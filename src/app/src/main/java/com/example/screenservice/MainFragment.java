@@ -47,7 +47,7 @@ public class MainFragment extends BrowseSupportFragment {
     private static final int BACKGROUND_UPDATE_DELAY = 300;
     private static final int GRID_ITEM_WIDTH = 200;
     private static final int GRID_ITEM_HEIGHT = 200;
-    private static final int NUM_ROWS = 6;
+    private static final int NUM_ROWS = 1;
     private static final int NUM_COLS = 15;
 
     private final Handler mHandler = new Handler(Looper.myLooper());
@@ -81,7 +81,8 @@ public class MainFragment extends BrowseSupportFragment {
     }
 
     private void loadRows() {
-        List<Movie> list = MovieList.setupMovies();
+
+        List<Screen> list = ScreenList.setupScreens();
 
         ArrayObjectAdapter rowsAdapter = new ArrayObjectAdapter(new ListRowPresenter());
         CardPresenter cardPresenter = new CardPresenter();
@@ -95,7 +96,7 @@ public class MainFragment extends BrowseSupportFragment {
             for (int j = 0; j < NUM_COLS; j++) {
                 listRowAdapter.add(list.get(j % 5));
             }
-            HeaderItem header = new HeaderItem(i, MovieList.MOVIE_CATEGORY[i]);
+            HeaderItem header = new HeaderItem(i, ScreenList.MOVIE_CATEGORY[i]);
             rowsAdapter.add(new ListRow(header, listRowAdapter));
         }
 
@@ -179,8 +180,22 @@ public class MainFragment extends BrowseSupportFragment {
         public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item,
                                   RowPresenter.ViewHolder rowViewHolder, Row row) {
 
-            if (item instanceof Movie) {
-                Movie movie = (Movie) item;
+            if (item instanceof Screen) {
+                Screen movie = (Screen) item;
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            ScreenList.screenRequest();
+                        } catch (Exception e) {
+                            Log.d("CalledToScreenList", e.toString());
+                            //throw new RuntimeException(e);
+                        }
+                        // Do network action in this function
+                    }
+                }).start();
+
                 Log.d(TAG, "Item: " + item.toString());
                 Intent intent = new Intent(getActivity(), DetailsActivity.class);
                 intent.putExtra(DetailsActivity.MOVIE, movie);
@@ -209,8 +224,8 @@ public class MainFragment extends BrowseSupportFragment {
                 Object item,
                 RowPresenter.ViewHolder rowViewHolder,
                 Row row) {
-            if (item instanceof Movie) {
-                mBackgroundUri = ((Movie) item).getBackgroundImageUrl();
+            if (item instanceof Screen) {
+                mBackgroundUri = ((Screen) item).getBackgroundImageUrl();
                 startBackgroundTimer();
             }
         }

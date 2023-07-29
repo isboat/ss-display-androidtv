@@ -1,25 +1,60 @@
-
 package com.example.screenservice;
-/*
+
+import android.util.Log;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class MovieList {
+public final class ScreenList {
     public static final String MOVIE_CATEGORY[] = {
             "Screens",
     };
 
-    private static List<Movie> list;
+    private static List<Screen> list;
     private static long count = 0;
 
-    public static List<Movie> getList() {
+    public static List<Screen> getList() {
         if (list == null) {
-            list = setupMovies();
+            list = setupScreens();
         }
+
         return list;
     }
 
-    public static List<Movie> setupMovies() {
+    public static void screenRequest() throws Exception {
+        String url = "https://ss-display-api.azurewebsites.net/api/content/screens";
+        URL obj = new URL(url);
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+        con.setRequestMethod("GET");
+        con.setRequestProperty("User-Agent", "Mozilla/5.0");
+        int responseCode = con.getResponseCode();
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer response = new StringBuffer();
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+        in.close();
+
+        //Read JSON response and print
+        JSONArray myResponse = new JSONArray(response.toString());
+
+        for (int i = 0; i < myResponse.length(); i++) {
+            JSONObject json_data = myResponse.getJSONObject(i);
+            Log.d("ScreenList",
+                    "id: " + json_data.getString("id")+", displayName: " + json_data.getString("displayName"));
+        }
+    }
+
+    public static List<Screen> setupScreens() {
         list = new ArrayList<>();
         String title[] = {
                 "Zeitgeist 2010_ Year in Review",
@@ -62,7 +97,7 @@ public final class MovieList {
 
         for (int index = 0; index < title.length; ++index) {
             list.add(
-                    buildMovieInfo(
+                    buildScreenInfo(
                             title[index],
                             description,
                             studio[index],
@@ -74,14 +109,14 @@ public final class MovieList {
         return list;
     }
 
-    private static Movie buildMovieInfo(
+    private static Screen buildScreenInfo(
             String title,
             String description,
             String studio,
             String videoUrl,
             String cardImageUrl,
             String backgroundImageUrl) {
-        Movie movie = new Movie();
+        Screen movie = new Screen();
         movie.setId(count++);
         movie.setTitle(title);
         movie.setDescription(description);
@@ -92,4 +127,3 @@ public final class MovieList {
         return movie;
     }
 }
-*/

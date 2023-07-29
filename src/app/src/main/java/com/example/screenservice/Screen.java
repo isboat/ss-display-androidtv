@@ -4,8 +4,8 @@ import java.io.Serializable;
 
 /*
  * Movie class represents video entity with title, description, image thumbs and video url.
-
-public class Movie implements Serializable {
+ */
+public class Screen implements Serializable {
     static final long serialVersionUID = 727566175075960653L;
     private long id;
     private String title;
@@ -15,7 +15,7 @@ public class Movie implements Serializable {
     private String videoUrl;
     private String studio;
 
-    public Movie() {
+    public Screen() {
     }
 
     public long getId() {
@@ -76,7 +76,7 @@ public class Movie implements Serializable {
 
     @Override
     public String toString() {
-        return "Movie{" +
+        return "Screen{" +
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", videoUrl='" + videoUrl + '\'' +
@@ -85,4 +85,3 @@ public class Movie implements Serializable {
                 '}';
     }
 }
-*/

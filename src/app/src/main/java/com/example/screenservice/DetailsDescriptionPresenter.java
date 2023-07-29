@@ -6,7 +6,7 @@ public class DetailsDescriptionPresenter extends AbstractDetailsDescriptionPrese
 
     @Override
     protected void onBindDescription(ViewHolder viewHolder, Object item) {
-        Movie movie = (Movie) item;
+        Screen movie = (Screen) item;
 
         if (movie != null) {
             viewHolder.getTitle().setText(movie.getTitle());
