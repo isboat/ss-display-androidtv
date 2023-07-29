@@ -18,9 +18,18 @@ public final class ScreenList {
     };
 
     private static List<Screen> list;
+    private static List<Screen> screenList;
     private static long count = 0;
 
     public static List<Screen> getList() {
+
+        Log.d("getList", "in getlist now");
+        if(screenList != null)
+        {
+            Log.d("screenRequest", "in screenlisst is not null now");
+            return screenList;
+        }
+        Log.d("screenRequest", "in screenlust is null now");
         if (list == null) {
             list = setupScreens();
         }
@@ -29,6 +38,29 @@ public final class ScreenList {
     }
 
     public static void screenRequest() throws Exception {
+        String videoUrl[] = {
+                "https://commondatastorage.googleapis.com/android-tv/Sample%20videos/Zeitgeist/Zeitgeist%202010_%20Year%20in%20Review.mp4",
+                "https://commondatastorage.googleapis.com/android-tv/Sample%20videos/Demo%20Slam/Google%20Demo%20Slam_%2020ft%20Search.mp4",
+                "https://commondatastorage.googleapis.com/android-tv/Sample%20videos/April%20Fool's%202013/Introducing%20Gmail%20Blue.mp4",
+                "https://commondatastorage.googleapis.com/android-tv/Sample%20videos/April%20Fool's%202013/Introducing%20Google%20Fiber%20to%20the%20Pole.mp4",
+                "https://commondatastorage.googleapis.com/android-tv/Sample%20videos/April%20Fool's%202013/Introducing%20Google%20Nose.mp4"
+        };
+        String bgImageUrl[] = {
+                "https://commondatastorage.googleapis.com/android-tv/Sample%20videos/Zeitgeist/Zeitgeist%202010_%20Year%20in%20Review/bg.jpg",
+                "https://commondatastorage.googleapis.com/android-tv/Sample%20videos/Demo%20Slam/Google%20Demo%20Slam_%2020ft%20Search/bg.jpg",
+                "https://commondatastorage.googleapis.com/android-tv/Sample%20videos/April%20Fool's%202013/Introducing%20Gmail%20Blue/bg.jpg",
+                "https://commondatastorage.googleapis.com/android-tv/Sample%20videos/April%20Fool's%202013/Introducing%20Google%20Fiber%20to%20the%20Pole/bg.jpg",
+                "https://commondatastorage.googleapis.com/android-tv/Sample%20videos/April%20Fool's%202013/Introducing%20Google%20Nose/bg.jpg",
+        };
+        String cardImageUrl[] = {
+                "https://commondatastorage.googleapis.com/android-tv/Sample%20videos/Zeitgeist/Zeitgeist%202010_%20Year%20in%20Review/card.jpg",
+                "https://commondatastorage.googleapis.com/android-tv/Sample%20videos/Demo%20Slam/Google%20Demo%20Slam_%2020ft%20Search/card.jpg",
+                "https://commondatastorage.googleapis.com/android-tv/Sample%20videos/April%20Fool's%202013/Introducing%20Gmail%20Blue/card.jpg",
+                "https://commondatastorage.googleapis.com/android-tv/Sample%20videos/April%20Fool's%202013/Introducing%20Google%20Fiber%20to%20the%20Pole/card.jpg",
+                "https://commondatastorage.googleapis.com/android-tv/Sample%20videos/April%20Fool's%202013/Introducing%20Google%20Nose/card.jpg"
+        };
+        screenList = new ArrayList<>();
+
         String url = "https://ss-display-api.azurewebsites.net/api/content/screens";
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -49,12 +81,23 @@ public final class ScreenList {
 
         for (int i = 0; i < myResponse.length(); i++) {
             JSONObject json_data = myResponse.getJSONObject(i);
-            Log.d("ScreenList",
-                    "id: " + json_data.getString("id")+", displayName: " + json_data.getString("displayName"));
+
+            screenList.add(
+                    buildScreenInfo(
+                            json_data.getString("displayName"),
+                            "description for screen" + json_data.getString("displayName"),
+                            "some info for studio",
+                            videoUrl[i],
+                            cardImageUrl[i],
+                            bgImageUrl[i]));
         }
     }
 
     public static List<Screen> setupScreens() {
+        if(screenList != null)
+        {
+            return screenList;
+        }
         list = new ArrayList<>();
         String title[] = {
                 "Zeitgeist 2010_ Year in Review",

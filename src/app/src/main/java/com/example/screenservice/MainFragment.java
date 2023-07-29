@@ -48,7 +48,7 @@ public class MainFragment extends BrowseSupportFragment {
     private static final int GRID_ITEM_WIDTH = 200;
     private static final int GRID_ITEM_HEIGHT = 200;
     private static final int NUM_ROWS = 1;
-    private static final int NUM_COLS = 15;
+    private static final int NUM_COLS = 3;
 
     private final Handler mHandler = new Handler(Looper.myLooper());
     private Drawable mDefaultBackground;
@@ -61,6 +61,29 @@ public class MainFragment extends BrowseSupportFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         Log.i(TAG, "onCreate");
         super.onActivityCreated(savedInstanceState);
+
+        try {
+            Thread t = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+
+                        ScreenList.screenRequest();
+
+                    } catch (Exception e) {
+                        Log.d("CalledToScreenList", e.toString());
+                        //throw new RuntimeException(e);
+                    }
+                    // Do network action in this function
+                }
+            });
+            t.start();
+            t.join();
+        }
+        catch(Exception ii)
+        {
+            Log.d("ThreadCall", ii.toString());
+        }
 
         prepareBackgroundManager();
 
@@ -187,7 +210,7 @@ public class MainFragment extends BrowseSupportFragment {
                     @Override
                     public void run() {
                         try {
-                            ScreenList.screenRequest();
+                            //ScreenList.screenRequest();
                         } catch (Exception e) {
                             Log.d("CalledToScreenList", e.toString());
                             //throw new RuntimeException(e);
