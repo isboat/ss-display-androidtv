@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
 
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -12,9 +14,13 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class CodeActivationActivity extends AppCompatActivity {
-    private static final String ENDPOINT_BASEURL = "http://mydisplay123point.runasp.net/";
+    private static final String ENDPOINT_BASEURL = "http://mydisplay123point.runasp.net/api/";
 
     private TextView userCodeTextView;
+    private TextView codeUrlTextView;
+
+    private HttpLoggingInterceptor loggingInterceptor;
+    private OkHttpClient okHttpClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,13 +28,24 @@ public class CodeActivationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_code_activation);
 
         userCodeTextView = findViewById(R.id.step_two_code);
+        codeUrlTextView = findViewById(R.id.step_one_url);
+
+        this.loggingInterceptor = new HttpLoggingInterceptor();
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY); // Choose the desired log level
+
+        // Create an instance of OkHttpClient with the interceptor
+        this.okHttpClient = new OkHttpClient.Builder()
+                .addInterceptor(loggingInterceptor)
+                .build();
 
         makeApiRequest();
     }
 
     private void makeApiRequest() {
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(ENDPOINT_BASEURL)
+                .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
@@ -41,10 +58,14 @@ public class CodeActivationActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     CodeActivationApiResponse responseData = response.body();
                     // Display the JSON data on the screen
-                    displayUserCodeOnScreen(responseData != null ? responseData.getUserCode() : null);
+                    String userCode = responseData != null ? responseData.getUserCode() : null;
+                    String codeUrl = responseData != null ? responseData.getVerificationUrl() : null;
+                    if(userCode != null) {
+                        displayUserCodeOnScreen(userCode, codeUrl);
+                    }
                 } else {
                     // Handle unsuccessful API request
-                    userCodeTextView.setText("Error: " + response.code());
+                    userCodeTextView.setText("Status Error: " + response.code());
                 }
             }
 
@@ -56,9 +77,13 @@ public class CodeActivationActivity extends AppCompatActivity {
         });
     }
 
-    private void displayUserCodeOnScreen(String userCode) {
+    private void displayUserCodeOnScreen(String userCode, String codeUrl) {
         if(userCode != null) {
             userCodeTextView.setText(userCode);
+        }
+
+        if(codeUrl != null) {
+            codeUrlTextView.setText(codeUrl);
         }
     }
 }
