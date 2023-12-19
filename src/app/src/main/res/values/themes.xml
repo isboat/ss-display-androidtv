@@ -1,4 +1,4 @@
 <resources>
 
-    <style name="Theme.ScreenService" parent="@style/Theme.Leanback" />
+    <style name="Theme.ScreenServiceTVApp" parent="@style/Theme.Leanback" />
 </resources>

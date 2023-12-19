@@ -13,5 +13,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Screen Service"
+rootProject.name = "Screen Service TV App"
 include(":app")
+ 

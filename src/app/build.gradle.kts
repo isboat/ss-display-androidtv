@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.screenservice"
+    namespace = "com.example.screenservicetvapp"
     compileSdk = 33
 
     defaultConfig {
-        applicationId = "com.example.screenservice"
+        applicationId = "com.example.screenservicetvapp"
         minSdk = 21
         targetSdk = 33
         versionCode = 1
@@ -29,6 +29,10 @@ android {
 
 dependencies {
 
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("androidx.leanback:leanback:1.0.0")
-    implementation("com.github.bumptech.glide:glide:4.11.0")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.google.android.material:material:1.8.0")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
 }
