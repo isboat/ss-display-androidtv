@@ -12,10 +12,10 @@ public class CodeActivationApiResponse {
     private String verificationUrl;
 
     @SerializedName("expiresIn")
-    private int expiresIn;
+    private long expiresIn;
 
     @SerializedName("interval")
-    private int interval;
+    private long interval;
 
     @SerializedName("deviceName")
     private String deviceName;
@@ -35,11 +35,11 @@ public class CodeActivationApiResponse {
         return verificationUrl;
     }
 
-    public int getExpiresIn() {
+    public long getExpiresIn() {
         return expiresIn;
     }
 
-    public int getInterval() {
+    public long getInterval() {
         return interval;
     }
 

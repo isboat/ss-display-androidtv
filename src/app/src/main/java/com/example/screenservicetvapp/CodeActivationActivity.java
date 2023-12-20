@@ -3,6 +3,7 @@ package com.example.screenservicetvapp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.widget.TextView;
 
 import okhttp3.OkHttpClient;
@@ -21,6 +22,10 @@ public class CodeActivationActivity extends AppCompatActivity {
 
     private HttpLoggingInterceptor loggingInterceptor;
     private OkHttpClient okHttpClient;
+
+    private Handler handler = new Handler();
+    private int retryCount = 0;
+    private static final int MAX_RETRY_COUNT = 5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,11 +62,20 @@ public class CodeActivationActivity extends AppCompatActivity {
             public void onResponse(Call<CodeActivationApiResponse> call, Response<CodeActivationApiResponse> response) {
                 if (response.isSuccessful()) {
                     CodeActivationApiResponse responseData = response.body();
-                    // Display the JSON data on the screen
-                    String userCode = responseData != null ? responseData.getUserCode() : null;
-                    String codeUrl = responseData != null ? responseData.getVerificationUrl() : null;
-                    if(userCode != null) {
-                        displayUserCodeOnScreen(userCode, codeUrl);
+                    if(responseData != null) {
+                        // Display the JSON data on the screen
+                        String userCode = responseData.getUserCode();
+                        String codeUrl = responseData.getVerificationUrl();
+                        if (userCode != null) {
+                            displayUserCodeOnScreen(userCode, codeUrl);
+                            long interval = responseData.getInterval();
+                            long expiresIn = responseData.getExpiresIn();
+
+                            scheduleStatusApiRequest(responseData);
+                        }
+                    }
+                    else {
+                        userCodeTextView.setText("Status Error: ResponseData is null");
                     }
                 } else {
                     // Handle unsuccessful API request
@@ -71,6 +85,53 @@ public class CodeActivationActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<CodeActivationApiResponse> call, Throwable t) {
+                // Handle API request failure
+                userCodeTextView.setText("Error: " + t.getMessage());
+            }
+        });
+    }
+
+    private void scheduleStatusApiRequest(CodeActivationApiResponse requestData) {
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // Make a periodic API request for status
+                makeStatusApiRequest(requestData);
+            }
+        }, requestData.getInterval()); // 5000 Schedule the next request after 5 seconds
+        retryCount++;
+
+        // Display an error if the maximum retry count is reached
+        if (retryCount >= MAX_RETRY_COUNT) {
+            // show error page; textViewResult.setText("Error: Maximum retry count reached");
+        }
+    }
+    private void makeStatusApiRequest(CodeActivationApiResponse requestData) {
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(ENDPOINT_BASEURL)
+                .client(okHttpClient)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        TokenApiRequest tokenApiRequest = retrofit.create(TokenApiRequest.class);
+        Call<TokenApiResponse> call = tokenApiRequest.tokenRequest(new TokenApiRequestBody(requestData.getClientId(), "", requestData.getDeviceCode(), ""));
+
+        call.enqueue(new Callback<TokenApiResponse>() {
+            @Override
+            public void onResponse(Call<TokenApiResponse> call, Response<TokenApiResponse> response) {
+                if (response.isSuccessful()) {
+                    TokenApiResponse responseData = response.body();
+                    // Display the JSON data on the screen
+
+                } else {
+                    // Handle unsuccessful API request
+                    userCodeTextView.setText("Status Error: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<TokenApiResponse> call, Throwable t) {
                 // Handle API request failure
                 userCodeTextView.setText("Error: " + t.getMessage());
             }
