@@ -21,6 +21,8 @@ public class MainActivity extends FragmentActivity {
         // Assume you want to start AnotherActivity when a certain condition is met
         if (accessToken == null) {
             this.navigateToCodeActivationScreen();
+        } else {
+            this.navigateToContentScreen();
         }
 /*
         listFragment = new ListFragment();
@@ -31,6 +33,18 @@ public class MainActivity extends FragmentActivity {
 
     private void navigateToCodeActivationScreen() {
         Intent intent = new Intent(this, CodeActivationActivity.class);
+
+        // You can also pass data to the new activity using putExtra
+        intent.putExtra("key", "value");
+
+        // Start the new activity
+        startActivity(intent);
+
+        finish(); // Close the current activity
+    }
+
+    private void navigateToContentScreen() {
+        Intent intent = new Intent(this, ContentActivity.class);
 
         // You can also pass data to the new activity using putExtra
         intent.putExtra("key", "value");

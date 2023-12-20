@@ -3,28 +3,20 @@ package com.example.screenservicetvapp;
 import com.google.gson.annotations.SerializedName;
 
 public class TokenApiResponse {
-
-    @SerializedName("deviceCode")
-    private String deviceCode;
-
-    @SerializedName("access_token")
+    @SerializedName("accessToken")
     private String accessToken;
 
-    @SerializedName("expires_in")
+    @SerializedName("expiresIn")
     private long expiresIn;
 
     @SerializedName("scope")
     private String scope;
 
-    @SerializedName("token_type")
+    @SerializedName("tokenType")
     private String tokenType;
 
-    @SerializedName("refresh_token")
+    @SerializedName("refreshToken")
     private String refreshToken;
-
-    public String getDeviceCode() {
-        return deviceCode;
-    }
 
     public String getAccessToken() {
         return accessToken;

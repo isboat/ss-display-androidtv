@@ -8,6 +8,8 @@ import android.os.Handler;
 import android.util.Log;
 import android.widget.TextView;
 
+import org.json.JSONObject;
+
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
@@ -17,7 +19,6 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class CodeActivationActivity extends AppCompatActivity {
-    private static final String ENDPOINT_BASEURL = "http://mydisplay123point.runasp.net/api/";
     private static final String TOKEN_GRANT_TYPE = "urn:ietf:params:oauth:grant-type:access_token";
 
     private TextView userCodeTextView;
@@ -56,7 +57,7 @@ public class CodeActivationActivity extends AppCompatActivity {
     private void makeApiRequest() {
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(ENDPOINT_BASEURL)
+                .baseUrl(Constants.ENDPOINT_BASEURL)
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
@@ -118,7 +119,7 @@ public class CodeActivationActivity extends AppCompatActivity {
     private void makeStatusApiRequest(CodeActivationApiResponse requestData) {
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(ENDPOINT_BASEURL)
+                .baseUrl(Constants.ENDPOINT_BASEURL)
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
@@ -139,6 +140,15 @@ public class CodeActivationActivity extends AppCompatActivity {
                     // Display the JSON data on the screen
 
                 } else {
+
+                    try {
+                        JSONObject jObjError = new JSONObject(response.errorBody().string());
+                        String error = jObjError.getString("error");
+                        Log.d("ContentActErrorTest", error);
+                    } catch (Exception e) {
+                        Log.d("CodeActivationJSON", e.getMessage());
+                    }
+
                     int responseStatusCode = response.code();
                     switch (responseStatusCode) {
                         case 428:  // authorization_pending

@@ -20,10 +20,12 @@
         android:usesCleartextTraffic="true">
         <activity
             android:name=".ContentActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat.Light" />
         <activity
             android:name=".ErrorActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat.Light" />
         <activity
             android:name=".CodeActivationActivity"
             android:exported="false"

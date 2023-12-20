@@ -3,12 +3,125 @@ package com.example.screenservicetvapp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
+import android.widget.TextView;
+
+import org.json.JSONObject;
+
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ContentActivity extends AppCompatActivity {
+    private static final String TOKEN_GRANT_TYPE = "urn:ietf:params:oauth:grant-type:access_token";
 
+
+    private HttpLoggingInterceptor loggingInterceptor;
+    private OkHttpClient okHttpClient;
+
+    private TokenStorageService storageService;
+
+    private TextView messageTextView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_content);
+        messageTextView = findViewById(R.id.content_message_txt);
+
+        this.loggingInterceptor = new HttpLoggingInterceptor();
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY); // Choose the desired log level
+
+        // Create an instance of OkHttpClient with the interceptor
+        this.okHttpClient = new OkHttpClient.Builder()
+                .addInterceptor(loggingInterceptor)
+                .build();
+
+        storageService = new TokenStorageService(this);
+
+        // Retrieve access token
+        String accessToken = storageService.getAccessToken();
+        Log.d("ContentActivity", "accessToken: " + accessToken);
+        // Assume you want to start AnotherActivity when a certain condition is met
+        if (accessToken == null) {
+            //this.tryRefreshAccessToken();
+        } else {
+            this.makeApiRequest(accessToken);
+        }
+    }
+
+    private void makeApiRequest(String accessToken) {
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Constants.ENDPOINT_BASEURL)
+                .client(okHttpClient)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        ContentDataApiRequest apiRequest = retrofit.create(ContentDataApiRequest.class);
+        Call<ContentDataApiResponse> call = apiRequest.getData("Bearer " + accessToken);
+
+        call.enqueue(new Callback<ContentDataApiResponse>() {
+            @Override
+            public void onResponse(Call<ContentDataApiResponse> call, Response<ContentDataApiResponse> response) {
+                if (response.isSuccessful()) {
+                    ContentDataApiResponse responseData = response.body();
+                    if(responseData != null) {
+                        // Display the JSON data on the screen
+                        //String userCode = responseData.getUserCode();
+                    }
+                    else {
+                        //userCodeTextView.setText("Status Error: ResponseData is null");
+                    }
+                } else {
+
+                    try {
+                        String error = response.errorBody().string();
+                        Log.d("ContentActErrorTest", error);
+                        //Toast.makeText(getContext(), jObjError.getJSONObject("error").getString("message"), Toast.LENGTH_LONG).show();
+
+                        int responseStatus = response.code();
+                        switch (responseStatus){
+                            case 404:
+                                displayNotFoundMessage(error);
+                                break;
+                            default:
+                                break;
+                        }
+                    } catch (Exception e) {
+                        Log.d("ContentActivityMakeReq", e.getMessage());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ContentDataApiResponse> call, Throwable t) {
+                // Handle API request failure
+                //userCodeTextView.setText("Error: " + t.getMessage());
+            }
+        });
+    }
+
+    private void displayNotFoundMessage(String errorCode) {
+        String displayMsg = null;
+        switch (errorCode) {
+            case "no_such_device":
+                displayMsg = "No Such Device Found";
+                break;
+            case "no_screen_id":
+                displayMsg = "No Screen Attached";
+                break;
+            case "no_screen_data_found":
+                displayMsg = "No Screen Data Found";
+                break;
+            default:
+                displayMsg = "Error occurred";
+                break;
+        }
+        messageTextView.setText(displayMsg);
     }
 }
