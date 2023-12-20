@@ -8,8 +8,7 @@
         android:name="android.hardware.touchscreen"
         android:required="false" />
 
-    <uses-permission
-        android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -17,8 +16,11 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:usesCleartextTraffic="true"
-        android:theme="@style/Theme.ScreenServiceTVApp">
+        android:theme="@style/Theme.ScreenServiceTVApp"
+        android:usesCleartextTraffic="true">
+        <activity
+            android:name=".ContentActivity"
+            android:exported="false" />
         <activity
             android:name=".ErrorActivity"
             android:exported="false" />

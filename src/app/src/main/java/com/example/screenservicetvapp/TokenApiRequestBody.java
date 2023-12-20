@@ -1,12 +1,19 @@
 package com.example.screenservicetvapp;
 
+import com.google.gson.annotations.SerializedName;
+
 public class TokenApiRequestBody {
+
+    @SerializedName("clientId")
     private String clientId;
 
+    @SerializedName("clientSecret")
     private String clientSecret;
 
+    @SerializedName("deviceCode")
     private String deviceCode;
 
+    @SerializedName("grantType")
     private String grantType;
 
     public TokenApiRequestBody(String clientId, String clientSecret, String deviceCode, String grantType) {
