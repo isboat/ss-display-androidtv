@@ -19,6 +19,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ContentActivity extends AppCompatActivity {
     private static final String TOKEN_GRANT_TYPE = "urn:ietf:params:oauth:grant-type:access_token";
+    private static final String TOKEN_REFRESH_GRANT_TYPE = "refresh_token";
 
 
     private HttpLoggingInterceptor loggingInterceptor;
@@ -89,6 +90,8 @@ public class ContentActivity extends AppCompatActivity {
                             case 404:
                                 displayNotFoundMessage(error);
                                 break;
+                            case 401:
+                                refreshAccessToken();
                             default:
                                 break;
                         }
@@ -104,6 +107,57 @@ public class ContentActivity extends AppCompatActivity {
                 //userCodeTextView.setText("Error: " + t.getMessage());
             }
         });
+    }
+
+    private void refreshAccessToken() {
+        String refreshToken = storageService.getRefreshToken();
+        if(refreshToken == null) {
+            navigateToCodeActivationScreen();
+            return;
+        }
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Constants.ENDPOINT_BASEURL)
+                .client(okHttpClient)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        TokenApiRequest tokenApiRequest = retrofit.create(TokenApiRequest.class);
+        Call<TokenApiResponse> call = tokenApiRequest.refreshTokenRequest(
+                new TokenApiRequestBody("", "string", "", TOKEN_REFRESH_GRANT_TYPE), "Bearer " + refreshToken);
+
+        call.enqueue(new Callback<TokenApiResponse>() {
+            @Override
+            public void onResponse(Call<TokenApiResponse> call, Response<TokenApiResponse> response) {
+                if (response.isSuccessful()) {
+                    TokenApiResponse responseData = response.body();
+                    storageService.setAccessToken(responseData.getAccessToken());
+                    storageService.setRefreshToken(responseData.getRefreshToken());
+
+                    makeApiRequest(responseData.getAccessToken());
+                    // Display the JSON data on the screen
+
+                } else {
+
+                    try {
+                        JSONObject jObjError = new JSONObject(response.errorBody().string());
+                        String error = jObjError.getString("error");
+                        Log.d("ContentActErrorTest", error);
+                    } catch (Exception e) {
+                        Log.d("CodeActivationJSON", e.getMessage());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<TokenApiResponse> call, Throwable t) {
+                // Handle API request failure
+                messageTextView.setText("Error: " + t.getMessage());
+            }
+        });
+    }
+
+    private void navigateToCodeActivationScreen() {
     }
 
     private void displayNotFoundMessage(String errorCode) {
