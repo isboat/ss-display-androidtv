@@ -7,13 +7,14 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link ListFragment#newInstance} factory method to
+ * Use the {@link ExternalMediaFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ListFragment extends Fragment {
+public class ExternalMediaFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -24,7 +25,9 @@ public class ListFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public ListFragment() {
+    private TextView sourceTextView;
+
+    public ExternalMediaFragment() {
         // Required empty public constructor
     }
 
@@ -34,11 +37,11 @@ public class ListFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment ListFragment.
+     * @return A new instance of fragment ExternalMediaFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ListFragment newInstance(String param1, String param2) {
-        ListFragment fragment = new ListFragment();
+    public static ExternalMediaFragment newInstance(String param1, String param2) {
+        ExternalMediaFragment fragment = new ExternalMediaFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -53,12 +56,24 @@ public class ListFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_list, container, false);
+
+        View view = inflater.inflate(R.layout.fragment_external_media, container, false);
+
+        // Retrieve data from arguments
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            String externalMediaSource = bundle.getString("externalMediaSource");
+            sourceTextView = (TextView) view.findViewById(R.id.external_fragment_source);
+            sourceTextView.setText(externalMediaSource);
+        }
+
+        return view;
     }
 }

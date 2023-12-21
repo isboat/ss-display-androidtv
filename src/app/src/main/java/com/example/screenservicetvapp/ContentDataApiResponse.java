@@ -18,5 +18,9 @@ public class ContentDataApiResponse {
 
     @SerializedName("externalMediaSource")
     private String externalMediaSource;
+
+    public String getExternalMediaSource() {
+        return externalMediaSource;
+    }
 }
 

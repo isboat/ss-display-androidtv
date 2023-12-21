@@ -73,8 +73,7 @@ public class ContentActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     ContentDataApiResponse responseData = response.body();
                     if(responseData != null) {
-                        // Display the JSON data on the screen
-                        //String userCode = responseData.getUserCode();
+                        navigateToMediaOnlyActivity(responseData);
                     }
                     else {
                         //userCodeTextView.setText("Status Error: ResponseData is null");
@@ -108,6 +107,17 @@ public class ContentActivity extends AppCompatActivity {
                 navigateToErrorActivity("Content Data Network Error", "Technical error occurred when connecting to the server, try again later.");
             }
         });
+    }
+
+    private void navigateToMediaOnlyActivity(ContentDataApiResponse responseData) {
+        Intent intent = new Intent(this, MediaOnlyActivity.class);
+
+        // You can also pass data to the new activity using putExtra
+        intent.putExtra("externalMediaSource", responseData.getExternalMediaSource());
+
+        // Start the new activity
+        startActivity(intent);
+        finish(); // Close the current activity
     }
 
     private void refreshAccessToken() {
@@ -156,8 +166,6 @@ public class ContentActivity extends AppCompatActivity {
             }
         });
     }
-
-
 
     private void navigateToErrorActivity(String errorTitle, String errorMessage) {
         Intent intent = new Intent(this, ErrorActivity.class);
