@@ -7,6 +7,9 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.TextView;
 
 /**
@@ -25,7 +28,7 @@ public class ExternalMediaFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private TextView sourceTextView;
+    private WebView externalWebView;
 
     public ExternalMediaFragment() {
         // Required empty public constructor
@@ -61,8 +64,7 @@ public class ExternalMediaFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_external_media, container, false);
 
@@ -70,8 +72,14 @@ public class ExternalMediaFragment extends Fragment {
         Bundle bundle = getArguments();
         if (bundle != null) {
             String externalMediaSource = bundle.getString("externalMediaSource");
-            sourceTextView = (TextView) view.findViewById(R.id.external_fragment_source);
-            sourceTextView.setText(externalMediaSource);
+            externalWebView = (WebView) view.findViewById(R.id.external_media_web_view);
+            externalWebView.setWebChromeClient(new WebChromeClient());
+
+            WebSettings ws = externalWebView.getSettings();
+            ws.setBuiltInZoomControls(true);
+            ws.setJavaScriptEnabled(true);
+
+            externalWebView.loadUrl(externalMediaSource);
         }
 
         return view;

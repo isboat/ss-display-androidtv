@@ -73,7 +73,7 @@ public class ContentActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     ContentDataApiResponse responseData = response.body();
                     if(responseData != null) {
-                        navigateToMediaOnlyActivity(responseData);
+                        //navigateToMediaOnlyActivity(responseData);
                     }
                     else {
                         //userCodeTextView.setText("Status Error: ResponseData is null");
