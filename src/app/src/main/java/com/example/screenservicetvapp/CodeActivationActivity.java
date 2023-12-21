@@ -76,9 +76,6 @@ public class CodeActivationActivity extends AppCompatActivity {
                         String codeUrl = responseData.getVerificationUrl();
                         if (userCode != null) {
                             displayUserCodeOnScreen(userCode, codeUrl);
-                            long interval = responseData.getInterval();
-                            long expiresIn = responseData.getExpiresIn();
-
                             scheduleStatusApiRequest(responseData);
                         }
                     }
@@ -94,7 +91,7 @@ public class CodeActivationActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<CodeActivationApiResponse> call, Throwable t) {
                 // Handle API request failure
-                userCodeTextView.setText("Error: " + t.getMessage());
+                navigateToErrorActivity("CodeActivation Network Error", "technical error occurred when connecting to the server, try again later.");
             }
         });
     }
@@ -165,15 +162,15 @@ public class CodeActivationActivity extends AppCompatActivity {
                         case 403:
                             // StatusCodes.Status403Forbidden, "access_denied", "Invalid device code"
                             // or Status403Forbidden, "access_denied", "Forbidden"
-                            userCodeTextView.setText("Error: Invalid device code or Forbidden. Status: " + response.code());
+                            navigateToErrorActivity("Error occurred","Invalid device code or Forbidden. Status: " + response.code());
                             break;
                         case 400:
                             // StatusCodes.Status400BadRequest, "access_expired", "Access Expired"
-                            userCodeTextView.setText("Error: Access Expired. Status: " + response.code());
+                            navigateToErrorActivity("Error occurred","Access Expired. Status: " + response.code());
                             break;
                         default:
                             // Handle unsuccessful API request
-                            userCodeTextView.setText("Error: Handle unsuccessful API request. Status " + response.code());
+                            navigateToErrorActivity("Error occurred","Handle unsuccessful API request. Status " + response.code());
                             break;
                     }
                 }
@@ -182,7 +179,7 @@ public class CodeActivationActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<TokenApiResponse> call, Throwable t) {
                 // Handle API request failure
-                userCodeTextView.setText("Error: " + t.getMessage());
+                navigateToErrorActivity("Network Error", "technical error occurred when connecting to the server, try again later.");
             }
         });
     }
@@ -190,12 +187,21 @@ public class CodeActivationActivity extends AppCompatActivity {
     private void navigateToContentActivity() {
         Intent intent = new Intent(this, ContentActivity.class);
 
-        // You can also pass data to the new activity using putExtra
-        intent.putExtra("key", "value");
-
         // Start the new activity
         startActivity(intent);
 
+        finish(); // Close the current activity
+    }
+
+    private void navigateToErrorActivity(String errorTitle, String errorMessage) {
+        Intent intent = new Intent(this, ErrorActivity.class);
+
+        // You can also pass data to the new activity using putExtra
+        intent.putExtra("errorTitle", errorTitle);
+        intent.putExtra("errorMessage", errorMessage);
+
+        // Start the new activity
+        startActivity(intent);
         finish(); // Close the current activity
     }
 

@@ -2,6 +2,7 @@ package com.example.screenservicetvapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -104,7 +105,7 @@ public class ContentActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<ContentDataApiResponse> call, Throwable t) {
                 // Handle API request failure
-                //userCodeTextView.setText("Error: " + t.getMessage());
+                navigateToErrorActivity("Content Data Network Error", "Technical error occurred when connecting to the server, try again later.");
             }
         });
     }
@@ -138,7 +139,6 @@ public class ContentActivity extends AppCompatActivity {
                     // Display the JSON data on the screen
 
                 } else {
-
                     try {
                         JSONObject jObjError = new JSONObject(response.errorBody().string());
                         String error = jObjError.getString("error");
@@ -152,12 +152,29 @@ public class ContentActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<TokenApiResponse> call, Throwable t) {
                 // Handle API request failure
-                messageTextView.setText("Error: " + t.getMessage());
+                navigateToErrorActivity("Content Refresh Network Error", "Technical error occurred when connecting to the server, try again later.");
             }
         });
     }
 
+
+
+    private void navigateToErrorActivity(String errorTitle, String errorMessage) {
+        Intent intent = new Intent(this, ErrorActivity.class);
+
+        // You can also pass data to the new activity using putExtra
+        intent.putExtra("errorTitle", errorTitle);
+        intent.putExtra("errorMessage", errorMessage);
+
+        // Start the new activity
+        startActivity(intent);
+        finish(); // Close the current activity
+    }
+
     private void navigateToCodeActivationScreen() {
+        Intent intent = new Intent(this, CodeActivationActivity.class);
+        startActivity(intent);
+        finish(); // Close the current activity
     }
 
     private void displayNotFoundMessage(String errorCode) {
