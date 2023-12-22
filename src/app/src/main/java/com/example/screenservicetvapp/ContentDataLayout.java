@@ -9,5 +9,17 @@ public class ContentDataLayout {
     private String subType;
     @SerializedName("templateProperties")
     private LayoutTemplateProperty[] templateProperties;
+
+    public String getTemplateKey() {
+        return templateKey;
+    }
+
+    public String getSubType() {
+        return subType;
+    }
+
+    public LayoutTemplateProperty[] getTemplateProperties() {
+        return templateProperties;
+    }
 }
 

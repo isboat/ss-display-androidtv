@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.FrameLayout;
 
 public class MediaOnlyActivity extends AppCompatActivity {
@@ -18,17 +19,44 @@ public class MediaOnlyActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_media_only);
 
+        frameLayout = (FrameLayout) findViewById(R.id.media_only_framelayout);
+
         // Retrieve the Intent that started this activity
         Intent intent = getIntent();
-
-        // Retrieve the data from the Intent using getStringExtra
+        ContentDataMediaAsset mediaAsset = intent.getParcelableExtra("mediaAsset");
         externalMediaSource = intent.getStringExtra("externalMediaSource");
 
+        if(!ObjectExtensions.isNullOrEmpty(externalMediaSource)) {
+            loadExternalMediaFragment(externalMediaSource);
+        } else {
+            boolean isImg = GetMediaType(mediaAsset);
+            Log.d("INElse", "isImg" + isImg);
+            if(isImg) {
+                loadImageMediaFragment(mediaAsset.getAssetUrl());
+            }
+        }
+    }
+
+    private boolean GetMediaType(ContentDataMediaAsset mediaAsset) {
+        return mediaAsset.getType() == 1; // image is 1, video is 2
+    }
+
+    private void loadImageMediaFragment(String assetUrl) {
+        Bundle bundle = new Bundle();
+        bundle.putString("assetUrl", assetUrl);
+        Fragment fragment = new ImageMediaFragment();
+        loadFragment(fragment, bundle);
+    }
+
+    private void loadExternalMediaFragment(String externalMediaSource) {
         Bundle bundle = new Bundle();
         bundle.putString("externalMediaSource", externalMediaSource);
 
-        frameLayout = (FrameLayout) findViewById(R.id.media_only_framelayout);
         Fragment fragment = new ExternalMediaFragment();
+        loadFragment(fragment, bundle);
+    }
+
+    private void loadFragment(Fragment fragment, Bundle bundle) {
         fragment.setArguments(bundle);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();

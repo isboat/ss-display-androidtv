@@ -73,7 +73,17 @@ public class ContentActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     ContentDataApiResponse responseData = response.body();
                     if(responseData != null) {
-                        //navigateToMediaOnlyActivity(responseData);
+                        ContentDataLayout layout = responseData.getLayout();
+                        if(layout != null) {
+                            switch (layout.getTemplateKey()) {
+                                case "MediaOnly":
+                                    navigateToMediaOnlyActivity(responseData);
+                                    break;
+                                default:
+                                    navigateToErrorActivity("No Layout Key", "Layout Key is not set, update screen and republish");
+                            }
+                        }
+                        navigateToMediaOnlyActivity(responseData);
                     }
                     else {
                         //userCodeTextView.setText("Status Error: ResponseData is null");
@@ -113,6 +123,7 @@ public class ContentActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MediaOnlyActivity.class);
 
         // You can also pass data to the new activity using putExtra
+        intent.putExtra("mediaAsset", responseData.getMediaAsset());
         intent.putExtra("externalMediaSource", responseData.getExternalMediaSource());
 
         // Start the new activity

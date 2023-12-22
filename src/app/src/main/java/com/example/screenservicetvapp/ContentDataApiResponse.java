@@ -16,11 +16,22 @@ public class ContentDataApiResponse {
     @SerializedName("menu")
     private ContentDataMenu menu;
 
+    @SerializedName("mediaAsset")
+    private ContentDataMediaAsset mediaAsset;
+
     @SerializedName("externalMediaSource")
     private String externalMediaSource;
 
     public String getExternalMediaSource() {
         return externalMediaSource;
+    }
+
+    public ContentDataMediaAsset getMediaAsset() {
+        return mediaAsset;
+    }
+
+    public ContentDataLayout getLayout() {
+        return layout;
     }
 }
 

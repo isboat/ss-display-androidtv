@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/someidforimage"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ImageMediaFragment">
+
+
+    <ImageView
+        android:id="@+id/media_image_asset"
+        android:layout_width="match_parent"
+        android:layout_height="526dp"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        tools:src="@tools:sample/avatars" />
+</FrameLayout>
