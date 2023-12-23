@@ -4,10 +4,12 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.MediaController;
 import android.widget.VideoView;
 
 import com.squareup.picasso.Picasso;
@@ -73,7 +75,21 @@ public class VideoMediaFragment extends Fragment {
             String assetUrl = bundle.getString("assetUrl");
             mediaVideoView = (VideoView) view.findViewById(R.id.media_video_asset_view);
             if(mediaVideoView != null) {
+
+                // Set up a MediaController to enable play, pause, etc. controls
+                MediaController mediaController = new MediaController(this.getContext());
+                mediaController.setAnchorView(mediaVideoView);
+                mediaVideoView.setMediaController(mediaController);
+
+                // Set the video URL using setVideoPath or setVideoURI
                 mediaVideoView.setVideoPath(assetUrl);
+
+                // Alternatively, you can use setVideoURI
+                // Uri uri = Uri.parse(assetUrl);
+                // mediaVideoView.setVideoURI(uri);
+Log.d("mediaVideoView", assetUrl);
+                // Start playing the video
+                mediaVideoView.start();
             }
         }
         return view;

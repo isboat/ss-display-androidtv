@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -26,14 +25,16 @@ public class ContentActivity extends AppCompatActivity {
     private HttpLoggingInterceptor loggingInterceptor;
     private OkHttpClient okHttpClient;
 
-    private TokenStorageService storageService;
+    private LocalStorageService storageService;
 
     private TextView messageTextView;
+    private TextView deviceNameTextView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_content);
-        messageTextView = findViewById(R.id.content_message_txt);
+        messageTextView = (TextView) findViewById(R.id.content_message_txt);
+        deviceNameTextView = (TextView) findViewById(R.id.content_act_device_name_textview);
 
         this.loggingInterceptor = new HttpLoggingInterceptor();
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY); // Choose the desired log level
@@ -43,7 +44,7 @@ public class ContentActivity extends AppCompatActivity {
                 .addInterceptor(loggingInterceptor)
                 .build();
 
-        storageService = new TokenStorageService(this);
+        storageService = new LocalStorageService(this);
 
         // Retrieve access token
         String accessToken = storageService.getAccessToken();
@@ -73,6 +74,7 @@ public class ContentActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     ContentDataApiResponse responseData = response.body();
                     if(responseData != null) {
+
                         ContentDataLayout layout = responseData.getLayout();
                         if(layout != null) {
                             switch (layout.getTemplateKey()) {
@@ -83,7 +85,7 @@ public class ContentActivity extends AppCompatActivity {
                                     navigateToErrorActivity("No Layout Key", "Layout Key is not set, update screen and republish");
                             }
                         }
-                        navigateToMediaOnlyActivity(responseData);
+                        //navigateToMediaOnlyActivity(responseData);
                     }
                     else {
                         //userCodeTextView.setText("Status Error: ResponseData is null");
@@ -197,7 +199,8 @@ public class ContentActivity extends AppCompatActivity {
     }
 
     private void displayNotFoundMessage(String errorCode) {
-        String displayMsg = null;
+        String displayMsg;
+        boolean showDeviceName = false;
         switch (errorCode) {
             case "no_such_device":
                 displayMsg = "No Such Device Found";
@@ -213,5 +216,12 @@ public class ContentActivity extends AppCompatActivity {
                 break;
         }
         messageTextView.setText(displayMsg);
+        if(showDeviceName) {
+            String deviceName = storageService.getData(Constants.DEVICE_NAME);
+            if(!ObjectExtensions.isNullOrEmpty(deviceName))
+            {
+                deviceNameTextView.setText(deviceName);
+            }
+        }
     }
 }

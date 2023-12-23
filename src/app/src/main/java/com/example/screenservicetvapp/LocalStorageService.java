@@ -3,14 +3,14 @@ package com.example.screenservicetvapp;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-public class TokenStorageService {
+public class LocalStorageService {
     private static final String PREFERENCES_NAME = "com.example.screen_service";
     private static final String ACCESS_TOKEN_KEY = "access_token";
     private static final String REFRESH_TOKEN_KEY = "refresh_token";
 
     private final SharedPreferences sharedPreferences;
 
-    public TokenStorageService(Context context) {
+    public LocalStorageService(Context context) {
         // Initialize SharedPreferences
         this.sharedPreferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
     }
@@ -37,5 +37,17 @@ public class TokenStorageService {
     public String getRefreshToken() {
         // Retrieve the access token from SharedPreferences
         return sharedPreferences.getString(REFRESH_TOKEN_KEY, null);
+    }
+
+    public void setData(String dataStorageKey, String dataValue) {
+        // Save the access token in SharedPreferences
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(dataStorageKey, dataValue);
+        editor.apply();
+    }
+
+    public String getData(String dataStorageKey) {
+        // Retrieve the access token from SharedPreferences
+        return sharedPreferences.getString(dataStorageKey, null);
     }
 }

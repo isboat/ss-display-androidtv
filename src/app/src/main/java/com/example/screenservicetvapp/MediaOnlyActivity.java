@@ -29,16 +29,26 @@ public class MediaOnlyActivity extends AppCompatActivity {
         if(!ObjectExtensions.isNullOrEmpty(externalMediaSource)) {
             loadExternalMediaFragment(externalMediaSource);
         } else {
-            boolean isImg = GetMediaType(mediaAsset);
-            Log.d("INElse", "isImg" + isImg);
-            if(isImg) {
-                loadImageMediaFragment(mediaAsset.getAssetUrl());
+            int mediaType = mediaAsset.getType();
+            switch(mediaType) {
+                case 1: // Image
+                    loadImageMediaFragment(mediaAsset.getAssetUrl());
+                    break;
+                case 2: // Video
+                    loadVideoMediaFragment(mediaAsset.getAssetUrl());
+                    break;
+                default:
+                    Log.d("MediaOnlyActivity", "No such media type");
+                    break;
             }
         }
     }
 
-    private boolean GetMediaType(ContentDataMediaAsset mediaAsset) {
-        return mediaAsset.getType() == 1; // image is 1, video is 2
+    private void loadVideoMediaFragment(String assetUrl) {
+        Bundle bundle = new Bundle();
+        bundle.putString("assetUrl", assetUrl);
+        Fragment fragment = new VideoMediaFragment();
+        loadFragment(fragment, bundle);
     }
 
     private void loadImageMediaFragment(String assetUrl) {

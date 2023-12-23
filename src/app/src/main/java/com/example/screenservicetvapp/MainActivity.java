@@ -13,7 +13,7 @@ public class MainActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        TokenStorageService storageService = new TokenStorageService(this);
+        LocalStorageService storageService = new LocalStorageService(this);
 
         // Retrieve access token
         String accessToken = storageService.getAccessToken();

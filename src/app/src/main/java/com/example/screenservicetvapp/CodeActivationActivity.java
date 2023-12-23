@@ -31,7 +31,7 @@ public class CodeActivationActivity extends AppCompatActivity {
     private int retryCount = 0;
     private static final int MAX_RETRY_COUNT = 5;
 
-    private TokenStorageService storageService;
+    private LocalStorageService storageService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +49,7 @@ public class CodeActivationActivity extends AppCompatActivity {
                 .addInterceptor(loggingInterceptor)
                 .build();
 
-        storageService = new TokenStorageService(this);
+        storageService = new LocalStorageService(this);
 
         makeApiRequest();
     }
@@ -71,6 +71,10 @@ public class CodeActivationActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     CodeActivationApiResponse responseData = response.body();
                     if(responseData != null) {
+
+                        //Store device name
+                        storageService.setData(Constants.DEVICE_NAME, responseData.getDeviceName());
+
                         // Display the JSON data on the screen
                         String userCode = responseData.getUserCode();
                         String codeUrl = responseData.getVerificationUrl();
