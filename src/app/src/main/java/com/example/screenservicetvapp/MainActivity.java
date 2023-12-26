@@ -5,6 +5,8 @@ import androidx.fragment.app.FragmentActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Window;
+import android.view.WindowManager;
 
 public class MainActivity extends FragmentActivity {
 
@@ -24,11 +26,6 @@ public class MainActivity extends FragmentActivity {
         } else {
             this.navigateToContentScreen();
         }
-/*
-        listFragment = new ListFragment();
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.add(R.id.list_fragment, listFragment);
-        transaction.commit();*/
     }
 
     private void navigateToCodeActivationScreen() {

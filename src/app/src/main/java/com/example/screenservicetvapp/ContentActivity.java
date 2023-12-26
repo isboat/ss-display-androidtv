@@ -4,10 +4,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.TextView;
 
 import org.json.JSONObject;
+
+import java.util.Objects;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -29,6 +32,10 @@ public class ContentActivity extends AppCompatActivity {
 
     private TextView messageTextView;
     private TextView deviceNameTextView;
+    private Handler handler;
+
+    private boolean isActive;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,9 +58,18 @@ public class ContentActivity extends AppCompatActivity {
         Log.d("ContentActivity", "accessToken: " + accessToken);
         // Assume you want to start AnotherActivity when a certain condition is met
         if (accessToken == null) {
-            //this.tryRefreshAccessToken();
+            this.refreshAccessToken();
         } else {
-            this.makeApiRequest(accessToken);
+            handler = new Handler();
+
+            final Runnable r = new Runnable() {
+                public void run() {
+                    makeApiRequest(accessToken);
+                    handler.postDelayed(this, 5000);
+                }
+            };
+
+            handler.postDelayed(r, 1000);
         }
     }
 
@@ -74,6 +90,11 @@ public class ContentActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     ContentDataApiResponse responseData = response.body();
                     if(responseData != null) {
+                        String checksum = responseData.getChecksum();
+                        String storedChecksum = storageService.getData(Constants.CHECKSUM_DATA_KEY);
+                        if(Objects.equals(storedChecksum, checksum) && isActive) return;
+                        storageService.setData(Constants.CHECKSUM_DATA_KEY, checksum);
+                        isActive = true;
 
                         ContentDataLayout layout = responseData.getLayout();
                         if(layout != null) {

@@ -22,6 +22,9 @@ public class ContentDataApiResponse {
     @SerializedName("externalMediaSource")
     private String externalMediaSource;
 
+    @SerializedName("checksum")
+    private String checksum;
+
     public String getExternalMediaSource() {
         return externalMediaSource;
     }
@@ -32,6 +35,10 @@ public class ContentDataApiResponse {
 
     public ContentDataLayout getLayout() {
         return layout;
+    }
+
+    public String getChecksum() {
+        return checksum;
     }
 }
 
