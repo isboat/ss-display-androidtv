@@ -1,5 +1,6 @@
 package com.example.screenservicetvapp;
 
+import android.media.MediaPlayer;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -84,13 +85,27 @@ public class VideoMediaFragment extends Fragment {
                 mediaController.setAnchorView(mediaVideoView);
                 mediaVideoView.setMediaController(mediaController);
 
+                //Video Loop
+                mediaVideoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    public void onCompletion(MediaPlayer mp) {
+                        mediaVideoView.start(); //need to make transition seamless.
+                    }
+                });
+
+                mediaVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mp) {
+                        mp.setLooping(true);
+                    }
+                });
+
                 // Set the video URL using setVideoPath or setVideoURI
                 mediaVideoView.setVideoPath(assetUrl);
 
                 // Alternatively, you can use setVideoURI
                 // Uri uri = Uri.parse(assetUrl);
                 // mediaVideoView.setVideoURI(uri);
-Log.d("mediaVideoView", assetUrl);
+
                 // Start playing the video
                 mediaVideoView.start();
             }
