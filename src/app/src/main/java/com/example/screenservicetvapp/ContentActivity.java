@@ -99,6 +99,9 @@ public class ContentActivity extends AppCompatActivity {
                         ContentDataLayout layout = responseData.getLayout();
                         if(layout != null) {
                             switch (layout.getTemplateKey()) {
+                                case "MenuOnly":
+                                    navigateToMenuOnlyActivity(responseData);
+                                    break;
                                 case "MediaOnly":
                                     navigateToMediaOnlyActivity(responseData);
                                     break;
@@ -150,6 +153,21 @@ public class ContentActivity extends AppCompatActivity {
         });
     }
 
+    private void navigateToMenuOnlyActivity(ContentDataApiResponse responseData) {
+        Intent intent = new Intent(this, MenuOnlyActivity.class);
+
+        // You can also pass data to the new activity using putExtra
+        ContentDataMenu menu = responseData.getMenu();
+        intent.putExtra("currency", menu.getCurrency());
+        intent.putExtra("description", menu.getDescription());
+        intent.putExtra("title", menu.getTitle());
+        intent.putExtra("iconUrl", menu.getIconUrl());
+        intent.putExtra("menuItems", menu.getMenuItems());
+
+        // Start the new activity
+        startIntentActivity(intent);
+    }
+
     private void navigateToMediaOnlyActivity(ContentDataApiResponse responseData) {
         Intent intent = new Intent(this, MediaOnlyActivity.class);
 
@@ -158,8 +176,7 @@ public class ContentActivity extends AppCompatActivity {
         intent.putExtra("externalMediaSource", responseData.getExternalMediaSource());
 
         // Start the new activity
-        startActivity(intent);
-        finish(); // Close the current activity
+        startIntentActivity(intent);
     }
 
     private void navigateToTextEditorActivity(ContentDataApiResponse responseData) {
@@ -169,8 +186,7 @@ public class ContentActivity extends AppCompatActivity {
         intent.putExtra("textEditorData", responseData.getTextEditorData());
 
         // Start the new activity
-        startActivity(intent);
-        finish(); // Close the current activity
+        startIntentActivity(intent);
     }
 
     private void navigateToCurrentDateTimeActivity(ContentDataApiResponse responseData) {
@@ -184,8 +200,7 @@ public class ContentActivity extends AppCompatActivity {
         intent.putExtra("dateTimeFormat", dateTimeFormat);
 
         // Start the new activity
-        startActivity(intent);
-        finish(); // Close the current activity
+        startIntentActivity(intent);
     }
 
     private void navigateToMediaPlaylistActivity(ContentDataApiResponse responseData) {
@@ -197,6 +212,11 @@ public class ContentActivity extends AppCompatActivity {
         intent.putExtra("assetItems", playlistData.getAssetItems());
         intent.putExtra("itemDuration", playlistData.getItemDuration());
 
+        // Start the new activity
+        startIntentActivity(intent);
+    }
+
+    private void startIntentActivity(Intent intent) {
         // Start the new activity
         startActivity(intent);
         finish(); // Close the current activity

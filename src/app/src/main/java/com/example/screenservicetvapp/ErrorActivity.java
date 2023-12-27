@@ -30,5 +30,6 @@ public class ErrorActivity extends AppCompatActivity {
 
         errorMessageTextView.setText(errorMessage);
         errorTitleTextView.setText(errorTitle);
+        errorMessageTextView.setFocusable(false);
     }
 }

@@ -54,5 +54,9 @@ public class ContentDataApiResponse {
     public ContentDataPlaylistData getPlaylistData() {
         return playlistData;
     }
+
+    public ContentDataMenu getMenu() {
+        return menu;
+    }
 }
 

@@ -30,10 +30,10 @@ public class MediaPlaylistActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         itemDuration = intent.getStringExtra("itemDuration");
-        assetItems = getParcelableArrayExtra("assetItems", ContentDataMediaAsset.class);
+        assetItems = ObjectExtensions.getParcelableArrayExtra(getIntent(), "assetItems", ContentDataMediaAsset.class);
 
+        messageTextView.setVisibility(TextView.VISIBLE);
         if(assetItems != null) {
-
             if(assetItems.length == 0) {
                 messageTextView.setText("No item in the playlist, please add items and republish");
             } else {
@@ -101,23 +101,5 @@ public class MediaPlaylistActivity extends AppCompatActivity {
         transaction.replace(R.id.media_playlist_activity_framelayout, fragment);
         transaction.addToBackStack(null);
         transaction.commit();
-    }
-
-    private <T extends Parcelable> T[] getParcelableArrayExtra(String key, Class<T> type) {
-        Parcelable[] array = getIntent().getParcelableArrayExtra(key);
-
-        if (array != null && type.isInstance(array[0])) {
-            T[] result = (T[]) java.lang.reflect.Array.newInstance(type, array.length);
-
-            for (int i = 0; i < array.length; i++) {
-                //noinspection unchecked
-                result[i] = (T) array[i];
-            }
-
-            return result;
-        } else {
-            // Handle the case where the array is null or the type doesn't match
-            return null;
-        }
     }
 }

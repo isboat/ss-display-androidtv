@@ -17,5 +17,25 @@ public class ContentDataMenu {
     private String iconUrl;
     @SerializedName("menuItems")
     private ContentDataMenuItem[] menuItems;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public String getIconUrl() {
+        return iconUrl;
+    }
+
+    public ContentDataMenuItem[] getMenuItems() {
+        return menuItems;
+    }
 }
 
