@@ -9,7 +9,7 @@
         android:required="false" />
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -19,6 +19,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ScreenServiceTVApp"
         android:usesCleartextTraffic="true">
+        <activity
+            android:name=".CurrentDateTimeActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+        <activity
+            android:name=".TextEditorActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
             android:name=".MediaOnlyActivity"
             android:exported="false"

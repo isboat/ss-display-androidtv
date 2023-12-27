@@ -19,6 +19,9 @@ public class ContentDataApiResponse {
     @SerializedName("mediaAsset")
     private ContentDataMediaAsset mediaAsset;
 
+    @SerializedName("textEditorData")
+    private String textEditorData;
+
     @SerializedName("externalMediaSource")
     private String externalMediaSource;
 
@@ -39,6 +42,10 @@ public class ContentDataApiResponse {
 
     public String getChecksum() {
         return checksum;
+    }
+
+    public String getTextEditorData() {
+        return textEditorData;
     }
 }
 

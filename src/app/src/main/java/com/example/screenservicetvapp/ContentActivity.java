@@ -102,11 +102,16 @@ public class ContentActivity extends AppCompatActivity {
                                 case "MediaOnly":
                                     navigateToMediaOnlyActivity(responseData);
                                     break;
+                                case "Text":
+                                    navigateToTextEditorActivity(responseData);
+                                    break;
+                                case "CurrentDateTime":
+                                    navigateToCurrentDateTimeActivity(responseData);
+                                    break;
                                 default:
                                     navigateToErrorActivity("No Layout Key", "Layout Key is not set, update screen and republish");
                             }
                         }
-                        //navigateToMediaOnlyActivity(responseData);
                     }
                     else {
                         //userCodeTextView.setText("Status Error: ResponseData is null");
@@ -148,6 +153,32 @@ public class ContentActivity extends AppCompatActivity {
         // You can also pass data to the new activity using putExtra
         intent.putExtra("mediaAsset", responseData.getMediaAsset());
         intent.putExtra("externalMediaSource", responseData.getExternalMediaSource());
+
+        // Start the new activity
+        startActivity(intent);
+        finish(); // Close the current activity
+    }
+
+    private void navigateToTextEditorActivity(ContentDataApiResponse responseData) {
+        Intent intent = new Intent(this, TextEditorActivity.class);
+
+        // You can also pass data to the new activity using putExtra
+        intent.putExtra("textEditorData", responseData.getTextEditorData());
+
+        // Start the new activity
+        startActivity(intent);
+        finish(); // Close the current activity
+    }
+
+    private void navigateToCurrentDateTimeActivity(ContentDataApiResponse responseData) {
+        Intent intent = new Intent(this, CurrentDateTimeActivity.class);
+
+        // You can also pass data to the new activity using putExtra
+        ContentDataLayout layout = responseData.getLayout();
+        String dateTimeFormat = layout != null ? layout.getSubType() : "EEE, d MMM yyyy HH:mm:ss";
+        if(ObjectExtensions.isNullOrEmpty(dateTimeFormat)) dateTimeFormat = "EEE, d MMM yyyy HH:mm:ss";
+
+        intent.putExtra("dateTimeFormat", dateTimeFormat);
 
         // Start the new activity
         startActivity(intent);
