@@ -23,6 +23,27 @@ public class ContentDataMenuItem implements Parcelable {
     @SerializedName("discountPrice")
     private String discountPrice;
 
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getIconUrl() {
+        return iconUrl;
+    }
+
+    public String getPrice() {
+        return price;
+    }
+
+    public String getDiscountPrice() {
+        return discountPrice;
+    }
+
+
     protected ContentDataMenuItem(Parcel in) {
         name = in.readString();
         description = in.readString();
