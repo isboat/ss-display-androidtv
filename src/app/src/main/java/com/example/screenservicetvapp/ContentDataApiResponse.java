@@ -28,6 +28,9 @@ public class ContentDataApiResponse {
     @SerializedName("checksum")
     private String checksum;
 
+    @SerializedName("playlistData")
+    private ContentDataPlaylistData playlistData;
+
     public String getExternalMediaSource() {
         return externalMediaSource;
     }
@@ -46,6 +49,10 @@ public class ContentDataApiResponse {
 
     public String getTextEditorData() {
         return textEditorData;
+    }
+
+    public ContentDataPlaylistData getPlaylistData() {
+        return playlistData;
     }
 }
 

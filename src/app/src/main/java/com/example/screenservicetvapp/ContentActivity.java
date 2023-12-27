@@ -108,6 +108,9 @@ public class ContentActivity extends AppCompatActivity {
                                 case "CurrentDateTime":
                                     navigateToCurrentDateTimeActivity(responseData);
                                     break;
+                                case "MediaPlaylist":
+                                    navigateToMediaPlaylistActivity(responseData);
+                                    break;
                                 default:
                                     navigateToErrorActivity("No Layout Key", "Layout Key is not set, update screen and republish");
                             }
@@ -179,6 +182,20 @@ public class ContentActivity extends AppCompatActivity {
         if(ObjectExtensions.isNullOrEmpty(dateTimeFormat)) dateTimeFormat = "EEE, d MMM yyyy HH:mm:ss";
 
         intent.putExtra("dateTimeFormat", dateTimeFormat);
+
+        // Start the new activity
+        startActivity(intent);
+        finish(); // Close the current activity
+    }
+
+    private void navigateToMediaPlaylistActivity(ContentDataApiResponse responseData) {
+        Intent intent = new Intent(this, MediaPlaylistActivity.class);
+
+        // You can also pass data to the new activity using putExtra
+        ContentDataPlaylistData playlistData = responseData.getPlaylistData();
+
+        intent.putExtra("assetItems", playlistData.getAssetItems());
+        intent.putExtra("itemDuration", playlistData.getItemDuration());
 
         // Start the new activity
         startActivity(intent);
