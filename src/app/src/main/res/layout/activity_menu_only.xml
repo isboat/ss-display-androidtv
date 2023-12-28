@@ -6,34 +6,53 @@
     android:layout_height="match_parent"
     tools:context=".MenuOnlyActivity">
 
-    <TableLayout
-        android:id="@+id/menu_only_activity_table_layout"
+    <RelativeLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:stretchColumns="*"
-        tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="1dp">
-        <TableRow>
-            <TextView
-                android:layout_gravity="center"
-                android:padding="16dp"
-                android:text=""
-                />
-            <TextView
-                android:layout_gravity="center"
-                android:padding="16dp"
-                android:text="NAME"
-                />
-            <TextView
-                android:layout_gravity="center"
-                android:padding="16dp"
-                android:text="PRICE"
-                />
-            <TextView
-                android:layout_gravity="center"
-                android:padding="16dp"
-                android:text="INFORMATION"
-            />
-        </TableRow>
-    </TableLayout>
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/menu_only_activity_menu_icon_image_view"
+            android:layout_width="match_parent"
+            android:scaleX="1"
+            android:layout_marginBottom="20dp"
+            android:layout_height="100dp" />
+
+        <TableLayout
+            android:id="@+id/menu_only_activity_table_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/menu_only_activity_menu_icon_image_view"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="0dp"
+            android:stretchColumns="*">
+
+            <TableRow>
+
+                <TextView
+                    android:layout_gravity="center"
+                    android:padding="16dp"
+                    android:text="" />
+
+                <TextView
+                    android:layout_gravity="center"
+                    android:padding="16dp"
+                    android:textSize="30dp"
+                    android:text="NAME" />
+
+                <TextView
+                    android:layout_gravity="center"
+                    android:padding="16dp"
+                    android:textSize="30dp"
+                    android:text="PRICE" />
+
+                <TextView
+                    android:layout_gravity="center"
+                    android:padding="16dp"
+                    android:textSize="30dp"
+                    android:text="INFORMATION" />
+            </TableRow>
+        </TableLayout>
+    </RelativeLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

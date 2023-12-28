@@ -8,6 +8,7 @@ import android.text.Spannable;
 import android.text.Spanned;
 import android.text.style.StrikethroughSpan;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -26,12 +27,14 @@ public class MenuOnlyActivity extends AppCompatActivity {
     private ContentDataMenuItem[] menuItems;
     TableLayout tableLayout;
 
+    ImageView menuTopIconImageView;
     private static final StrikethroughSpan STRIKE_THROUGH_SPAN = new StrikethroughSpan();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu_only);
+        menuTopIconImageView = findViewById(R.id.menu_only_activity_menu_icon_image_view);
 
         tableLayout = findViewById(R.id.menu_only_activity_table_layout);
 
@@ -53,6 +56,14 @@ public class MenuOnlyActivity extends AppCompatActivity {
     }
 
     private void createMenu() {
+        boolean displayMenuIcon = !ObjectExtensions.isNullOrEmpty(iconUrl);
+        if(displayMenuIcon)
+        {
+            Picasso.get().load(iconUrl).into(menuTopIconImageView);
+        } else {
+            menuTopIconImageView.setVisibility(View.GONE);
+        }
+
         for (ContentDataMenuItem obj : menuItems) {
             TableRow tableRow = new TableRow(this);
 
@@ -75,13 +86,13 @@ public class MenuOnlyActivity extends AppCompatActivity {
 
     private ImageView createItemIcon(String iconUrl) {
         ImageView imageView = new ImageView(this);
-/*
-        RelativeLayout.LayoutParams params =
-                new RelativeLayout.LayoutParams(20, 20);
-        params.width = 10;
-        params.height = 10;
-        imageView.setLayoutParams(params);*/
+
         Picasso.get().load(iconUrl).into(imageView);
+        TableRow.LayoutParams params = new TableRow.LayoutParams(150, 150);
+        params.gravity = Gravity.CENTER;
+        imageView.setLayoutParams(params);
+        imageView.setPadding(16,16,16,16);
+
         return imageView;
     }
 
