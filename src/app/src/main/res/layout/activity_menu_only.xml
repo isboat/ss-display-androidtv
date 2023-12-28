@@ -8,9 +8,32 @@
 
     <TableLayout
         android:id="@+id/menu_only_activity_table_layout"
-        android:layout_width="958dp"
-        android:layout_height="538dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:stretchColumns="*"
         tools:layout_editor_absoluteX="1dp"
         tools:layout_editor_absoluteY="1dp">
+        <TableRow>
+            <TextView
+                android:layout_gravity="center"
+                android:padding="16dp"
+                android:text=""
+                />
+            <TextView
+                android:layout_gravity="center"
+                android:padding="16dp"
+                android:text="NAME"
+                />
+            <TextView
+                android:layout_gravity="center"
+                android:padding="16dp"
+                android:text="PRICE"
+                />
+            <TextView
+                android:layout_gravity="center"
+                android:padding="16dp"
+                android:text="INFORMATION"
+            />
+        </TableRow>
     </TableLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
