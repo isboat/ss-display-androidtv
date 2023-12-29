@@ -14,7 +14,7 @@
         <ImageView
             android:id="@+id/menu_only_activity_menu_icon_image_view"
             android:layout_width="match_parent"
-            android:scaleX="1"
+            android:scaleType="fitXY"
             android:layout_marginBottom="20dp"
             android:layout_height="100dp" />
 
