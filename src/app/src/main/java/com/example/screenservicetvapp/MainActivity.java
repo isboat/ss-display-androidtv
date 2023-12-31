@@ -1,61 +1,58 @@
 package com.example.screenservicetvapp;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Window;
-import android.view.WindowManager;
+import android.Manifest;
 
 public class MainActivity extends FragmentActivity {
+
+    private static final int PERMISSION_REQUEST_CODE = 123;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        requestBootCompletedPermission();
+
         LocalStorageService storageService = new LocalStorageService(this);
 
         // Retrieve access token
         String accessToken = storageService.getAccessToken();
-        Log.d("MainActivity", "accessToken: " + accessToken);
-        // Assume you want to start AnotherActivity when a certain condition is met
-        if (accessToken == null) {
-            this.navigateToCodeActivationScreen();
-        } else {
-            this.navigateToContentScreen();
+        Intent intent = accessToken == null
+                ? new Intent(this, CodeActivationActivity.class)
+                : new Intent(this, ContentActivity.class);
+        startIntent(intent);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        // Handle permission results here if needed
+    }
+
+    private void requestBootCompletedPermission() {
+
+        // Request the RECEIVE_BOOT_COMPLETED permission if needed
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_BOOT_COMPLETED)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECEIVE_BOOT_COMPLETED},
+                        PERMISSION_REQUEST_CODE);
+            }
         }
     }
 
-    private void navigateToCodeActivationScreen() {
-        Intent intent = new Intent(this, CodeActivationActivity.class);
-
-        // You can also pass data to the new activity using putExtra
-        intent.putExtra("key", "value");
-
+    private void startIntent(Intent intent) {
         // Start the new activity
         startActivity(intent);
-
         finish(); // Close the current activity
     }
-
-    private void navigateToContentScreen() {
-        Intent intent = new Intent(this, ContentActivity.class);
-
-        // You can also pass data to the new activity using putExtra
-        intent.putExtra("key", "value");
-
-        // Start the new activity
-        startActivity(intent);
-
-        finish(); // Close the current activity
-    }
-
-    private String getTokenFromLocalStorage() {
-        // Implement your logic to retrieve the token from local storage
-        // For simplicity, returning a hardcoded value here
-        return "sample_token";
-    }
-
 }
