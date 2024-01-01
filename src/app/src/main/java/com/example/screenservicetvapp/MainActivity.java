@@ -14,6 +14,7 @@ import android.Manifest;
 public class MainActivity extends FragmentActivity {
 
     private static final int PERMISSION_REQUEST_CODE = 123;
+    private DeviceService deviceService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +23,9 @@ public class MainActivity extends FragmentActivity {
 
         requestBootCompletedPermission();
 
+        deviceService = new DeviceService(this);
+        deviceService.updateName();
+        
         LocalStorageService storageService = new LocalStorageService(this);
 
         // Retrieve access token

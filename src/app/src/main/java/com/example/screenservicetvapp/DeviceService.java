@@ -14,6 +14,11 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class DeviceService {
+    private HttpLoggingInterceptor loggingInterceptor;
+    private OkHttpClient okHttpClient;
+
+    private LocalStorageService storageService;
+
 
     public DeviceService(Context context) {
         this.loggingInterceptor = new HttpLoggingInterceptor();
@@ -26,22 +31,21 @@ public class DeviceService {
 
         storageService = new LocalStorageService(context);
     }
-    private HttpLoggingInterceptor loggingInterceptor;
-    private OkHttpClient okHttpClient;
-
-    private LocalStorageService storageService;
 
     public void updateName() {
+        String accessToken = storageService.getAccessToken();
+        if(ObjectExtensions.isNullOrEmpty(accessToken)) return;
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Constants.ENDPOINT_BASEURL)
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-
-
+        Log.d("DeviceService", "retrofit");
 
         DeviceApiRequest deviceApiRequest = retrofit.create(DeviceApiRequest.class);
-        Call<DeviceApiResponse> call = deviceApiRequest.getName("Bearer " + storageService.getAccessToken());
+        Log.d("DeviceService", "deviceApiRequest");
+        Call<DeviceApiResponse> call = deviceApiRequest.getName("Bearer " + accessToken);
 
         call.enqueue(new Callback<DeviceApiResponse>() {
             @Override

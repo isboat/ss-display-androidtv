@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import org.json.JSONObject;
@@ -43,6 +44,14 @@ public class ContentActivity extends AppCompatActivity {
         messageTextView = (TextView) findViewById(R.id.content_message_txt);
         deviceNameTextView = (TextView) findViewById(R.id.content_act_device_name_textview);
 
+        storageService = new LocalStorageService(this);
+
+        String deviceName = storageService.getData(Constants.DEVICE_NAME);
+        if(!ObjectExtensions.isNullOrEmpty(deviceName))
+        {
+            deviceNameTextView.setText(deviceName);
+        }
+
         this.loggingInterceptor = new HttpLoggingInterceptor();
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY); // Choose the desired log level
 
@@ -51,15 +60,13 @@ public class ContentActivity extends AppCompatActivity {
                 .addInterceptor(loggingInterceptor)
                 .build();
 
-        storageService = new LocalStorageService(this);
-
         // Retrieve access token
         String accessToken = storageService.getAccessToken();
-        Log.d("ContentActivity", "accessToken: " + accessToken);
         // Assume you want to start AnotherActivity when a certain condition is met
         if (accessToken == null) {
             this.refreshAccessToken();
         } else {
+
             handler = new Handler();
 
             final Runnable r = new Runnable() {
@@ -289,10 +296,11 @@ public class ContentActivity extends AppCompatActivity {
 
     private void displayNotFoundMessage(String errorCode) {
         String displayMsg;
-        boolean showDeviceName = false;
+        boolean showDeviceName = true;
         switch (errorCode) {
             case "no_such_device":
                 displayMsg = "No Such Device Found";
+                showDeviceName = false;
                 break;
             case "no_screen_id":
                 displayMsg = "No Screen Attached";
@@ -307,10 +315,11 @@ public class ContentActivity extends AppCompatActivity {
         messageTextView.setText(displayMsg);
         if(showDeviceName) {
             String deviceName = storageService.getData(Constants.DEVICE_NAME);
-            if(!ObjectExtensions.isNullOrEmpty(deviceName))
-            {
+            if (!ObjectExtensions.isNullOrEmpty(deviceName)) {
                 deviceNameTextView.setText(deviceName);
             }
+        } else {
+            deviceNameTextView.setVisibility(View.INVISIBLE);
         }
     }
 }
