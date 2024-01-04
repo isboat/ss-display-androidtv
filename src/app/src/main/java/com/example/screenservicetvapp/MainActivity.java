@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.Manifest;
+import android.os.Handler;
 
 public class MainActivity extends FragmentActivity {
 
@@ -19,15 +20,21 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //setTheme(R.style.Theme_ScreenServiceTVApp);
         setContentView(R.layout.activity_main);
 
         requestBootCompletedPermission();
 
         deviceService = new DeviceService(this);
         deviceService.updateName();
-        
-        LocalStorageService storageService = new LocalStorageService(this);
 
+        Handler handler = new Handler();
+        final Runnable r = () -> startRun();
+        handler.postDelayed(r, 3000);
+    }
+
+    private void startRun() {
+        LocalStorageService storageService = new LocalStorageService(this);
         // Retrieve access token
         String accessToken = storageService.getAccessToken();
         Intent intent = accessToken == null

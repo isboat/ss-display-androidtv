@@ -12,4 +12,5 @@
     <string name="activation_step_two_code_txt">____-____-____</string>
     <string name="language_english">Language: English</string>
     <string name="service_unavailable_message">Your device may not be connected to the internet. Please make sure your connection is working. Retrying in 30 seconds.</string>
+    <string name="onscreen_sync">onScreen Sync</string>
 </resources>

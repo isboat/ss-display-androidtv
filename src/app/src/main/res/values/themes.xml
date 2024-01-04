@@ -1,4 +1,8 @@
 <resources>
 
     <style name="Theme.ScreenServiceTVApp" parent="@style/Theme.Leanback" />
+    <style name="splashScreenTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="android:windowBackground">@drawable/onscreensynlogo</item>
+        <item name="android:statusBarColor">@color/grey</item>
+    </style>
 </resources>

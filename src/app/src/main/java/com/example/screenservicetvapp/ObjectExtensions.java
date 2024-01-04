@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 public class ObjectExtensions {
     public static boolean isNullOrEmpty(String input) {
-        return input.equals(null) || input.equals("");
+        return input == null || input.equals("");
     }
 
     public static <T extends Parcelable> T[] getParcelableArrayExtra(Intent intent, String key, Class<T> type) {
