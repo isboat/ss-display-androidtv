@@ -46,6 +46,12 @@ public class MediaOnlyActivity extends AppCompatActivity {
         }
     }
 
+
+    @Override
+    public void onBackPressed() {
+        finishAffinity();
+        finish();
+    }
     private void loadVideoMediaFragment(String assetUrl) {
         Bundle bundle = new Bundle();
         bundle.putString("assetUrl", assetUrl);

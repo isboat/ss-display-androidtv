@@ -24,4 +24,10 @@ public class TextEditorActivity extends AppCompatActivity {
         textEditorTextView = findViewById(R.id.text_editor_activity_text_view);
         textEditorTextView.setText(Html.fromHtml(textEditorData));
     }
+
+    @Override
+    public void onBackPressed() {
+        finishAffinity();
+        finish();
+    }
 }

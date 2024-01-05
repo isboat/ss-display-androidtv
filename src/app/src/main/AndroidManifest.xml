@@ -22,42 +22,42 @@
         android:usesCleartextTraffic="true">
         <activity
             android:name=".ServiceUnavailableActivity"
-            android:exported="false" />
+            android:exported="false" android:noHistory="true" />
         <activity
             android:name=".MenuOnlyActivity"
             android:exported="false"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.AppCompat.NoActionBar" android:noHistory="true" />
         <activity
             android:name=".MediaPlaylistActivity"
             android:exported="false"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.AppCompat.NoActionBar" android:noHistory="true" />
         <activity
             android:name=".CurrentDateTimeActivity"
             android:exported="false"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.AppCompat.NoActionBar" android:noHistory="true" />
         <activity
             android:name=".TextEditorActivity"
             android:exported="false"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.AppCompat.NoActionBar" android:noHistory="true" />
         <activity
             android:name=".MediaOnlyActivity"
             android:exported="false"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.AppCompat.NoActionBar" android:noHistory="true" />
         <activity
             android:name=".ContentActivity"
             android:exported="false"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.AppCompat.NoActionBar" android:noHistory="true" />
         <activity
             android:name=".ErrorActivity"
             android:exported="false"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.AppCompat.NoActionBar" android:noHistory="true" />
         <activity
             android:name=".CodeActivationActivity"
             android:exported="false"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.AppCompat.NoActionBar" android:noHistory="true" />
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true" android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

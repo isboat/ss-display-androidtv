@@ -9,4 +9,12 @@ public class LayoutTemplateProperty {
     private String value;
     @SerializedName("label")
     private String label;
+
+    public String getKey() {
+        return key;
+    }
+
+    public String getValue() {
+        return value;
+    }
 }

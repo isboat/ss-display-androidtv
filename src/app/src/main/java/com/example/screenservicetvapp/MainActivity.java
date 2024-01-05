@@ -33,6 +33,12 @@ public class MainActivity extends FragmentActivity {
         handler.postDelayed(r, 3000);
     }
 
+    @Override
+    public void onBackPressed() {
+        finishAffinity();
+        finish();
+    }
+
     private void startRun() {
         LocalStorageService storageService = new LocalStorageService(this);
         // Retrieve access token

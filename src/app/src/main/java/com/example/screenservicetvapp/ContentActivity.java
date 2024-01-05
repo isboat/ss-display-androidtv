@@ -80,6 +80,12 @@ public class ContentActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        finishAffinity();
+        finish();
+    }
+
     private void makeApiRequest(String accessToken) {
 
         Retrofit retrofit = new Retrofit.Builder()
@@ -170,6 +176,7 @@ public class ContentActivity extends AppCompatActivity {
         intent.putExtra("title", menu.getTitle());
         intent.putExtra("iconUrl", menu.getIconUrl());
         intent.putExtra("menuItems", menu.getMenuItems());
+        addLayoutPropertiesToIntentExtra(responseData.getLayout(), intent);
 
         // Start the new activity
         startIntentActivity(intent);
@@ -205,9 +212,21 @@ public class ContentActivity extends AppCompatActivity {
         if(ObjectExtensions.isNullOrEmpty(dateTimeFormat)) dateTimeFormat = "EEE, d MMM yyyy HH:mm:ss";
 
         intent.putExtra("dateTimeFormat", dateTimeFormat);
+        addLayoutPropertiesToIntentExtra(layout, intent);
 
         // Start the new activity
         startIntentActivity(intent);
+    }
+
+    private void addLayoutPropertiesToIntentExtra(ContentDataLayout layout, Intent intent) {
+        if(layout == null) return;
+        LayoutTemplateProperty[] templateProperties = layout.getTemplateProperties();
+        if(templateProperties != null && templateProperties.length > 0) {
+            for (int i = 0; i < templateProperties.length; i++) {
+                LayoutTemplateProperty property = templateProperties[i];
+                intent.putExtra(property.getKey(), property.getValue());
+            }
+        }
     }
 
     private void navigateToMediaPlaylistActivity(ContentDataApiResponse responseData) {

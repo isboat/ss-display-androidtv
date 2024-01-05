@@ -25,4 +25,16 @@ public class ObjectExtensions {
             return null;
         }
     }
+
+
+
+    public static int convertToInt(String input) {
+        // Convert String to int
+        try {
+            int intValue = Integer.parseInt(input);
+            return intValue;
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
 }

@@ -26,8 +26,9 @@ public class MenuOnlyActivity extends AppCompatActivity {
     private String iconUrl;
     private ContentDataMenuItem[] menuItems;
     TableLayout tableLayout;
-
     ImageView menuTopIconImageView;
+    private String textColor;
+    private String textFont;
     private static final StrikethroughSpan STRIKE_THROUGH_SPAN = new StrikethroughSpan();
 
     @Override
@@ -44,6 +45,8 @@ public class MenuOnlyActivity extends AppCompatActivity {
         description = intent.getStringExtra("description");
         title = intent.getStringExtra("title");
         iconUrl = intent.getStringExtra("iconUrl");
+        textColor = intent.getStringExtra("textColor");
+        textFont = intent.getStringExtra("textFont");
         menuItems = ObjectExtensions.getParcelableArrayExtra(getIntent(), "menuItems", ContentDataMenuItem.class);
 
         if(menuItems != null) {
@@ -53,6 +56,12 @@ public class MenuOnlyActivity extends AppCompatActivity {
                 createMenu();
             }
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        finishAffinity();
+        finish();
     }
 
     private void createMenu() {
@@ -69,15 +78,23 @@ public class MenuOnlyActivity extends AppCompatActivity {
 
             // Create TextViews for each field
             ImageView imageView = createItemIcon(obj.getIconUrl());
-            TextView textView1 = createTextView(obj.getName());
-            TextView textView2 = createPriceTextView(obj.getPrice(), obj.getDiscountPrice());
-            TextView textView3 = createTextView(obj.getDescription());
+            TextView nameTextView = createTextView(obj.getName());
+            UiHelper.setTextViewFont(nameTextView, textFont);
+            UiHelper.setTextViewColor(nameTextView, textColor);
+
+            TextView priceTextView = createPriceTextView(obj.getPrice(), obj.getDiscountPrice());
+            UiHelper.setTextViewFont(priceTextView, textFont);
+            UiHelper.setTextViewColor(priceTextView, textColor);
+
+            TextView descTextView = createTextView(obj.getDescription());
+            UiHelper.setTextViewFont(descTextView, textFont);
+            UiHelper.setTextViewColor(descTextView, textColor);
 
             // Add TextViews to the TableRow
             tableRow.addView(imageView);
-            tableRow.addView(textView1);
-            tableRow.addView(textView2);
-            tableRow.addView(textView3);
+            tableRow.addView(nameTextView);
+            tableRow.addView(priceTextView);
+            tableRow.addView(descTextView);
 
             // Add TableRow to the TableLayout
             tableLayout.addView(tableRow);
@@ -87,7 +104,7 @@ public class MenuOnlyActivity extends AppCompatActivity {
     private ImageView createItemIcon(String iconUrl) {
         ImageView imageView = new ImageView(this);
 
-        Picasso.get().load(iconUrl).into(imageView);
+        if(!ObjectExtensions.isNullOrEmpty(iconUrl)) Picasso.get().load(iconUrl).into(imageView);
         TableRow.LayoutParams params = new TableRow.LayoutParams(150, 150);
         params.gravity = Gravity.CENTER;
         imageView.setLayoutParams(params);

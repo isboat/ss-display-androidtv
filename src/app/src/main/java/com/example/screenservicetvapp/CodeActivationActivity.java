@@ -54,6 +54,12 @@ public class CodeActivationActivity extends AppCompatActivity {
         makeApiRequest();
     }
 
+    @Override
+    public void onBackPressed() {
+        finishAffinity();
+        finish();
+    }
+
     private void makeApiRequest() {
 
         Retrofit retrofit = new Retrofit.Builder()

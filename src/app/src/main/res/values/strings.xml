@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Screen Service TV App</string>
+    <string name="app_name">onScreen Sync</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="activation_title_txt">Sign in to your manager dashboard</string>

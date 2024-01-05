@@ -32,4 +32,10 @@ public class ErrorActivity extends AppCompatActivity {
         errorTitleTextView.setText(errorTitle);
         errorMessageTextView.setFocusable(false);
     }
+
+    @Override
+    public void onBackPressed() {
+        finishAffinity();
+        finish();
+    }
 }
