@@ -172,9 +172,12 @@ public class ContentActivity extends AppCompatActivity {
     private void navigateToMenuOverlayActivity(ContentDataApiResponse responseData) {
         Intent intent = new Intent(this, MenuOverlayActivity.class);
 
+        ContentDataLayout layout = responseData.getLayout();
+        String subType = layout != null ? layout.getSubType() : null;
+
         // You can also pass data to the new activity using putExtra
         ContentDataMenu menu = responseData.getMenu();
-        MenuMetadata menuMetadata = new MenuMetadata(menu.getCurrency(), menu.getDescription(), menu.getTitle(), menu.getTitle());
+        MenuMetadata menuMetadata = new MenuMetadata(menu.getCurrency(), menu.getDescription(), menu.getTitle(), menu.getIconUrl(), subType);
         intent.putExtra("menuMetadata", menuMetadata);
         intent.putExtra("menuItems", menu.getMenuItems());
         intent.putExtra("mediaAsset", responseData.getMediaAsset());
@@ -187,12 +190,12 @@ public class ContentActivity extends AppCompatActivity {
     private void navigateToMenuOnlyActivity(ContentDataApiResponse responseData) {
         Intent intent = new Intent(this, MenuOnlyActivity.class);
 
+        ContentDataLayout layout = responseData.getLayout();
+        String subType = layout != null ? layout.getSubType() : null;
         // You can also pass data to the new activity using putExtra
         ContentDataMenu menu = responseData.getMenu();
-        intent.putExtra("currency", menu.getCurrency());
-        intent.putExtra("description", menu.getDescription());
-        intent.putExtra("title", menu.getTitle());
-        intent.putExtra("iconUrl", menu.getIconUrl());
+        MenuMetadata menuMetadata = new MenuMetadata(menu.getCurrency(), menu.getDescription(), menu.getTitle(), menu.getIconUrl(), subType);
+        intent.putExtra("menuMetadata", menuMetadata);
         intent.putExtra("menuItems", menu.getMenuItems());
         addLayoutPropertiesToIntentExtra(responseData.getLayout(), intent);
 

@@ -29,6 +29,7 @@ public class ObjectExtensions {
 
 
     public static int convertToInt(String input) {
+        if(ObjectExtensions.isNullOrEmpty(input)) return 0;
         // Convert String to int
         try {
             int intValue = Integer.parseInt(input);

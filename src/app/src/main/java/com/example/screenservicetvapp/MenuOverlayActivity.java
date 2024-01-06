@@ -46,7 +46,7 @@ public class MenuOverlayActivity extends AppCompatActivity {
                     loadImageMediaFragment(mediaAsset.getAssetUrl());
                     break;
                 case 2: // Video
-                    //loadVideoMediaFragment(mediaAsset.getAssetUrl());
+                    loadVideoMediaFragment(mediaAsset.getAssetUrl());
                     break;
                 default:
                     Log.d("MediaOnlyActivity", "No such media type");
@@ -74,6 +74,13 @@ public class MenuOverlayActivity extends AppCompatActivity {
         Bundle bundle = new Bundle();
         bundle.putString("assetUrl", assetUrl);
         Fragment fragment = new ImageMediaFragment();
+        loadFragment(fragment, bundle, R.id.menu_overlay_activity_media_frameLayout);
+    }
+
+    private void loadVideoMediaFragment(String assetUrl) {
+        Bundle bundle = new Bundle();
+        bundle.putString("assetUrl", assetUrl);
+        Fragment fragment = new VideoMediaFragment();
         loadFragment(fragment, bundle, R.id.menu_overlay_activity_media_frameLayout);
     }
 

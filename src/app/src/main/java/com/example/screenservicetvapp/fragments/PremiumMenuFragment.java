@@ -1,7 +1,5 @@
 package com.example.screenservicetvapp.fragments;
 
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -26,7 +24,7 @@ import com.example.screenservicetvapp.R;
 import com.example.screenservicetvapp.UiHelper;
 import com.squareup.picasso.Picasso;
 
-public class BasicMenuFragment extends Fragment {
+public class PremiumMenuFragment extends Fragment {
 
     private MenuMetadata menuMetadata;
     private String textFont;
@@ -40,12 +38,12 @@ public class BasicMenuFragment extends Fragment {
     private String backgroundOpacity;
     private static final StrikethroughSpan STRIKE_THROUGH_SPAN = new StrikethroughSpan();
 
-    public BasicMenuFragment() {
+    public PremiumMenuFragment() {
         // Required empty public constructor
     }
 
-    public static BasicMenuFragment newInstance() {
-        BasicMenuFragment fragment = new BasicMenuFragment();
+    public static PremiumMenuFragment newInstance() {
+        PremiumMenuFragment fragment = new PremiumMenuFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -74,10 +72,10 @@ public class BasicMenuFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_basic_menu, container, false);
+        View view = inflater.inflate(R.layout.fragment_premium_menu, container, false);
 
-        menuTopIconImageView = view.findViewById(R.id.basic_menu_fragment_menu_icon_image_view);
-        tableLayout = view.findViewById(R.id.basic_menu_fragment_table_layout);
+        menuTopIconImageView = view.findViewById(R.id.premium_menu_fragment_menu_icon_image_view);
+        tableLayout = view.findViewById(R.id.premium_menu_fragment_table_layout);
 
         if(menuItems != null) {
             if(menuItems.length == 0) {
@@ -87,7 +85,7 @@ public class BasicMenuFragment extends Fragment {
             }
         }
 
-        if(setTransparentBackground) {
+        if(setTransparentBackground && !ObjectExtensions.isNullOrEmpty(backgroundOpacity)) {
             int opacityInt = ObjectExtensions.convertToInt(backgroundOpacity);
             if(opacityInt > 0) {
                 view.getBackground().setAlpha(opacityInt + 150);
@@ -98,7 +96,6 @@ public class BasicMenuFragment extends Fragment {
 
         return view;
     }
-
     private void createMenu() {
         boolean displayMenuIcon = !ObjectExtensions.isNullOrEmpty(menuMetadata.getIconUrl());
         if(displayMenuIcon)
@@ -110,26 +107,18 @@ public class BasicMenuFragment extends Fragment {
 
         for (ContentDataMenuItem obj : menuItems) {
             TableRow tableRow = new TableRow(this.getContext());
-            tableRow.setPadding(5,5,5,5);
 
             // Create TextViews for each field
             ImageView imageView = createItemIcon(obj.getIconUrl());
-
             TextView nameTextView = createTextView(obj.getName());
-            nameTextView.setPadding(16,16,16,16);
-            nameTextView.setGravity(Gravity.CENTER);
             UiHelper.setTextViewFont(nameTextView, textFont);
             UiHelper.setTextViewColor(nameTextView, textColor);
 
             TextView priceTextView = createPriceTextView(obj.getPrice(), obj.getDiscountPrice());
-            priceTextView.setPadding(16,16,16,16);
-            priceTextView.setGravity(Gravity.CENTER);
             UiHelper.setTextViewFont(priceTextView, textFont);
             UiHelper.setTextViewColor(priceTextView, textColor);
 
             TextView descTextView = createTextView(obj.getDescription());
-            descTextView.setPadding(16,16,16,16);
-            descTextView.setGravity(Gravity.CENTER);
             UiHelper.setTextViewFont(descTextView, textFont);
             UiHelper.setTextViewColor(descTextView, textColor);
 
@@ -138,9 +127,6 @@ public class BasicMenuFragment extends Fragment {
             tableRow.addView(nameTextView);
             tableRow.addView(priceTextView);
             tableRow.addView(descTextView);
-
-            // Add a bottom border to the TableRow
-            tableRow.setBackgroundResource(R.drawable.border);
 
             // Add TableRow to the TableLayout
             tableLayout.addView(tableRow);

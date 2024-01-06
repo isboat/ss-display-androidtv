@@ -10,18 +10,21 @@ public class MenuMetadata implements Parcelable {
     private String description;
     private String title;
     private String iconUrl;
+    private String subType;
 
     protected MenuMetadata(Parcel in) {
         currency = in.readString();
         description = in.readString();
         title = in.readString();
         iconUrl = in.readString();
+        subType = in.readString();
     }
-    public MenuMetadata(String currency, String description, String title, String iconUrl) {
+    public MenuMetadata(String currency, String description, String title, String iconUrl, String subType) {
         this.currency = currency;
         this.description = description;
         this.title = title;
         this.iconUrl = iconUrl;
+        this.subType = subType;
     }
 
     public static final Creator<MenuMetadata> CREATOR = new Creator<MenuMetadata>() {
@@ -39,30 +42,21 @@ public class MenuMetadata implements Parcelable {
     public String getCurrency() {
         return currency;
     }
-    public void setCurrency(String curr) {
-        currency = curr;
-    }
 
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String val) {
-        description = val;
-    }
-
     public String getTitle() {
         return title;
-    }
-    public void setTitle(String val) {
-        title = val;
     }
 
     public String getIconUrl() {
         return iconUrl;
     }
-    public void setIconUrl(String val) {
-        iconUrl = val;
+
+    public String getSubType() {
+        return subType;
     }
 
     @Override
@@ -76,5 +70,6 @@ public class MenuMetadata implements Parcelable {
         parcel.writeString(description);
         parcel.writeString(title);
         parcel.writeString(iconUrl);
+        parcel.writeString(subType);
     }
 }
