@@ -1,5 +1,6 @@
 package com.example.screenservicetvapp.fragments;
 
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -34,6 +35,9 @@ public class BasicMenuFragment extends Fragment {
 
     TableLayout tableLayout;
     ImageView menuTopIconImageView;
+
+    private boolean setTransparantBackground;
+    private String backgroundOpacity;
     private static final StrikethroughSpan STRIKE_THROUGH_SPAN = new StrikethroughSpan();
 
     public BasicMenuFragment() {
@@ -55,6 +59,8 @@ public class BasicMenuFragment extends Fragment {
         if (bundle != null) {
             textFont = bundle.getString("textFont");
             textColor = bundle.getString("textColor");
+            setTransparantBackground = bundle.getBoolean("setTransparentBackground", false);
+            backgroundOpacity = bundle.getString("backgroundOpacity");
 
             menuMetadata = bundle.getParcelable("menuMetadata");
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -78,6 +84,15 @@ public class BasicMenuFragment extends Fragment {
 
             } else {
                 createMenu();
+            }
+        }
+
+        if(setTransparantBackground && !ObjectExtensions.isNullOrEmpty(backgroundOpacity)) {
+            int opacityInt = ObjectExtensions.convertToInt(backgroundOpacity);
+            if(opacityInt > 0) {
+                view.getBackground().setAlpha(opacityInt + 150);
+            } else {
+                if(opacityInt == 0) view.getBackground().setAlpha(0);
             }
         }
 

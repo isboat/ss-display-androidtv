@@ -19,6 +19,7 @@ public class MenuOverlayActivity extends AppCompatActivity {
     private ContentDataMediaAsset mediaAsset;
     private String textFont;
     private String textColor;
+    private String backgroundOpacity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +33,7 @@ public class MenuOverlayActivity extends AppCompatActivity {
         menuMetadata = intent.getParcelableExtra("menuMetadata");
         textColor = intent.getStringExtra("textColor");
         textFont = intent.getStringExtra("textFont");
+        backgroundOpacity = intent.getStringExtra("backgroundOpacity");
         menuItems = ObjectExtensions.getParcelableArrayExtra(getIntent(), "menuItems", ContentDataMenuItem.class);
         loadBasicMenuFragment();
 
@@ -61,6 +63,8 @@ public class MenuOverlayActivity extends AppCompatActivity {
         bundle.putParcelableArray("menuItems", menuItems);
         bundle.putString("textColor", textColor);
         bundle.putString("textFont", textFont);
+        bundle.putString("backgroundOpacity", backgroundOpacity);
+        bundle.putBoolean("setTransparentBackground", true);
 
         Fragment fragment = new BasicMenuFragment();
         loadFragment(fragment, bundle, R.id.menu_overlay_activity_menu_frameLayout);
