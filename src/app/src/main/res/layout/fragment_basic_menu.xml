@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.BasicMenuFragment">
+
+    <ImageView
+        android:id="@+id/basic_menu_fragment_menu_icon_image_view"
+        android:layout_width="match_parent"
+        android:scaleType="fitXY"
+        android:layout_marginBottom="20dp"
+        android:layout_height="100dp" />
+
+    <TableLayout
+        android:id="@+id/basic_menu_fragment_table_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/basic_menu_fragment_menu_icon_image_view"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="0dp"
+        android:stretchColumns="*">
+
+        <TableRow>
+
+            <TextView
+                android:layout_gravity="center"
+                android:padding="16dp"
+                android:text="" />
+
+            <TextView
+                android:layout_gravity="center"
+                android:padding="16dp"
+                android:textSize="30dp"
+                android:text="NAME" />
+
+            <TextView
+                android:layout_gravity="center"
+                android:padding="16dp"
+                android:textSize="30dp"
+                android:text="PRICE" />
+
+            <TextView
+                android:layout_gravity="center"
+                android:padding="16dp"
+                android:textSize="30dp"
+                android:text="INFORMATION" />
+        </TableRow>
+    </TableLayout>
+
+</FrameLayout>

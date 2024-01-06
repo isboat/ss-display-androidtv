@@ -21,43 +21,58 @@
         android:theme="@style/Theme.ScreenServiceTVApp"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".MenuOverlayActivity"
+            android:exported="false"
+            android:noHistory="true"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+        <activity
             android:name=".ServiceUnavailableActivity"
-            android:exported="false" android:noHistory="true" />
+            android:exported="false"
+            android:noHistory="true" />
         <activity
             android:name=".MenuOnlyActivity"
             android:exported="false"
-            android:theme="@style/Theme.AppCompat.NoActionBar" android:noHistory="true" />
+            android:noHistory="true"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
             android:name=".MediaPlaylistActivity"
             android:exported="false"
-            android:theme="@style/Theme.AppCompat.NoActionBar" android:noHistory="true" />
+            android:noHistory="true"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
             android:name=".CurrentDateTimeActivity"
             android:exported="false"
-            android:theme="@style/Theme.AppCompat.NoActionBar" android:noHistory="true" />
+            android:noHistory="true"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
             android:name=".TextEditorActivity"
             android:exported="false"
-            android:theme="@style/Theme.AppCompat.NoActionBar" android:noHistory="true" />
+            android:noHistory="true"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
             android:name=".MediaOnlyActivity"
             android:exported="false"
-            android:theme="@style/Theme.AppCompat.NoActionBar" android:noHistory="true" />
+            android:noHistory="true"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
             android:name=".ContentActivity"
             android:exported="false"
-            android:theme="@style/Theme.AppCompat.NoActionBar" android:noHistory="true" />
+            android:noHistory="true"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
             android:name=".ErrorActivity"
             android:exported="false"
-            android:theme="@style/Theme.AppCompat.NoActionBar" android:noHistory="true" />
+            android:noHistory="true"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
             android:name=".CodeActivationActivity"
             android:exported="false"
-            android:theme="@style/Theme.AppCompat.NoActionBar" android:noHistory="true" />
+            android:noHistory="true"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
             android:name=".MainActivity"
-            android:exported="true" android:noHistory="true">
+            android:exported="true"
+            android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -71,8 +86,9 @@
             android:exported="false">
             <intent-filter android:priority="100">
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.REBOOT"/>
-                <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
+                <action android:name="android.intent.action.REBOOT" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>

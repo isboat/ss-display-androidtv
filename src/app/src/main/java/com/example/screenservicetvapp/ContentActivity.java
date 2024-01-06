@@ -112,6 +112,9 @@ public class ContentActivity extends AppCompatActivity {
                         ContentDataLayout layout = responseData.getLayout();
                         if(layout != null) {
                             switch (layout.getTemplateKey()) {
+                                case "MenuOverlay":
+                                    navigateToMenuOverlayActivity(responseData);
+                                    break;
                                 case "MenuOnly":
                                     navigateToMenuOnlyActivity(responseData);
                                     break;
@@ -164,6 +167,21 @@ public class ContentActivity extends AppCompatActivity {
                 navigateToErrorActivity("Content Data Network Error", "Technical error occurred when connecting to the server, try again later.");
             }
         });
+    }
+
+    private void navigateToMenuOverlayActivity(ContentDataApiResponse responseData) {
+        Intent intent = new Intent(this, MenuOverlayActivity.class);
+
+        // You can also pass data to the new activity using putExtra
+        ContentDataMenu menu = responseData.getMenu();
+        MenuMetadata menuMetadata = new MenuMetadata(menu.getCurrency(), menu.getDescription(), menu.getTitle(), menu.getTitle());
+        intent.putExtra("menuMetadata", menuMetadata);
+        intent.putExtra("menuItems", menu.getMenuItems());
+        intent.putExtra("mediaAsset", responseData.getMediaAsset());
+        addLayoutPropertiesToIntentExtra(responseData.getLayout(), intent);
+
+        // Start the new activity
+        startIntentActivity(intent);
     }
 
     private void navigateToMenuOnlyActivity(ContentDataApiResponse responseData) {

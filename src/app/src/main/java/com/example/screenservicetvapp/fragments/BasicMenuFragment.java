@@ -1,53 +1,77 @@
-package com.example.screenservicetvapp;
+package com.example.screenservicetvapp.fragments;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+
+import androidx.fragment.app.Fragment;
+
 import android.text.Spannable;
 import android.text.Spanned;
 import android.text.style.StrikethroughSpan;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.example.screenservicetvapp.ContentDataMenuItem;
+import com.example.screenservicetvapp.MenuMetadata;
+import com.example.screenservicetvapp.ObjectExtensions;
+import com.example.screenservicetvapp.R;
+import com.example.screenservicetvapp.UiHelper;
 import com.squareup.picasso.Picasso;
 
-public class MenuOnlyActivity extends AppCompatActivity {
+public class BasicMenuFragment extends Fragment {
 
-    private String currency;
-    private String description;
-    private String title;
-    private String iconUrl;
+
+    private MenuMetadata menuMetadata;
+    private String textFont;
+    private String textColor;
     private ContentDataMenuItem[] menuItems;
+
     TableLayout tableLayout;
     ImageView menuTopIconImageView;
-    private String textColor;
-    private String textFont;
     private static final StrikethroughSpan STRIKE_THROUGH_SPAN = new StrikethroughSpan();
 
+    public BasicMenuFragment() {
+        // Required empty public constructor
+    }
+
+    public static BasicMenuFragment newInstance(String param1, String param2) {
+        BasicMenuFragment fragment = new BasicMenuFragment();
+        Bundle args = new Bundle();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_menu_only);
-        menuTopIconImageView = findViewById(R.id.menu_only_activity_menu_icon_image_view);
+        // Retrieve data from arguments
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            textFont = bundle.getString("textFont");
+            textColor = bundle.getString("textColor");
 
-        tableLayout = findViewById(R.id.menu_only_activity_table_layout);
+            menuMetadata = bundle.getParcelable("menuMetadata");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                menuItems = bundle.getParcelableArray("menuItems", ContentDataMenuItem.class);
+            } else {
+                menuItems = (ContentDataMenuItem[]) bundle.getParcelableArray("menuItems");
+            }
+        }
+    }
 
-        // Retrieve the Intent that started this activity
-        Intent intent = getIntent();
-        currency = intent.getStringExtra("currency");
-        description = intent.getStringExtra("description");
-        title = intent.getStringExtra("title");
-        iconUrl = intent.getStringExtra("iconUrl");
-        textColor = intent.getStringExtra("textColor");
-        textFont = intent.getStringExtra("textFont");
-        menuItems = ObjectExtensions.getParcelableArrayExtra(getIntent(), "menuItems", ContentDataMenuItem.class);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_basic_menu, container, false);
+
+        menuTopIconImageView = view.findViewById(R.id.basic_menu_fragment_menu_icon_image_view);
+        tableLayout = view.findViewById(R.id.basic_menu_fragment_table_layout);
 
         if(menuItems != null) {
             if(menuItems.length == 0) {
@@ -56,25 +80,21 @@ public class MenuOnlyActivity extends AppCompatActivity {
                 createMenu();
             }
         }
-    }
 
-    @Override
-    public void onBackPressed() {
-        finishAffinity();
-        finish();
+        return view;
     }
 
     private void createMenu() {
-        boolean displayMenuIcon = !ObjectExtensions.isNullOrEmpty(iconUrl);
+        boolean displayMenuIcon = !ObjectExtensions.isNullOrEmpty(menuMetadata.getIconUrl());
         if(displayMenuIcon)
         {
-            Picasso.get().load(iconUrl).into(menuTopIconImageView);
+            Picasso.get().load(menuMetadata.getIconUrl()).into(menuTopIconImageView);
         } else {
             menuTopIconImageView.setVisibility(View.GONE);
         }
 
         for (ContentDataMenuItem obj : menuItems) {
-            TableRow tableRow = new TableRow(this);
+            TableRow tableRow = new TableRow(this.getContext());
 
             // Create TextViews for each field
             ImageView imageView = createItemIcon(obj.getIconUrl());
@@ -102,7 +122,7 @@ public class MenuOnlyActivity extends AppCompatActivity {
     }
 
     private ImageView createItemIcon(String iconUrl) {
-        ImageView imageView = new ImageView(this);
+        ImageView imageView = new ImageView(this.getContext());
 
         if(!ObjectExtensions.isNullOrEmpty(iconUrl)) Picasso.get().load(iconUrl).into(imageView);
         TableRow.LayoutParams params = new TableRow.LayoutParams(150, 150);
@@ -115,6 +135,7 @@ public class MenuOnlyActivity extends AppCompatActivity {
 
     private TextView createPriceTextView(String price, String discountPrice) {
         TextView textView;
+        String currency = menuMetadata.getCurrency();
         if(ObjectExtensions.isNullOrEmpty(discountPrice)) {
             textView = createTextView(currency+price);
             return textView;
@@ -130,7 +151,7 @@ public class MenuOnlyActivity extends AppCompatActivity {
     }
 
     private TextView createTextView(String text) {
-        TextView textView = new TextView(this);
+        TextView textView = new TextView(this.getContext());
         textView.setText(text);
         textView.setPadding(16, 16, 16, 16);
         textView.setGravity(Gravity.CENTER);
