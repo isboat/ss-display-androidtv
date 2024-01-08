@@ -110,9 +110,11 @@ public class PremiumMenuFragment extends Fragment {
 
             // Create TextViews for each field
             ImageView imageView = createItemIcon(obj.getIconUrl());
+
             TextView nameTextView = createTextView(obj.getName());
             UiHelper.setTextViewFont(nameTextView, textFont);
             UiHelper.setTextViewColor(nameTextView, textColor);
+            nameTextView.setBackgroundResource(R.drawable.premium_border);
 
             TextView priceTextView = createPriceTextView(obj.getPrice(), obj.getDiscountPrice());
             UiHelper.setTextViewFont(priceTextView, textFont);
@@ -121,6 +123,7 @@ public class PremiumMenuFragment extends Fragment {
             TextView descTextView = createTextView(obj.getDescription());
             UiHelper.setTextViewFont(descTextView, textFont);
             UiHelper.setTextViewColor(descTextView, textColor);
+            descTextView.setBackgroundResource(R.drawable.premium_border);
 
             // Add TextViews to the TableRow
             tableRow.addView(imageView);

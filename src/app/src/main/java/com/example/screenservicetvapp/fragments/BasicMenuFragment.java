@@ -1,7 +1,5 @@
 package com.example.screenservicetvapp.fragments;
 
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -15,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -115,21 +114,16 @@ public class BasicMenuFragment extends Fragment {
             // Create TextViews for each field
             ImageView imageView = createItemIcon(obj.getIconUrl());
 
+
             TextView nameTextView = createTextView(obj.getName());
-            nameTextView.setPadding(16,16,16,16);
-            nameTextView.setGravity(Gravity.CENTER);
             UiHelper.setTextViewFont(nameTextView, textFont);
             UiHelper.setTextViewColor(nameTextView, textColor);
 
             TextView priceTextView = createPriceTextView(obj.getPrice(), obj.getDiscountPrice());
-            priceTextView.setPadding(16,16,16,16);
-            priceTextView.setGravity(Gravity.CENTER);
             UiHelper.setTextViewFont(priceTextView, textFont);
             UiHelper.setTextViewColor(priceTextView, textColor);
 
             TextView descTextView = createTextView(obj.getDescription());
-            descTextView.setPadding(16,16,16,16);
-            descTextView.setGravity(Gravity.CENTER);
             UiHelper.setTextViewFont(descTextView, textFont);
             UiHelper.setTextViewColor(descTextView, textColor);
 
@@ -180,7 +174,14 @@ public class BasicMenuFragment extends Fragment {
         TextView textView = new TextView(this.getContext());
         textView.setText(text);
         textView.setPadding(16, 16, 16, 16);
-        textView.setGravity(Gravity.CENTER);
+
+        TableLayout.LayoutParams params = new TableLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+
+        // Set layout gravity for the TextView (e.g., center horizontally)
+        params.gravity = Gravity.CENTER;
+        //textView.setLayoutParams(params);
         return textView;
     }
 }

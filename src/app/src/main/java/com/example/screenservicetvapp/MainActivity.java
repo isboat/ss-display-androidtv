@@ -1,9 +1,14 @@
 package com.example.screenservicetvapp;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -11,6 +16,17 @@ import android.os.Build;
 import android.os.Bundle;
 import android.Manifest;
 import android.os.Handler;
+import android.util.Log;
+import android.widget.Toast;
+
+import com.example.screenservicetvapp.workers.AppStatusWorker;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.messaging.FirebaseMessaging;
+
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends FragmentActivity {
 
@@ -47,6 +63,47 @@ public class MainActivity extends FragmentActivity {
                 ? new Intent(this, CodeActivationActivity.class)
                 : new Intent(this, ContentActivity.class);
         startIntent(intent);
+
+        startWorkerRun();
+        setUpFirebase();
+    }
+
+    private void setUpFirebase() {
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete(@NonNull Task<String> task) {
+                        if (!task.isSuccessful()) {
+                            Log.w(TAG, "Fetching FCM registration token failed", task.getException());
+                            return;
+                        }
+
+                        // Get new FCM registration token
+                        String token = task.getResult();
+
+                        // Log and toast
+                        Log.d("FCMToken", token);
+                        Toast.makeText(MainActivity.this, "Your token: " + token, Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void startWorkerRun() {
+
+        // Enqueue a periodic work request
+
+        PeriodicWorkRequest periodicWorkRequest = new PeriodicWorkRequest.Builder(
+                AppStatusWorker.class,
+                15, // Repeat interval in minutes
+                TimeUnit.SECONDS,
+                5,
+                TimeUnit.SECONDS)
+                .build();
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+                "screen.service.tv.app.worker",
+                ExistingPeriodicWorkPolicy.UPDATE,
+                periodicWorkRequest);
     }
 
     @Override
