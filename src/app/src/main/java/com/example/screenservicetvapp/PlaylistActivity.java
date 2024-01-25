@@ -8,14 +8,17 @@ import androidx.fragment.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Parcelable;
-import android.util.Log;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-public class MediaPlaylistActivity extends AppCompatActivity {
+import com.example.screenservicetvapp.datamodels.TextADInformationAsset;
+import com.example.screenservicetvapp.fragments.TextADInformationFragment;
+import com.example.screenservicetvapp.utils.JsonUtils;
 
-    private ContentDataMediaAsset[] assetItems;
+public class PlaylistActivity extends AppCompatActivity {
+
+    private PlaylistItemSerialized[] itemsSerialized;
+
     private int itemDuration; //"00:00:20"
     TextView messageTextView;
     FrameLayout frameLayout;
@@ -32,16 +35,19 @@ public class MediaPlaylistActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         itemDuration = parseItemDuration(intent.getStringExtra("itemDuration"));
-        assetItems = ObjectExtensions.getParcelableArrayExtra(getIntent(), "assetItems", ContentDataMediaAsset.class);
+        itemsSerialized = ObjectExtensions.getParcelableArrayExtra(getIntent(), "itemsSerialized", PlaylistItemSerialized.class);
 
         messageTextView.setVisibility(TextView.VISIBLE);
-        if(assetItems != null) {
-            if(assetItems.length == 0) {
+        if(itemsSerialized != null) {
+            if(itemsSerialized.length == 0) {
                 messageTextView.setText("No item in the playlist, please add items and republish");
             } else {
                 messageTextView.setVisibility(TextView.INVISIBLE);
-                iterateWithDelay(assetItems);
+                iterateItemsWithDelay(itemsSerialized);
             }
+        }
+        else {
+            messageTextView.setText("No item in the playlist, please add items and republish");
         }
     }
 
@@ -65,7 +71,7 @@ public class MediaPlaylistActivity extends AppCompatActivity {
         finish();
     }
 
-    private void iterateWithDelay(ContentDataMediaAsset[] assetItems) {
+    private void iterateItemsWithDelay(PlaylistItemSerialized[] itemsSerialized) {
         final Handler handler = new Handler();
         final int delayMillis = 1000; // 5 seconds
 
@@ -74,19 +80,19 @@ public class MediaPlaylistActivity extends AppCompatActivity {
             public void run() {
                 if(!stopIteration) {
                     // Your iteration logic here
-                    if (currentIndex < assetItems.length) {
-                        ContentDataMediaAsset currentItem = assetItems[currentIndex];
+                    if (currentIndex < itemsSerialized.length) {
+                        PlaylistItemSerialized currentItem = itemsSerialized[currentIndex];
                         // Do something with the current item
-                        int assetType = currentItem.getType();
-                        switch (assetType) {
-                            case 1: // Image
-                                loadImageMediaFragment(currentItem.getAssetUrl());
+                        String objType = currentItem.getKey(); // key contains ObjectType
+                        switch (objType) {
+                            case "AssetItemModel":
+                                runAssetItemModel(currentItem);
                                 break;
-                            case 2: // Video
-                                loadVideoMediaFragment(currentItem.getAssetUrl());
+                            case "TextAssetItemModel":
+                                runTextAssetItemModel(currentItem);
                                 break;
                             default:
-                                messageTextView.setText("No such media type");
+                                messageTextView.setText("No such Item type");
                                 break;
                         }
 
@@ -96,13 +102,54 @@ public class MediaPlaylistActivity extends AppCompatActivity {
                         // Continue iterating after the delay
                         handler.postDelayed(this, itemDuration);
                     } else {
-                            // Reset or start again
-                            currentIndex = 0;
-                            handler.postDelayed(this, delayMillis);
+                        // Reset or start again
+                        currentIndex = 0;
+                        handler.postDelayed(this, delayMillis);
                     }
                 }
             }
         }, delayMillis);
+    }
+
+    private void runTextAssetItemModel(PlaylistItemSerialized itemSerialized) {
+        TextADInformationAsset currentItem = JsonUtils.fromJson(itemSerialized.getValue(), TextADInformationAsset.class);
+        if(currentItem == null)
+        {
+            messageTextView.setText("ItemSerialized is null.");
+            return;
+        }
+
+        Bundle bundle = new Bundle();
+        bundle.putString("description", currentItem.getDescription());
+        bundle.putString("backgroundColor", currentItem.getBackgroundColor());
+        bundle.putString("name", currentItem.getName());
+        bundle.putString("textColor", currentItem.getTextColor());
+        bundle.putString("textFont", currentItem.getTextFont());
+        Fragment fragment = new TextADInformationFragment();
+        loadFragment(fragment, bundle);
+    }
+
+    private void runAssetItemModel(PlaylistItemSerialized itemSerialized) {
+        MediaAsset  currentItem = JsonUtils.fromJson(itemSerialized.getValue(), MediaAsset.class);
+        if(currentItem == null)
+        {
+            messageTextView.setText("ItemSerialized is null.");
+            return;
+        }
+        // Do something with the current item
+        int assetType = currentItem.getType();
+
+        switch (assetType) {
+            case 1: // Image
+                loadImageMediaFragment(currentItem.getAssetUrl());
+                break;
+            case 2: // Video
+                loadVideoMediaFragment(currentItem.getAssetUrl());
+                break;
+            default:
+                messageTextView.setText("No such media type");
+                break;
+        }
     }
 
     private void loadVideoMediaFragment(String assetUrl) {

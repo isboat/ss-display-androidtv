@@ -16,7 +16,7 @@ public class MenuOverlayActivity extends AppCompatActivity {
     RelativeLayout relativeLayout;
     private ContentDataMenuItem[] menuItems;
     private MenuMetadata menuMetadata;
-    private ContentDataMediaAsset mediaAsset;
+    private MediaAsset mediaAsset;
     private String textFont;
     private String textColor;
     private String backgroundOpacity;

@@ -6,7 +6,7 @@
     <string name="activation_subtitle_txt">This screen will refresh when completed.</string>
     <string name="activation_step_one_txt">STEP 1</string>
     <string name="activation_step_one_desc_txt">Sign in to your manager dashboard</string>
-    <string name="activation_step_one_url_txt">manager.screenservice.io/code-auth</string>
+    <string name="activation_step_one_url_txt">manager.onscreensync.io/code-auth</string>
     <string name="activation_step_two_txt">STEP 2</string>
     <string name="activation_step_two_desc_txt">Enter activation code when prompted</string>
     <string name="activation_step_two_code_txt">____-____-____</string>

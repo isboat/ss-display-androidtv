@@ -41,4 +41,5 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("com.google.firebase:firebase-messaging:23.4.0")
     implementation("androidx.work:work-runtime:2.9.0")
+    implementation("com.google.code.gson:gson:2.8.9")
 }

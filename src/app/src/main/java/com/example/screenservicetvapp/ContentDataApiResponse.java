@@ -17,7 +17,7 @@ public class ContentDataApiResponse {
     private ContentDataMenu menu;
 
     @SerializedName("mediaAsset")
-    private ContentDataMediaAsset mediaAsset;
+    private MediaAsset mediaAsset;
 
     @SerializedName("textEditorData")
     private String textEditorData;
@@ -29,13 +29,13 @@ public class ContentDataApiResponse {
     private String checksum;
 
     @SerializedName("playlistData")
-    private ContentDataPlaylistData playlistData;
+    private PlaylistData playlistData;
 
     public String getExternalMediaSource() {
         return externalMediaSource;
     }
 
-    public ContentDataMediaAsset getMediaAsset() {
+    public MediaAsset getMediaAsset() {
         return mediaAsset;
     }
 
@@ -51,7 +51,7 @@ public class ContentDataApiResponse {
         return textEditorData;
     }
 
-    public ContentDataPlaylistData getPlaylistData() {
+    public PlaylistData getPlaylistData() {
         return playlistData;
     }
 

@@ -64,8 +64,8 @@ public class MainActivity extends FragmentActivity {
                 : new Intent(this, ContentActivity.class);
         startIntent(intent);
 
-        startWorkerRun();
-        setUpFirebase();
+        //startWorkerRun();
+        //setUpFirebase();
     }
 
     private void setUpFirebase() {
@@ -99,11 +99,12 @@ public class MainActivity extends FragmentActivity {
                 5,
                 TimeUnit.SECONDS)
                 .build();
-
+/*
         WorkManager.getInstance(this).enqueueUniquePeriodicWork(
                 "screen.service.tv.app.worker",
                 ExistingPeriodicWorkPolicy.UPDATE,
-                periodicWorkRequest);
+                periodicWorkRequest);*/
+        //WorkManager.getInstance(this).cancelAllWork();
     }
 
     @Override

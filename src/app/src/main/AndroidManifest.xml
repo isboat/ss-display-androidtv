@@ -35,7 +35,7 @@
             android:noHistory="true"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
-            android:name=".MediaPlaylistActivity"
+            android:name=".PlaylistActivity"
             android:exported="false"
             android:noHistory="true"
             android:theme="@style/Theme.AppCompat.NoActionBar" />

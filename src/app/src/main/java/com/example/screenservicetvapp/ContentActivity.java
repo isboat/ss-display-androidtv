@@ -128,7 +128,7 @@ public class ContentActivity extends AppCompatActivity {
                                     navigateToCurrentDateTimeActivity(responseData);
                                     break;
                                 case "MediaPlaylist":
-                                    navigateToMediaPlaylistActivity(responseData);
+                                    navigateToPlaylistActivity(responseData);
                                     break;
                                 default:
                                     navigateToErrorActivity("No Layout Key", "Layout Key is not set, update screen and republish");
@@ -250,13 +250,14 @@ public class ContentActivity extends AppCompatActivity {
         }
     }
 
-    private void navigateToMediaPlaylistActivity(ContentDataApiResponse responseData) {
-        Intent intent = new Intent(this, MediaPlaylistActivity.class);
+    private void navigateToPlaylistActivity(ContentDataApiResponse responseData) {
+        Intent intent = new Intent(this, PlaylistActivity.class);
 
         // You can also pass data to the new activity using putExtra
-        ContentDataPlaylistData playlistData = responseData.getPlaylistData();
+        PlaylistData playlistData = responseData.getPlaylistData();
 
-        intent.putExtra("assetItems", playlistData.getAssetItems());
+        intent.putExtra("assetItems", playlistData.getItems());
+        intent.putExtra("itemsSerialized", playlistData.getItemsSerialized());
         intent.putExtra("itemDuration", playlistData.getItemDuration());
 
         // Start the new activity

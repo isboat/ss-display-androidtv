@@ -7,8 +7,6 @@ import androidx.fragment.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 public class MediaOnlyActivity extends AppCompatActivity {
@@ -25,7 +23,7 @@ public class MediaOnlyActivity extends AppCompatActivity {
 
         // Retrieve the Intent that started this activity
         Intent intent = getIntent();
-        ContentDataMediaAsset mediaAsset = intent.getParcelableExtra("mediaAsset");
+        MediaAsset mediaAsset = intent.getParcelableExtra("mediaAsset");
         externalMediaSource = intent.getStringExtra("externalMediaSource");
 
         if(!ObjectExtensions.isNullOrEmpty(externalMediaSource)) {

@@ -3,13 +3,13 @@ package com.example.screenservicetvapp;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class ContentDataMediaAsset implements Parcelable {
+public class MediaAsset implements Parcelable {
     private int type;
     private String assetUrl;
     private String description;
     private String name;
 
-    protected ContentDataMediaAsset(Parcel in) {
+    protected MediaAsset(Parcel in) {
         type = in.readInt();
         assetUrl = in.readString();
         description = in.readString();
@@ -29,15 +29,15 @@ public class ContentDataMediaAsset implements Parcelable {
         return 0;
     }
 
-    public static final Creator<ContentDataMediaAsset> CREATOR = new Creator<ContentDataMediaAsset>() {
+    public static final Creator<MediaAsset> CREATOR = new Creator<MediaAsset>() {
         @Override
-        public ContentDataMediaAsset createFromParcel(Parcel in) {
-            return new ContentDataMediaAsset(in);
+        public MediaAsset createFromParcel(Parcel in) {
+            return new MediaAsset(in);
         }
 
         @Override
-        public ContentDataMediaAsset[] newArray(int size) {
-            return new ContentDataMediaAsset[size];
+        public MediaAsset[] newArray(int size) {
+            return new MediaAsset[size];
         }
     };
 
