@@ -9,14 +9,20 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.RelativeLayout;
 
+import com.example.screenservicetvapp.datamodels.MediaAssetDataModel;
+import com.example.screenservicetvapp.datamodels.MenuItemDataModel;
+import com.example.screenservicetvapp.datamodels.MenuMetadata;
 import com.example.screenservicetvapp.fragments.BasicMenuFragment;
+import com.example.screenservicetvapp.fragments.ImageMediaFragment;
+import com.example.screenservicetvapp.fragments.VideoMediaFragment;
+import com.example.screenservicetvapp.utils.ObjectExtensions;
 
 public class MenuOverlayActivity extends AppCompatActivity {
 
     RelativeLayout relativeLayout;
-    private ContentDataMenuItem[] menuItems;
+    private MenuItemDataModel[] menuItems;
     private MenuMetadata menuMetadata;
-    private MediaAsset mediaAsset;
+    private MediaAssetDataModel mediaAsset;
     private String textFont;
     private String textColor;
     private String backgroundOpacity;
@@ -34,7 +40,7 @@ public class MenuOverlayActivity extends AppCompatActivity {
         textColor = intent.getStringExtra("textColor");
         textFont = intent.getStringExtra("textFont");
         backgroundOpacity = intent.getStringExtra("backgroundOpacity");
-        menuItems = ObjectExtensions.getParcelableArrayExtra(getIntent(), "menuItems", ContentDataMenuItem.class);
+        menuItems = ObjectExtensions.getParcelableArrayExtra(getIntent(), "menuItems", MenuItemDataModel.class);
         loadBasicMenuFragment();
 
         mediaAsset = intent.getParcelableExtra("mediaAsset");

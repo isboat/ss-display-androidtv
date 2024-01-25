@@ -1,4 +1,4 @@
-package com.example.screenservicetvapp;
+package com.example.screenservicetvapp.apiresponses;
 
 import com.google.gson.annotations.SerializedName;
 public class CodeActivationApiResponse {

@@ -1,20 +1,17 @@
-package com.example.screenservicetvapp;
+package com.example.screenservicetvapp.fragments;
 
 import android.media.MediaPlayer;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
-import com.squareup.picasso.Picasso;
+import com.example.screenservicetvapp.R;
 
 /**
  * A simple {@link Fragment} subclass.

@@ -1,4 +1,4 @@
-package com.example.screenservicetvapp;
+package com.example.screenservicetvapp.apirequests;
 
 public class CodeActivationRequestBody {
 

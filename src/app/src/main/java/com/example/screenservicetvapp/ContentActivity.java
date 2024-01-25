@@ -9,6 +9,19 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.example.screenservicetvapp.apirequests.ContentDataApiRequest;
+import com.example.screenservicetvapp.apirequests.TokenApiRequest;
+import com.example.screenservicetvapp.apirequests.TokenApiRequestBody;
+import com.example.screenservicetvapp.apiresponses.ContentDataApiResponse;
+import com.example.screenservicetvapp.apiresponses.TokenApiResponse;
+import com.example.screenservicetvapp.datamodels.LayoutDataModel;
+import com.example.screenservicetvapp.datamodels.LayoutTemplatePropertyDataModel;
+import com.example.screenservicetvapp.datamodels.MenuDataModel;
+import com.example.screenservicetvapp.datamodels.MenuMetadata;
+import com.example.screenservicetvapp.datamodels.PlaylistData;
+import com.example.screenservicetvapp.services.LocalStorageService;
+import com.example.screenservicetvapp.utils.ObjectExtensions;
+
 import org.json.JSONObject;
 
 import java.util.Objects;
@@ -109,7 +122,7 @@ public class ContentActivity extends AppCompatActivity {
                         storageService.setData(Constants.CHECKSUM_DATA_KEY, checksum);
                         isActive = true;
 
-                        ContentDataLayout layout = responseData.getLayout();
+                        LayoutDataModel layout = responseData.getLayout();
                         if(layout != null) {
                             switch (layout.getTemplateKey()) {
                                 case "MenuOverlay":
@@ -172,11 +185,11 @@ public class ContentActivity extends AppCompatActivity {
     private void navigateToMenuOverlayActivity(ContentDataApiResponse responseData) {
         Intent intent = new Intent(this, MenuOverlayActivity.class);
 
-        ContentDataLayout layout = responseData.getLayout();
+        LayoutDataModel layout = responseData.getLayout();
         String subType = layout != null ? layout.getSubType() : null;
 
         // You can also pass data to the new activity using putExtra
-        ContentDataMenu menu = responseData.getMenu();
+        MenuDataModel menu = responseData.getMenu();
         MenuMetadata menuMetadata = new MenuMetadata(menu.getCurrency(), menu.getDescription(), menu.getTitle(), menu.getIconUrl(), subType);
         intent.putExtra("menuMetadata", menuMetadata);
         intent.putExtra("menuItems", menu.getMenuItems());
@@ -190,10 +203,10 @@ public class ContentActivity extends AppCompatActivity {
     private void navigateToMenuOnlyActivity(ContentDataApiResponse responseData) {
         Intent intent = new Intent(this, MenuOnlyActivity.class);
 
-        ContentDataLayout layout = responseData.getLayout();
+        LayoutDataModel layout = responseData.getLayout();
         String subType = layout != null ? layout.getSubType() : null;
         // You can also pass data to the new activity using putExtra
-        ContentDataMenu menu = responseData.getMenu();
+        MenuDataModel menu = responseData.getMenu();
         MenuMetadata menuMetadata = new MenuMetadata(menu.getCurrency(), menu.getDescription(), menu.getTitle(), menu.getIconUrl(), subType);
         intent.putExtra("menuMetadata", menuMetadata);
         intent.putExtra("menuItems", menu.getMenuItems());
@@ -228,7 +241,7 @@ public class ContentActivity extends AppCompatActivity {
         Intent intent = new Intent(this, CurrentDateTimeActivity.class);
 
         // You can also pass data to the new activity using putExtra
-        ContentDataLayout layout = responseData.getLayout();
+        LayoutDataModel layout = responseData.getLayout();
         String dateTimeFormat = layout != null ? layout.getSubType() : "EEE, d MMM yyyy HH:mm:ss";
         if(ObjectExtensions.isNullOrEmpty(dateTimeFormat)) dateTimeFormat = "EEE, d MMM yyyy HH:mm:ss";
 
@@ -239,12 +252,12 @@ public class ContentActivity extends AppCompatActivity {
         startIntentActivity(intent);
     }
 
-    private void addLayoutPropertiesToIntentExtra(ContentDataLayout layout, Intent intent) {
+    private void addLayoutPropertiesToIntentExtra(LayoutDataModel layout, Intent intent) {
         if(layout == null) return;
-        LayoutTemplateProperty[] templateProperties = layout.getTemplateProperties();
+        LayoutTemplatePropertyDataModel[] templateProperties = layout.getTemplateProperties();
         if(templateProperties != null && templateProperties.length > 0) {
             for (int i = 0; i < templateProperties.length; i++) {
-                LayoutTemplateProperty property = templateProperties[i];
+                LayoutTemplatePropertyDataModel property = templateProperties[i];
                 intent.putExtra(property.getKey(), property.getValue());
             }
         }

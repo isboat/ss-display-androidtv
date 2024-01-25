@@ -1,4 +1,4 @@
-package com.example.screenservicetvapp;
+package com.example.screenservicetvapp.datamodels;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
-public class ContentDataMenuItem implements Parcelable {
+public class MenuItemDataModel implements Parcelable {
     @SerializedName("name")
     private String name;
 
@@ -44,7 +44,7 @@ public class ContentDataMenuItem implements Parcelable {
     }
 
 
-    protected ContentDataMenuItem(Parcel in) {
+    protected MenuItemDataModel(Parcel in) {
         name = in.readString();
         description = in.readString();
         iconUrl = in.readString();
@@ -52,15 +52,15 @@ public class ContentDataMenuItem implements Parcelable {
         discountPrice = in.readString();
     }
 
-    public static final Creator<ContentDataMenuItem> CREATOR = new Creator<ContentDataMenuItem>() {
+    public static final Creator<MenuItemDataModel> CREATOR = new Creator<MenuItemDataModel>() {
         @Override
-        public ContentDataMenuItem createFromParcel(Parcel in) {
-            return new ContentDataMenuItem(in);
+        public MenuItemDataModel createFromParcel(Parcel in) {
+            return new MenuItemDataModel(in);
         }
 
         @Override
-        public ContentDataMenuItem[] newArray(int size) {
-            return new ContentDataMenuItem[size];
+        public MenuItemDataModel[] newArray(int size) {
+            return new MenuItemDataModel[size];
         }
     };
 

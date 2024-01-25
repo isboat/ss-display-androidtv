@@ -1,5 +1,9 @@
-package com.example.screenservicetvapp;
+package com.example.screenservicetvapp.apiresponses;
 
+import com.example.screenservicetvapp.datamodels.LayoutDataModel;
+import com.example.screenservicetvapp.datamodels.MediaAssetDataModel;
+import com.example.screenservicetvapp.datamodels.MenuDataModel;
+import com.example.screenservicetvapp.datamodels.PlaylistData;
 import com.google.gson.annotations.SerializedName;
 
 public class ContentDataApiResponse {
@@ -11,13 +15,13 @@ public class ContentDataApiResponse {
     private String displayName;
 
     @SerializedName("layout")
-    private ContentDataLayout layout;
+    private LayoutDataModel layout;
 
     @SerializedName("menu")
-    private ContentDataMenu menu;
+    private MenuDataModel menu;
 
     @SerializedName("mediaAsset")
-    private MediaAsset mediaAsset;
+    private MediaAssetDataModel mediaAsset;
 
     @SerializedName("textEditorData")
     private String textEditorData;
@@ -35,11 +39,11 @@ public class ContentDataApiResponse {
         return externalMediaSource;
     }
 
-    public MediaAsset getMediaAsset() {
+    public MediaAssetDataModel getMediaAsset() {
         return mediaAsset;
     }
 
-    public ContentDataLayout getLayout() {
+    public LayoutDataModel getLayout() {
         return layout;
     }
 
@@ -55,7 +59,7 @@ public class ContentDataApiResponse {
         return playlistData;
     }
 
-    public ContentDataMenu getMenu() {
+    public MenuDataModel getMenu() {
         return menu;
     }
 }

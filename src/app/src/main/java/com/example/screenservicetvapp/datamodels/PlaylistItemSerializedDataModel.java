@@ -1,4 +1,4 @@
-package com.example.screenservicetvapp;
+package com.example.screenservicetvapp.datamodels;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
-public class PlaylistItemSerialized implements Parcelable {
+public class PlaylistItemSerializedDataModel implements Parcelable {
 
     @SerializedName("key")
     private String key;
@@ -15,20 +15,20 @@ public class PlaylistItemSerialized implements Parcelable {
     @SerializedName("value")
     private String value;
 
-    protected PlaylistItemSerialized(Parcel in) {
+    protected PlaylistItemSerializedDataModel(Parcel in) {
         key = in.readString();
         value = in.readString();
     }
 
-    public static final Creator<PlaylistItemSerialized> CREATOR = new Creator<PlaylistItemSerialized>() {
+    public static final Creator<PlaylistItemSerializedDataModel> CREATOR = new Creator<PlaylistItemSerializedDataModel>() {
         @Override
-        public PlaylistItemSerialized createFromParcel(Parcel in) {
-            return new PlaylistItemSerialized(in);
+        public PlaylistItemSerializedDataModel createFromParcel(Parcel in) {
+            return new PlaylistItemSerializedDataModel(in);
         }
 
         @Override
-        public PlaylistItemSerialized[] newArray(int size) {
-            return new PlaylistItemSerialized[size];
+        public PlaylistItemSerializedDataModel[] newArray(int size) {
+            return new PlaylistItemSerializedDataModel[size];
         }
     };
 

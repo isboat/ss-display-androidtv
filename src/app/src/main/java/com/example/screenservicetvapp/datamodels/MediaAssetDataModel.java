@@ -1,15 +1,15 @@
-package com.example.screenservicetvapp;
+package com.example.screenservicetvapp.datamodels;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class MediaAsset implements Parcelable {
+public class MediaAssetDataModel implements Parcelable {
     private int type;
     private String assetUrl;
     private String description;
     private String name;
 
-    protected MediaAsset(Parcel in) {
+    protected MediaAssetDataModel(Parcel in) {
         type = in.readInt();
         assetUrl = in.readString();
         description = in.readString();
@@ -29,15 +29,15 @@ public class MediaAsset implements Parcelable {
         return 0;
     }
 
-    public static final Creator<MediaAsset> CREATOR = new Creator<MediaAsset>() {
+    public static final Creator<MediaAssetDataModel> CREATOR = new Creator<MediaAssetDataModel>() {
         @Override
-        public MediaAsset createFromParcel(Parcel in) {
-            return new MediaAsset(in);
+        public MediaAssetDataModel createFromParcel(Parcel in) {
+            return new MediaAssetDataModel(in);
         }
 
         @Override
-        public MediaAsset[] newArray(int size) {
-            return new MediaAsset[size];
+        public MediaAssetDataModel[] newArray(int size) {
+            return new MediaAssetDataModel[size];
         }
     };
 

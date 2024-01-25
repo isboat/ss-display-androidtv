@@ -3,11 +3,13 @@ package com.example.screenservicetvapp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Html;
 import android.widget.TextView;
+
+import com.example.screenservicetvapp.utils.ObjectExtensions;
+import com.example.screenservicetvapp.utils.UiHelper;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

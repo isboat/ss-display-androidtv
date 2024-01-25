@@ -1,8 +1,8 @@
-package com.example.screenservicetvapp;
+package com.example.screenservicetvapp.datamodels;
 
 import com.google.gson.annotations.SerializedName;
 
-public class ContentDataMenu {
+public class MenuDataModel {
     @SerializedName("name")
     private String name;
     @SerializedName("description")
@@ -16,7 +16,7 @@ public class ContentDataMenu {
     @SerializedName("iconUrl")
     private String iconUrl;
     @SerializedName("menuItems")
-    private ContentDataMenuItem[] menuItems;
+    private MenuItemDataModel[] menuItems;
 
     public String getDescription() {
         return description;
@@ -34,7 +34,7 @@ public class ContentDataMenu {
         return iconUrl;
     }
 
-    public ContentDataMenuItem[] getMenuItems() {
+    public MenuItemDataModel[] getMenuItems() {
         return menuItems;
     }
 }

@@ -1,4 +1,4 @@
-package com.example.screenservicetvapp;
+package com.example.screenservicetvapp.datamodels;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -11,12 +11,7 @@ public class PlaylistData {
     private Object[] items;
 
     @SerializedName("itemsSerialized")
-    private PlaylistItemSerialized[] itemsSerialized;
-
-    /*
-    * @SerializedName("assetItems")
-    private ContentDataMediaAsset[] assetItems;
-    * */
+    private PlaylistItemSerializedDataModel[] itemsSerialized;
 
     public Object[] getItems() {
         return items;
@@ -26,7 +21,7 @@ public class PlaylistData {
         return itemDuration;
     }
 
-    public PlaylistItemSerialized[] getItemsSerialized() {
+    public PlaylistItemSerializedDataModel[] getItemsSerialized() {
         return itemsSerialized;
     }
 }

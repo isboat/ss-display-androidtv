@@ -1,7 +1,12 @@
-package com.example.screenservicetvapp;
+package com.example.screenservicetvapp.services;
 
 import android.content.Context;
 import android.util.Log;
+
+import com.example.screenservicetvapp.Constants;
+import com.example.screenservicetvapp.apirequests.DeviceApiRequest;
+import com.example.screenservicetvapp.apiresponses.DeviceApiResponse;
+import com.example.screenservicetvapp.utils.ObjectExtensions;
 
 import org.json.JSONObject;
 

@@ -9,6 +9,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.FrameLayout;
 
+import com.example.screenservicetvapp.datamodels.MediaAssetDataModel;
+import com.example.screenservicetvapp.fragments.ExternalMediaFragment;
+import com.example.screenservicetvapp.fragments.ImageMediaFragment;
+import com.example.screenservicetvapp.fragments.VideoMediaFragment;
+import com.example.screenservicetvapp.utils.ObjectExtensions;
+
 public class MediaOnlyActivity extends AppCompatActivity {
 
     FrameLayout frameLayout;
@@ -23,7 +29,7 @@ public class MediaOnlyActivity extends AppCompatActivity {
 
         // Retrieve the Intent that started this activity
         Intent intent = getIntent();
-        MediaAsset mediaAsset = intent.getParcelableExtra("mediaAsset");
+        MediaAssetDataModel mediaAsset = intent.getParcelableExtra("mediaAsset");
         externalMediaSource = intent.getStringExtra("externalMediaSource");
 
         if(!ObjectExtensions.isNullOrEmpty(externalMediaSource)) {

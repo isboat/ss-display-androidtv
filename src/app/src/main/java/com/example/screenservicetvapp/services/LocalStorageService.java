@@ -1,4 +1,4 @@
-package com.example.screenservicetvapp;
+package com.example.screenservicetvapp.services;
 
 import android.content.Context;
 import android.content.SharedPreferences;

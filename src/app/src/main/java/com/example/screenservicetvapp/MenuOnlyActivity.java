@@ -7,13 +7,16 @@ import androidx.fragment.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.example.screenservicetvapp.datamodels.MenuItemDataModel;
+import com.example.screenservicetvapp.datamodels.MenuMetadata;
 import com.example.screenservicetvapp.fragments.BasicMenuFragment;
 import com.example.screenservicetvapp.fragments.PremiumMenuFragment;
+import com.example.screenservicetvapp.utils.ObjectExtensions;
 
 public class MenuOnlyActivity extends AppCompatActivity {
 
 
-    private ContentDataMenuItem[] menuItems;
+    private MenuItemDataModel[] menuItems;
     private MenuMetadata menuMetadata;
     private String textFont;
     private String textColor;
@@ -28,7 +31,7 @@ public class MenuOnlyActivity extends AppCompatActivity {
         menuMetadata = intent.getParcelableExtra("menuMetadata");
         textColor = intent.getStringExtra("textColor");
         textFont = intent.getStringExtra("textFont");
-        menuItems = ObjectExtensions.getParcelableArrayExtra(getIntent(), "menuItems", ContentDataMenuItem.class);
+        menuItems = ObjectExtensions.getParcelableArrayExtra(getIntent(), "menuItems", MenuItemDataModel.class);
 
         String subType = menuMetadata.getSubType();
         switch (subType) {

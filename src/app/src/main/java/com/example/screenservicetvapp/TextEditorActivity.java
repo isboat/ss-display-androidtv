@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.text.Html;
 import android.widget.TextView;
 
+import com.example.screenservicetvapp.utils.ObjectExtensions;
+
 public class TextEditorActivity extends AppCompatActivity {
 
     private String textEditorData;

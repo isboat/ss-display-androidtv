@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.screenservicetvapp.ObjectExtensions;
+import com.example.screenservicetvapp.utils.ObjectExtensions;
 import com.example.screenservicetvapp.R;
 
 public class TextADInformationFragment extends Fragment {

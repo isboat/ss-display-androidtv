@@ -6,9 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
-import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.PeriodicWorkRequest;
-import androidx.work.WorkManager;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -19,13 +17,14 @@ import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.screenservicetvapp.services.DeviceService;
+import com.example.screenservicetvapp.services.LocalStorageService;
 import com.example.screenservicetvapp.workers.AppStatusWorker;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.messaging.FirebaseMessaging;
 
-import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends FragmentActivity {

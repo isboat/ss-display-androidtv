@@ -11,13 +11,18 @@ import android.os.Handler;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.example.screenservicetvapp.datamodels.MediaAssetDataModel;
+import com.example.screenservicetvapp.datamodels.PlaylistItemSerializedDataModel;
 import com.example.screenservicetvapp.datamodels.TextADInformationAsset;
+import com.example.screenservicetvapp.fragments.ImageMediaFragment;
 import com.example.screenservicetvapp.fragments.TextADInformationFragment;
+import com.example.screenservicetvapp.fragments.VideoMediaFragment;
 import com.example.screenservicetvapp.utils.JsonUtils;
+import com.example.screenservicetvapp.utils.ObjectExtensions;
 
 public class PlaylistActivity extends AppCompatActivity {
 
-    private PlaylistItemSerialized[] itemsSerialized;
+    private PlaylistItemSerializedDataModel[] itemsSerialized;
 
     private int itemDuration; //"00:00:20"
     TextView messageTextView;
@@ -35,7 +40,7 @@ public class PlaylistActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         itemDuration = parseItemDuration(intent.getStringExtra("itemDuration"));
-        itemsSerialized = ObjectExtensions.getParcelableArrayExtra(getIntent(), "itemsSerialized", PlaylistItemSerialized.class);
+        itemsSerialized = ObjectExtensions.getParcelableArrayExtra(getIntent(), "itemsSerialized", PlaylistItemSerializedDataModel.class);
 
         messageTextView.setVisibility(TextView.VISIBLE);
         if(itemsSerialized != null) {
@@ -71,7 +76,7 @@ public class PlaylistActivity extends AppCompatActivity {
         finish();
     }
 
-    private void iterateItemsWithDelay(PlaylistItemSerialized[] itemsSerialized) {
+    private void iterateItemsWithDelay(PlaylistItemSerializedDataModel[] itemsSerialized) {
         final Handler handler = new Handler();
         final int delayMillis = 1000; // 5 seconds
 
@@ -81,7 +86,7 @@ public class PlaylistActivity extends AppCompatActivity {
                 if(!stopIteration) {
                     // Your iteration logic here
                     if (currentIndex < itemsSerialized.length) {
-                        PlaylistItemSerialized currentItem = itemsSerialized[currentIndex];
+                        PlaylistItemSerializedDataModel currentItem = itemsSerialized[currentIndex];
                         // Do something with the current item
                         String objType = currentItem.getKey(); // key contains ObjectType
                         switch (objType) {
@@ -111,7 +116,7 @@ public class PlaylistActivity extends AppCompatActivity {
         }, delayMillis);
     }
 
-    private void runTextAssetItemModel(PlaylistItemSerialized itemSerialized) {
+    private void runTextAssetItemModel(PlaylistItemSerializedDataModel itemSerialized) {
         TextADInformationAsset currentItem = JsonUtils.fromJson(itemSerialized.getValue(), TextADInformationAsset.class);
         if(currentItem == null)
         {
@@ -129,8 +134,8 @@ public class PlaylistActivity extends AppCompatActivity {
         loadFragment(fragment, bundle);
     }
 
-    private void runAssetItemModel(PlaylistItemSerialized itemSerialized) {
-        MediaAsset  currentItem = JsonUtils.fromJson(itemSerialized.getValue(), MediaAsset.class);
+    private void runAssetItemModel(PlaylistItemSerializedDataModel itemSerialized) {
+        MediaAssetDataModel currentItem = JsonUtils.fromJson(itemSerialized.getValue(), MediaAssetDataModel.class);
         if(currentItem == null)
         {
             messageTextView.setText("ItemSerialized is null.");

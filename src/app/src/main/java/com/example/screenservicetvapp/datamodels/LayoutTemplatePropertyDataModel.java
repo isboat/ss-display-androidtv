@@ -1,8 +1,8 @@
-package com.example.screenservicetvapp;
+package com.example.screenservicetvapp.datamodels;
 
 import com.google.gson.annotations.SerializedName;
 
-public class LayoutTemplateProperty {
+public class LayoutTemplatePropertyDataModel {
     @SerializedName("key")
     private String key;
     @SerializedName("value")

@@ -1,7 +1,8 @@
-package com.example.screenservicetvapp;
+package com.example.screenservicetvapp.apirequests;
+
+import com.example.screenservicetvapp.apiresponses.ContentDataApiResponse;
 
 import retrofit2.Call;
-import retrofit2.http.Body;
 import retrofit2.http.Header;
 import retrofit2.http.GET;
 

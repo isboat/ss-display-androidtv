@@ -1,4 +1,4 @@
-package com.example.screenservicetvapp;
+package com.example.screenservicetvapp.utils;
 
 import android.content.Intent;
 import android.os.Parcelable;

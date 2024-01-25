@@ -1,14 +1,14 @@
-package com.example.screenservicetvapp;
+package com.example.screenservicetvapp.datamodels;
 
 import com.google.gson.annotations.SerializedName;
 
-public class ContentDataLayout {
+public class LayoutDataModel {
     @SerializedName("templateKey")
     private String templateKey;
     @SerializedName("subType")
     private String subType;
     @SerializedName("templateProperties")
-    private LayoutTemplateProperty[] templateProperties;
+    private LayoutTemplatePropertyDataModel[] templateProperties;
 
     public String getTemplateKey() {
         return templateKey;
@@ -18,7 +18,7 @@ public class ContentDataLayout {
         return subType;
     }
 
-    public LayoutTemplateProperty[] getTemplateProperties() {
+    public LayoutTemplatePropertyDataModel[] getTemplateProperties() {
         return templateProperties;
     }
 }

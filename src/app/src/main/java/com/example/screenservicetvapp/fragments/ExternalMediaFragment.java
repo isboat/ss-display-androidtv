@@ -1,4 +1,4 @@
-package com.example.screenservicetvapp;
+package com.example.screenservicetvapp.fragments;
 
 import android.os.Bundle;
 
@@ -10,7 +10,8 @@ import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.widget.TextView;
+
+import com.example.screenservicetvapp.R;
 
 /**
  * A simple {@link Fragment} subclass.

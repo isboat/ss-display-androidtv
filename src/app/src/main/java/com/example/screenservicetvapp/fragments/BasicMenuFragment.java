@@ -18,11 +18,11 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import com.example.screenservicetvapp.ContentDataMenuItem;
-import com.example.screenservicetvapp.MenuMetadata;
-import com.example.screenservicetvapp.ObjectExtensions;
+import com.example.screenservicetvapp.datamodels.MenuItemDataModel;
+import com.example.screenservicetvapp.datamodels.MenuMetadata;
+import com.example.screenservicetvapp.utils.ObjectExtensions;
 import com.example.screenservicetvapp.R;
-import com.example.screenservicetvapp.UiHelper;
+import com.example.screenservicetvapp.utils.UiHelper;
 import com.squareup.picasso.Picasso;
 
 public class BasicMenuFragment extends Fragment {
@@ -30,7 +30,7 @@ public class BasicMenuFragment extends Fragment {
     private MenuMetadata menuMetadata;
     private String textFont;
     private String textColor;
-    private ContentDataMenuItem[] menuItems;
+    private MenuItemDataModel[] menuItems;
 
     TableLayout tableLayout;
     ImageView menuTopIconImageView;
@@ -63,9 +63,9 @@ public class BasicMenuFragment extends Fragment {
 
             menuMetadata = bundle.getParcelable("menuMetadata");
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                menuItems = bundle.getParcelableArray("menuItems", ContentDataMenuItem.class);
+                menuItems = bundle.getParcelableArray("menuItems", MenuItemDataModel.class);
             } else {
-                menuItems = (ContentDataMenuItem[]) bundle.getParcelableArray("menuItems");
+                menuItems = (MenuItemDataModel[]) bundle.getParcelableArray("menuItems");
             }
         }
     }
@@ -107,7 +107,7 @@ public class BasicMenuFragment extends Fragment {
             menuTopIconImageView.setVisibility(View.GONE);
         }
 
-        for (ContentDataMenuItem obj : menuItems) {
+        for (MenuItemDataModel obj : menuItems) {
             TableRow tableRow = new TableRow(this.getContext());
             tableRow.setPadding(5,5,5,5);
 

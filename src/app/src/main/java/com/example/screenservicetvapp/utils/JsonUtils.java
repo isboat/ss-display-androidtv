@@ -1,6 +1,5 @@
 package com.example.screenservicetvapp.utils;
 
-import com.example.screenservicetvapp.ObjectExtensions;
 import com.google.gson.Gson;
 
 public class JsonUtils {
