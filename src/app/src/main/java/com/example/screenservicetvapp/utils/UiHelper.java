@@ -14,34 +14,33 @@ public class UiHelper {
         textView.setTextSize(toInt);
     }
     public static void setTextViewColor(TextView textView, String textColor) {
-
         if(ObjectExtensions.isNullOrEmpty(textColor)) return;
+        textView.setTextColor(parseColor(textColor));
+    }
+
+    public static int parseColor(String textColor) {
+
+        if(ObjectExtensions.isNullOrEmpty(textColor)) return Color.WHITE;
 
         switch (textColor.toLowerCase())
         {
             case "red":
-                textView.setTextColor(Color.RED);
-                break;
+                return Color.RED;
             case "blue":
-                textView.setTextColor(Color.BLUE);
-                break;
+                return Color.BLUE;
             case "grey":
             case "gray":
-                textView.setTextColor(Color.GRAY);
-                break;
+                return Color.GRAY;
             case "black":
-                textView.setTextColor(Color.BLACK);
-                break;
+                return Color.BLACK;
             case "yellow":
-                textView.setTextColor(Color.YELLOW);
-                break;
+                return Color.YELLOW;
             default:
                 try {
-                    textView.setTextColor(Color.parseColor(textColor.toLowerCase()));
+                    return Color.parseColor(textColor.toLowerCase());
                 } catch(Exception ex) {
-                    textView.setTextColor(Color.WHITE);
+                    return Color.WHITE;
                 }
-                break;
         }
     }
 }

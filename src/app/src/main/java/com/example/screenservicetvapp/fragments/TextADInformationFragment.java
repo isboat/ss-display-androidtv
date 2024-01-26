@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.example.screenservicetvapp.utils.ObjectExtensions;
 import com.example.screenservicetvapp.R;
+import com.example.screenservicetvapp.utils.UiHelper;
 
 public class TextADInformationFragment extends Fragment {
 
@@ -56,6 +57,10 @@ public class TextADInformationFragment extends Fragment {
         if(ObjectExtensions.isNullOrEmpty(description)) description = "Error: No text found in the data, republish.";
         textEditorTextView = view.findViewById(R.id.text_ad_information_textview);
         textEditorTextView.setText(Html.fromHtml(description));
+        UiHelper.setTextViewFont(textEditorTextView, textFont);
+        UiHelper.setTextViewColor(textEditorTextView, textColor);
+
+        view.setBackgroundColor(UiHelper.parseColor(backgroundColor));
         return view;
     }
 }
