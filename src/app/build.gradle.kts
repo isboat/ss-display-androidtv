@@ -4,15 +4,15 @@ plugins {
 }
 
 android {
-    namespace = "com.example.screenservicetvapp"
+    namespace = "com.onscreensync.tvapp"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.screenservicetvapp"
+        applicationId = "com.onscreensync.tvapp"
         minSdk = 21
         targetSdk = 33
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "2.0"
 
     }
 

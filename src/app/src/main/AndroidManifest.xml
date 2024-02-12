@@ -92,7 +92,7 @@
         </receiver>
 
         <service
-            android:name="com.example.screenservicetvapp.services.CustomFirebaseMessagingService"
+            android:name="com.onscreensync.tvapp.services.CustomFirebaseMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
