@@ -1,6 +1,7 @@
 package com.onscreensync.tvapp.utils;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 public class JsonUtils {
     private static final Gson gson = new Gson();
@@ -9,6 +10,10 @@ public class JsonUtils {
     public static <T> T fromJson(String jsonString, Class<T> classOfT) {
         if(ObjectExtensions.isNullOrEmpty(jsonString)) return null;
 
-        return gson.fromJson(jsonString, classOfT);
+        try {
+            return gson.fromJson(jsonString, classOfT);
+        } catch (JsonSyntaxException e) {
+            return null;
+        }
     }
 }

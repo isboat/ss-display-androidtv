@@ -3,12 +3,14 @@ package com.onscreensync.tvapp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.microsoft.signalr.HubConnection;
 import com.onscreensync.tvapp.apirequests.ContentDataApiRequest;
 import com.onscreensync.tvapp.apirequests.TokenApiRequest;
@@ -20,9 +22,11 @@ import com.onscreensync.tvapp.datamodels.LayoutTemplatePropertyDataModel;
 import com.onscreensync.tvapp.datamodels.MenuDataModel;
 import com.onscreensync.tvapp.datamodels.MenuMetadata;
 import com.onscreensync.tvapp.datamodels.PlaylistData;
+import com.onscreensync.tvapp.datamodels.SignalrReceivedMessage;
 import com.onscreensync.tvapp.services.LocalStorageService;
 import com.onscreensync.tvapp.signalR.SignalRManager;
 import com.onscreensync.tvapp.signalR.SignalrHubConnectionBuilder;
+import com.onscreensync.tvapp.utils.JsonUtils;
 import com.onscreensync.tvapp.utils.ObjectExtensions;
 
 import org.json.JSONObject;
@@ -117,13 +121,45 @@ public class ContentActivity extends AppCompatActivity {
             this.signalrHubConnectionBuilder = new SignalrHubConnectionBuilder(accessToken, deviceId, (message) -> {
                 // Handle incoming message
                 runOnUiThread(() -> {
-                    Log.d("SignalrRecevied", message);
-                    makeApiRequest(accessToken);
+                    SignalrReceivedMessage receivedMessage = JsonUtils.fromJson(message, SignalrReceivedMessage.class);
+                    Log.d("SignalrReceived", message);
+                    if(receivedMessage != null) {
+
+                        switch (receivedMessage.getMessageType()) {
+                            case "content.published":
+                                makeApiRequest(accessToken);
+                                break;
+                            case "app.restart":
+                                // makeApiRequest(accessToken);
+                                break;
+                            case "app.terminate":
+                                // shutdown makeApiRequest(accessToken);
+                                break;
+                            case "app.upgrade.info":
+                                makeSnackBarMessage(receivedMessage.getMessageData(), Color.BLACK);
+                                break;
+                            case "operator.info":
+                                makeSnackBarMessage(receivedMessage.getMessageData(), Color.RED);
+                                // Toast message for users to upgrade
+                                break;
+                            case "app.upgrade.force":
+                                // App should auto upgrade itself
+                                break;
+                        }
+                    }
                 });
             });
 
             this.hubConnection = signalrHubConnectionBuilder.getConnection();
         }
+    }
+
+    private void makeSnackBarMessage(String message, int color) {
+        Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), message, 10000)
+                .setBackgroundTint(Color.WHITE)
+                .setTextColor(color); // Set text color;
+
+        snackbar.show();
     }
 
     @Override
