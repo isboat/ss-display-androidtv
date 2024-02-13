@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.microsoft.signalr.HubConnection;
 import com.onscreensync.tvapp.apirequests.ContentDataApiRequest;
 import com.onscreensync.tvapp.apirequests.TokenApiRequest;
 import com.onscreensync.tvapp.apirequests.TokenApiRequestBody;
@@ -20,6 +21,8 @@ import com.onscreensync.tvapp.datamodels.MenuDataModel;
 import com.onscreensync.tvapp.datamodels.MenuMetadata;
 import com.onscreensync.tvapp.datamodels.PlaylistData;
 import com.onscreensync.tvapp.services.LocalStorageService;
+import com.onscreensync.tvapp.signalR.SignalRManager;
+import com.onscreensync.tvapp.signalR.SignalrHubConnectionBuilder;
 import com.onscreensync.tvapp.utils.ObjectExtensions;
 
 import org.json.JSONObject;
@@ -50,20 +53,18 @@ public class ContentActivity extends AppCompatActivity {
 
     private boolean isActive;
 
+    private HubConnection hubConnection;
+    private SignalrHubConnectionBuilder signalrHubConnectionBuilder;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_content);
         messageTextView = (TextView) findViewById(R.id.content_message_txt);
         deviceNameTextView = (TextView) findViewById(R.id.content_act_device_name_textview);
 
         storageService = new LocalStorageService(this);
-
-        String deviceName = storageService.getData(Constants.DEVICE_NAME);
-        if(!ObjectExtensions.isNullOrEmpty(deviceName))
-        {
-            deviceNameTextView.setText(deviceName);
-        }
 
         this.loggingInterceptor = new HttpLoggingInterceptor();
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY); // Choose the desired log level
@@ -73,13 +74,29 @@ public class ContentActivity extends AppCompatActivity {
                 .addInterceptor(loggingInterceptor)
                 .build();
 
+        this.startRun();
+    }
+
+    private void startRun()
+    {
+        String deviceName = storageService.getData(Constants.DEVICE_NAME);
+        if(!ObjectExtensions.isNullOrEmpty(deviceName))
+        {
+            deviceNameTextView.setText(deviceName);
+        }
+
         // Retrieve access token
         String accessToken = storageService.getAccessToken();
+        String deviceId = storageService.getData((Constants.DEVICE_ID));
         // Assume you want to start AnotherActivity when a certain condition is met
         if (accessToken == null) {
             this.refreshAccessToken();
         } else {
 
+            this.makeApiRequest(accessToken);
+            this.establishSignalRConnection(accessToken, deviceId);
+
+            /*
             handler = new Handler();
 
             final Runnable r = new Runnable() {
@@ -90,6 +107,21 @@ public class ContentActivity extends AppCompatActivity {
             };
 
             handler.postDelayed(r, 1000);
+            */
+        }
+    }
+
+    private void establishSignalRConnection(String accessToken, String deviceId) {
+
+        if(this.signalrHubConnectionBuilder == null) {
+            this.signalrHubConnectionBuilder = new SignalrHubConnectionBuilder(accessToken, deviceId, (message) -> {
+                // Handle incoming message
+                runOnUiThread(() -> {
+                    Log.d("SignalrRecevied", message);
+                });
+            });
+
+            this.hubConnection = signalrHubConnectionBuilder.getConnection();
         }
     }
 
@@ -308,8 +340,7 @@ public class ContentActivity extends AppCompatActivity {
                     storageService.setAccessToken(responseData.getAccessToken());
                     storageService.setRefreshToken(responseData.getRefreshToken());
 
-                    makeApiRequest(responseData.getAccessToken());
-                    // Display the JSON data on the screen
+                    startRun();
 
                 } else {
                     try {

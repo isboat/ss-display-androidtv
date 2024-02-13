@@ -42,4 +42,5 @@ dependencies {
     implementation("com.google.firebase:firebase-messaging:23.4.0")
     implementation("androidx.work:work-runtime:2.9.0")
     implementation("com.google.code.gson:gson:2.8.9")
+    implementation("com.microsoft.signalr:signalr:7.0.0")
 }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.onscreensync.tvapp.Constants;
+import com.onscreensync.tvapp.ContentActivity;
 import com.onscreensync.tvapp.apirequests.DeviceApiRequest;
 import com.onscreensync.tvapp.apiresponses.DeviceApiResponse;
 import com.onscreensync.tvapp.utils.ObjectExtensions;
@@ -21,11 +22,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class DeviceService {
     private HttpLoggingInterceptor loggingInterceptor;
     private OkHttpClient okHttpClient;
-
+    private String accessToken;
     private LocalStorageService storageService;
 
-
-    public DeviceService(Context context) {
+    public DeviceService(String accessToken, Context context) {
         this.loggingInterceptor = new HttpLoggingInterceptor();
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY); // Choose the desired log level
 
@@ -33,12 +33,11 @@ public class DeviceService {
         this.okHttpClient = new OkHttpClient.Builder()
                 .addInterceptor(loggingInterceptor)
                 .build();
-
-        storageService = new LocalStorageService(context);
+        this.storageService = new LocalStorageService(context);
+        this.accessToken = accessToken;
     }
 
-    public void updateName() {
-        String accessToken = storageService.getAccessToken();
+    public void updateDeviceInfo() {
         if(ObjectExtensions.isNullOrEmpty(accessToken)) return;
 
         Retrofit retrofit = new Retrofit.Builder()
@@ -58,6 +57,8 @@ public class DeviceService {
                 if (response.isSuccessful()) {
                     DeviceApiResponse responseData = response.body();
                     storageService.setData(Constants.DEVICE_NAME, responseData.getName());
+                    storageService.setData(Constants.DEVICE_ID, responseData.getId());
+                    storageService.setData(Constants.TENANT_ID, responseData.getTenantId());
                 } else {
                     try {
                         JSONObject jObjError = new JSONObject(response.errorBody().string());

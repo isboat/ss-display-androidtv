@@ -2,6 +2,7 @@ package com.onscreensync.tvapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,6 +15,7 @@ import com.onscreensync.tvapp.apirequests.TokenApiRequest;
 import com.onscreensync.tvapp.apirequests.TokenApiRequestBody;
 import com.onscreensync.tvapp.apiresponses.CodeActivationApiResponse;
 import com.onscreensync.tvapp.apiresponses.TokenApiResponse;
+import com.onscreensync.tvapp.services.DeviceService;
 import com.onscreensync.tvapp.services.LocalStorageService;
 
 import org.json.JSONObject;
@@ -35,11 +37,11 @@ public class CodeActivationActivity extends AppCompatActivity {
     private HttpLoggingInterceptor loggingInterceptor;
     private OkHttpClient okHttpClient;
 
-    private Handler handler = new Handler();
     private int retryCount = 0;
     private static final int MAX_RETRY_COUNT = 5;
 
     private LocalStorageService storageService;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,7 +96,7 @@ public class CodeActivationActivity extends AppCompatActivity {
                         String codeUrl = responseData.getVerificationUrl();
                         if (userCode != null) {
                             displayUserCodeOnScreen(userCode, codeUrl);
-                            scheduleStatusApiRequest(responseData);
+                            makeStatusApiRequest(responseData);
                         }
                     }
                     else {
@@ -114,24 +116,10 @@ public class CodeActivationActivity extends AppCompatActivity {
         });
     }
 
-    private void scheduleStatusApiRequest(CodeActivationApiResponse requestData) {
-        if(requestData != null) {
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    // Make a periodic API request for status
-                    makeStatusApiRequest(requestData);
-                }
-            }, requestData.getInterval()); // 5000 Schedule the next request after 5 seconds
-            retryCount++;
-
-            // Display an error if the maximum retry count is reached
-            if (retryCount >= MAX_RETRY_COUNT) {
-                // show error page; textViewResult.setText("Error: Maximum retry count reached");
-            }
-        }
-    }
     private void makeStatusApiRequest(CodeActivationApiResponse requestData) {
+
+        Context contextToUse = this;
+        retryCount++;
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Constants.ENDPOINT_BASEURL)
@@ -146,13 +134,22 @@ public class CodeActivationActivity extends AppCompatActivity {
         call.enqueue(new Callback<TokenApiResponse>() {
             @Override
             public void onResponse(Call<TokenApiResponse> call, Response<TokenApiResponse> response) {
+
+                // Display an error if the maximum retry count is reached
+                if (retryCount > MAX_RETRY_COUNT) {
+                    userCodeTextView.setText("Error: Maximum retry count reached");
+                    return;
+                }
+
                 if (response.isSuccessful()) {
                     TokenApiResponse responseData = response.body();
                     storageService.setAccessToken(responseData.getAccessToken());
                     storageService.setRefreshToken(responseData.getRefreshToken());
 
+                    DeviceService deviceService = new DeviceService(responseData.getAccessToken(), contextToUse);
+                    deviceService.updateDeviceInfo();
+
                     navigateToContentActivity();
-                    // Display the JSON data on the screen
 
                 } else {
 

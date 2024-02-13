@@ -6,7 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
-import androidx.work.PeriodicWorkRequest;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -19,18 +18,15 @@ import android.widget.Toast;
 
 import com.onscreensync.tvapp.services.DeviceService;
 import com.onscreensync.tvapp.services.LocalStorageService;
-import com.onscreensync.tvapp.workers.AppStatusWorker;
+import com.onscreensync.tvapp.utils.ObjectExtensions;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.messaging.FirebaseMessaging;
 
-import java.util.concurrent.TimeUnit;
-
 public class MainActivity extends FragmentActivity {
 
     private static final int PERMISSION_REQUEST_CODE = 123;
-    private DeviceService deviceService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,9 +35,6 @@ public class MainActivity extends FragmentActivity {
         setContentView(R.layout.activity_main);
 
         requestBootCompletedPermission();
-
-        deviceService = new DeviceService(this);
-        deviceService.updateName();
 
         Handler handler = new Handler();
         final Runnable r = () -> startRun();
@@ -58,9 +51,16 @@ public class MainActivity extends FragmentActivity {
         LocalStorageService storageService = new LocalStorageService(this);
         // Retrieve access token
         String accessToken = storageService.getAccessToken();
-        Intent intent = accessToken == null
-                ? new Intent(this, CodeActivationActivity.class)
-                : new Intent(this, ContentActivity.class);
+        Intent intent;
+        if(ObjectExtensions.isNullOrEmpty(accessToken))
+        {
+            intent = new Intent(this, CodeActivationActivity.class);
+        } else {
+
+            DeviceService deviceService = new DeviceService(accessToken, this);
+            deviceService.updateDeviceInfo();
+            intent = new Intent(this, ContentActivity.class);
+        }
         startIntent(intent);
 
         //startWorkerRun();
@@ -85,25 +85,6 @@ public class MainActivity extends FragmentActivity {
                         Toast.makeText(MainActivity.this, "Your token: " + token, Toast.LENGTH_SHORT).show();
                     }
                 });
-    }
-
-    private void startWorkerRun() {
-
-        // Enqueue a periodic work request
-
-        PeriodicWorkRequest periodicWorkRequest = new PeriodicWorkRequest.Builder(
-                AppStatusWorker.class,
-                15, // Repeat interval in minutes
-                TimeUnit.SECONDS,
-                5,
-                TimeUnit.SECONDS)
-                .build();
-/*
-        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
-                "screen.service.tv.app.worker",
-                ExistingPeriodicWorkPolicy.UPDATE,
-                periodicWorkRequest);*/
-        //WorkManager.getInstance(this).cancelAllWork();
     }
 
     @Override

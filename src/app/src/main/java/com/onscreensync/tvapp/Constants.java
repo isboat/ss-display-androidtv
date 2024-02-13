@@ -5,5 +5,9 @@ public class Constants {
 
     public static final String DEVICE_NAME = "deviceName";
 
+    public static final String DEVICE_ID = "deviceId";
+
+    public static final String TENANT_ID = "tenantId";
+
     public static final String CHECKSUM_DATA_KEY = "contentChecksum";
 }

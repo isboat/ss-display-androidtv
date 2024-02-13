@@ -8,6 +8,6 @@ import retrofit2.http.GET;
 
 public interface DeviceApiRequest {
 
-    @GET("device/name")
+    @GET("device/info")
     Call<DeviceApiResponse> getName(@Header("Authorization") String authHeader);
 }
