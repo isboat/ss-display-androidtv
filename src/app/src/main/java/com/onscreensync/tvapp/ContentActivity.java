@@ -24,7 +24,6 @@ import com.onscreensync.tvapp.datamodels.MenuMetadata;
 import com.onscreensync.tvapp.datamodels.PlaylistData;
 import com.onscreensync.tvapp.datamodels.SignalrReceivedMessage;
 import com.onscreensync.tvapp.services.LocalStorageService;
-import com.onscreensync.tvapp.signalR.SignalRManager;
 import com.onscreensync.tvapp.signalR.SignalrHubConnectionBuilder;
 import com.onscreensync.tvapp.utils.JsonUtils;
 import com.onscreensync.tvapp.utils.ObjectExtensions;
@@ -57,7 +56,6 @@ public class ContentActivity extends AppCompatActivity {
 
     private boolean isActive;
 
-    private HubConnection hubConnection;
     private SignalrHubConnectionBuilder signalrHubConnectionBuilder;
 
     @Override
@@ -97,7 +95,7 @@ public class ContentActivity extends AppCompatActivity {
             this.refreshAccessToken();
         } else {
 
-            this.makeApiRequest(accessToken);
+            this.loadContentDataFromApi(accessToken);
             this.establishSignalRConnection(accessToken, deviceId);
 
             /*
@@ -105,7 +103,7 @@ public class ContentActivity extends AppCompatActivity {
 
             final Runnable r = new Runnable() {
                 public void run() {
-                    makeApiRequest(accessToken);
+                    loadContentDataFromApi(accessToken);
                     handler.postDelayed(this, 5000);
                 }
             };
@@ -127,20 +125,19 @@ public class ContentActivity extends AppCompatActivity {
 
                         switch (receivedMessage.getMessageType()) {
                             case "content.published":
-                                makeApiRequest(accessToken);
+                                loadContentDataFromApi(accessToken);
                                 break;
                             case "app.restart":
-                                // makeApiRequest(accessToken);
+                                // loadContentDataFromApi(accessToken);
                                 break;
                             case "app.terminate":
-                                // shutdown makeApiRequest(accessToken);
+                                // shutdown loadContentDataFromApi(accessToken);
                                 break;
                             case "app.upgrade.info":
                                 makeSnackBarMessage(receivedMessage.getMessageData(), Color.BLACK);
                                 break;
                             case "operator.info":
                                 makeSnackBarMessage(receivedMessage.getMessageData(), Color.RED);
-                                // Toast message for users to upgrade
                                 break;
                             case "app.upgrade.force":
                                 // App should auto upgrade itself
@@ -149,8 +146,6 @@ public class ContentActivity extends AppCompatActivity {
                     }
                 });
             });
-
-            this.hubConnection = signalrHubConnectionBuilder.getConnection();
         }
     }
 
@@ -168,7 +163,7 @@ public class ContentActivity extends AppCompatActivity {
         finish();
     }
 
-    private void makeApiRequest(String accessToken) {
+    private void loadContentDataFromApi(String accessToken) {
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Constants.ENDPOINT_BASEURL)
