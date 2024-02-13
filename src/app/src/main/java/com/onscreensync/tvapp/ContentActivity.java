@@ -118,6 +118,7 @@ public class ContentActivity extends AppCompatActivity {
                 // Handle incoming message
                 runOnUiThread(() -> {
                     Log.d("SignalrRecevied", message);
+                    makeApiRequest(accessToken);
                 });
             });
 

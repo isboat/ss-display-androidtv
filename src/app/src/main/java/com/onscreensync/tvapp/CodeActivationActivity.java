@@ -38,7 +38,7 @@ public class CodeActivationActivity extends AppCompatActivity {
     private OkHttpClient okHttpClient;
 
     private int retryCount = 0;
-    private static final int MAX_RETRY_COUNT = 5;
+    private static final int MAX_RETRY_COUNT = 10;
 
     private LocalStorageService storageService;
 
