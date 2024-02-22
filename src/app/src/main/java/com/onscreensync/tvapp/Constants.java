@@ -10,4 +10,6 @@ public class Constants {
     public static final String TENANT_ID = "tenantId";
 
     public static final String CHECKSUM_DATA_KEY = "contentChecksum";
+
+    public static final String TOKEN_REFRESH_GRANT_TYPE = "refresh_token";
 }

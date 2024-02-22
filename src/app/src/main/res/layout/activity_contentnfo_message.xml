@@ -4,36 +4,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ContentActivity">
+    tools:context=".ContentInfoMessageActivity">
 
     <TextView
-        android:id="@+id/content_message_txt"
+        android:id="@+id/activity_content_info_message_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/onscreen_sync"
+        android:text="@string/hello_blank_fragment"
         android:textSize="100sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.515"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.261" />
 
     <TextView
-        android:id="@+id/content_act_device_name_textview"
+        android:id="@+id/activity_content_info_subtext_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="device name"
         android:textSize="70sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.499"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.808" />
+        app:layout_constraintVertical_bias="0.726" />
 
-    <FrameLayout
-        android:id="@+id/content_activity_framelayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

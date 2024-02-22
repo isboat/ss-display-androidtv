@@ -3,8 +3,10 @@ package com.onscreensync.tvapp.services;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.MutableLiveData;
+
 import com.onscreensync.tvapp.Constants;
-import com.onscreensync.tvapp.ContentActivity;
 import com.onscreensync.tvapp.apirequests.DeviceApiRequest;
 import com.onscreensync.tvapp.apiresponses.DeviceApiResponse;
 import com.onscreensync.tvapp.utils.ObjectExtensions;
@@ -22,10 +24,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class DeviceService {
     private HttpLoggingInterceptor loggingInterceptor;
     private OkHttpClient okHttpClient;
-    private String accessToken;
     private LocalStorageService storageService;
 
-    public DeviceService(String accessToken, Context context) {
+    private AccessTokenService accessTokenService;
+    private Context context;
+    private MutableLiveData<DeviceApiResponse> data;
+
+    public DeviceService(Context context) {
+        this.context = context;
         this.loggingInterceptor = new HttpLoggingInterceptor();
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY); // Choose the desired log level
 
@@ -33,32 +39,46 @@ public class DeviceService {
         this.okHttpClient = new OkHttpClient.Builder()
                 .addInterceptor(loggingInterceptor)
                 .build();
+
         this.storageService = new LocalStorageService(context);
-        this.accessToken = accessToken;
+        this.accessTokenService = new AccessTokenService(context);
     }
 
-    public void updateDeviceInfo() {
-        if(ObjectExtensions.isNullOrEmpty(accessToken)) return;
+    public MutableLiveData<DeviceApiResponse> updateDeviceInfo() {
+        String accessToken = this.storageService.getAccessToken();
+        if(data == null) {
+            data = new MutableLiveData<>();
+        }
+
+        if(ObjectExtensions.isNullOrEmpty(accessToken))
+        {
+            data.postValue(null);
+            return data;
+        };
+
+        LifecycleOwner lifecycleOwner = (LifecycleOwner) this.context;
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Constants.ENDPOINT_BASEURL)
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        Log.d("DeviceService", "retrofit");
 
         DeviceApiRequest deviceApiRequest = retrofit.create(DeviceApiRequest.class);
-        Log.d("DeviceService", "deviceApiRequest");
         Call<DeviceApiResponse> call = deviceApiRequest.getName("Bearer " + accessToken);
 
         call.enqueue(new Callback<DeviceApiResponse>() {
             @Override
             public void onResponse(Call<DeviceApiResponse> call, Response<DeviceApiResponse> response) {
                 if (response.isSuccessful()) {
+
                     DeviceApiResponse responseData = response.body();
                     storageService.setData(Constants.DEVICE_NAME, responseData.getName());
                     storageService.setData(Constants.DEVICE_ID, responseData.getId());
                     storageService.setData(Constants.TENANT_ID, responseData.getTenantId());
+
+                    data.postValue(response.body());
+
                 } else {
                     try {
                         JSONObject jObjError = new JSONObject(response.errorBody().string());
@@ -67,13 +87,31 @@ public class DeviceService {
                     } catch (Exception e) {
                         Log.d("CodeActivationJSON", e.getMessage());
                     }
+
+                    int responseCode = response.code();
+                    if (responseCode == 401) {
+                        accessTokenService.refreshAccessToken().observe(lifecycleOwner, deviceApiResponse -> {
+                            if(deviceApiResponse != null)
+                            {
+                                if(!ObjectExtensions.isNullOrEmpty(deviceApiResponse.getAccessToken()))
+                                {
+                                    updateDeviceInfo();
+                                }
+                            }
+                        });
+                    }
+                    else {
+                        data.postValue(null);
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call<DeviceApiResponse> call, Throwable t) {
-                // Handle API request failure
+                data.postValue(null);
             }
         });
+
+        return data;
     }
 }

@@ -1,6 +1,7 @@
 package com.onscreensync.tvapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LifecycleOwner;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +15,7 @@ import com.onscreensync.tvapp.apirequests.CodeActivationRequestBody;
 import com.onscreensync.tvapp.apirequests.TokenApiRequest;
 import com.onscreensync.tvapp.apirequests.TokenApiRequestBody;
 import com.onscreensync.tvapp.apiresponses.CodeActivationApiResponse;
+import com.onscreensync.tvapp.apiresponses.DeviceApiResponse;
 import com.onscreensync.tvapp.apiresponses.TokenApiResponse;
 import com.onscreensync.tvapp.services.DeviceService;
 import com.onscreensync.tvapp.services.LocalStorageService;
@@ -38,7 +40,7 @@ public class CodeActivationActivity extends AppCompatActivity {
     private OkHttpClient okHttpClient;
 
     private int retryCount = 0;
-    private static final int MAX_RETRY_COUNT = 10;
+    private static final int MAX_RETRY_COUNT = 100;
 
     private LocalStorageService storageService;
 
@@ -146,7 +148,7 @@ public class CodeActivationActivity extends AppCompatActivity {
                     storageService.setAccessToken(responseData.getAccessToken());
                     storageService.setRefreshToken(responseData.getRefreshToken());
 
-                    DeviceService deviceService = new DeviceService(responseData.getAccessToken(), contextToUse);
+                    DeviceService deviceService = new DeviceService(contextToUse);
                     deviceService.updateDeviceInfo();
 
                     navigateToContentActivity();

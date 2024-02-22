@@ -5,30 +5,24 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
-import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.microsoft.signalr.HubConnection;
 import com.onscreensync.tvapp.apirequests.ContentDataApiRequest;
-import com.onscreensync.tvapp.apirequests.TokenApiRequest;
-import com.onscreensync.tvapp.apirequests.TokenApiRequestBody;
 import com.onscreensync.tvapp.apiresponses.ContentDataApiResponse;
-import com.onscreensync.tvapp.apiresponses.TokenApiResponse;
 import com.onscreensync.tvapp.datamodels.LayoutDataModel;
 import com.onscreensync.tvapp.datamodels.LayoutTemplatePropertyDataModel;
 import com.onscreensync.tvapp.datamodels.MenuDataModel;
 import com.onscreensync.tvapp.datamodels.MenuMetadata;
 import com.onscreensync.tvapp.datamodels.PlaylistData;
 import com.onscreensync.tvapp.datamodels.SignalrReceivedMessage;
+import com.onscreensync.tvapp.services.AccessTokenService;
+import com.onscreensync.tvapp.services.DeviceService;
 import com.onscreensync.tvapp.services.LocalStorageService;
 import com.onscreensync.tvapp.signalR.SignalrHubConnectionBuilder;
 import com.onscreensync.tvapp.utils.JsonUtils;
 import com.onscreensync.tvapp.utils.ObjectExtensions;
-
-import org.json.JSONObject;
 
 import java.util.Objects;
 
@@ -41,9 +35,6 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ContentActivity extends AppCompatActivity {
-    private static final String TOKEN_GRANT_TYPE = "urn:ietf:params:oauth:grant-type:access_token";
-    private static final String TOKEN_REFRESH_GRANT_TYPE = "refresh_token";
-
 
     private HttpLoggingInterceptor loggingInterceptor;
     private OkHttpClient okHttpClient;
@@ -51,10 +42,13 @@ public class ContentActivity extends AppCompatActivity {
     private LocalStorageService storageService;
 
     private TextView messageTextView;
+
     private TextView deviceNameTextView;
-    private Handler handler;
 
     private boolean isActive;
+    private DeviceService deviceService;
+
+    private AccessTokenService accessTokenService;
 
     private SignalrHubConnectionBuilder signalrHubConnectionBuilder;
 
@@ -67,6 +61,8 @@ public class ContentActivity extends AppCompatActivity {
         deviceNameTextView = (TextView) findViewById(R.id.content_act_device_name_textview);
 
         storageService = new LocalStorageService(this);
+        deviceService = new DeviceService(this);
+        accessTokenService = new AccessTokenService(this);
 
         this.loggingInterceptor = new HttpLoggingInterceptor();
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY); // Choose the desired log level
@@ -75,6 +71,7 @@ public class ContentActivity extends AppCompatActivity {
         this.okHttpClient = new OkHttpClient.Builder()
                 .addInterceptor(loggingInterceptor)
                 .build();
+
 
         this.startRun();
     }
@@ -89,34 +86,17 @@ public class ContentActivity extends AppCompatActivity {
 
         // Retrieve access token
         String accessToken = storageService.getAccessToken();
-        String deviceId = storageService.getData((Constants.DEVICE_ID));
-        // Assume you want to start AnotherActivity when a certain condition is met
         if (accessToken == null) {
             this.refreshAccessToken();
         } else {
-
-            this.loadContentDataFromApi(accessToken);
-            this.establishSignalRConnection(accessToken, deviceId);
-
-            /*
-            handler = new Handler();
-
-            final Runnable r = new Runnable() {
-                public void run() {
-                    loadContentDataFromApi(accessToken);
-                    handler.postDelayed(this, 5000);
-                }
-            };
-
-            handler.postDelayed(r, 1000);
-            */
+            this.loadContentDataFromApi();
         }
     }
 
-    private void establishSignalRConnection(String accessToken, String deviceId) {
+    private void establishSignalRConnection() {
 
         if(this.signalrHubConnectionBuilder == null) {
-            this.signalrHubConnectionBuilder = new SignalrHubConnectionBuilder(accessToken, deviceId, (message) -> {
+            this.signalrHubConnectionBuilder = new SignalrHubConnectionBuilder(this, (message) -> {
                 // Handle incoming message
                 runOnUiThread(() -> {
                     SignalrReceivedMessage receivedMessage = JsonUtils.fromJson(message, SignalrReceivedMessage.class);
@@ -124,8 +104,14 @@ public class ContentActivity extends AppCompatActivity {
                     if(receivedMessage != null) {
 
                         switch (receivedMessage.getMessageType()) {
-                            case "content.published":
-                                loadContentDataFromApi(accessToken);
+                            case "device.info.update":
+                                deviceService.updateDeviceInfo().observe(this, deviceApiResponse -> {
+                                    //deviceNameTextView.setText(storageService.getData(Constants.DEVICE_NAME));
+                                    //navigateToContentMessageInfoActivity("", storageService.getData(Constants.DEVICE_NAME));
+                                });
+                                break;
+                            case "content.publish":
+                                loadContentDataFromApi();
                                 break;
                             case "app.restart":
                                 // loadContentDataFromApi(accessToken);
@@ -139,7 +125,7 @@ public class ContentActivity extends AppCompatActivity {
                             case "operator.info":
                                 makeSnackBarMessage(receivedMessage.getMessageData(), Color.RED);
                                 break;
-                            case "app.upgrade.force":
+                            case "operator.upgrade.force":
                                 // App should auto upgrade itself
                                 break;
                         }
@@ -163,7 +149,7 @@ public class ContentActivity extends AppCompatActivity {
         finish();
     }
 
-    private void loadContentDataFromApi(String accessToken) {
+    private void loadContentDataFromApi() {
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Constants.ENDPOINT_BASEURL)
@@ -172,7 +158,7 @@ public class ContentActivity extends AppCompatActivity {
                 .build();
 
         ContentDataApiRequest apiRequest = retrofit.create(ContentDataApiRequest.class);
-        Call<ContentDataApiResponse> call = apiRequest.getData("Bearer " + accessToken);
+        Call<ContentDataApiResponse> call = apiRequest.getData("Bearer " + storageService.getAccessToken());
 
         call.enqueue(new Callback<ContentDataApiResponse>() {
             @Override
@@ -215,6 +201,7 @@ public class ContentActivity extends AppCompatActivity {
                     else {
                         //userCodeTextView.setText("Status Error: ResponseData is null");
                     }
+                    establishSignalRConnection();
                 } else {
 
                     try {
@@ -224,8 +211,12 @@ public class ContentActivity extends AppCompatActivity {
 
                         int responseStatus = response.code();
                         switch (responseStatus){
+                            case 204:
+                                establishSignalRConnection();
+                                break;
                             case 404:
                                 displayNotFoundMessage(error);
+                                establishSignalRConnection();
                                 break;
                             case 401:
                                 refreshAccessToken();
@@ -291,11 +282,22 @@ public class ContentActivity extends AppCompatActivity {
         startIntentActivity(intent);
     }
 
+    private void navigateToContentMessageInfoActivity(String message, String deviceName) {
+        Intent intent = new Intent(this, ContentInfoMessageActivity.class);
+
+        // You can also pass data to the new activity using putExtra
+        intent .putExtra("message", message);
+        intent .putExtra("deviceName", deviceName);
+
+        // Start the new activity
+        startIntentActivity(intent);
+    }
+
     private void navigateToTextEditorActivity(ContentDataApiResponse responseData) {
         Intent intent = new Intent(this, TextEditorActivity.class);
 
         // You can also pass data to the new activity using putExtra
-        intent.putExtra("textEditorData", responseData.getTextEditorData());
+        intent .putExtra("textEditorData", responseData.getTextEditorData());
 
         // Start the new activity
         startIntentActivity(intent);
@@ -348,46 +350,17 @@ public class ContentActivity extends AppCompatActivity {
     }
 
     private void refreshAccessToken() {
-        String refreshToken = storageService.getRefreshToken();
-        if(refreshToken == null) {
-            navigateToCodeActivationScreen();
-            return;
-        }
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constants.ENDPOINT_BASEURL)
-                .client(okHttpClient)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        TokenApiRequest tokenApiRequest = retrofit.create(TokenApiRequest.class);
-        Call<TokenApiResponse> call = tokenApiRequest.refreshTokenRequest(
-                new TokenApiRequestBody("", "string", "", TOKEN_REFRESH_GRANT_TYPE), "Bearer " + refreshToken);
-
-        call.enqueue(new Callback<TokenApiResponse>() {
-            @Override
-            public void onResponse(Call<TokenApiResponse> call, Response<TokenApiResponse> response) {
-                if (response.isSuccessful()) {
-                    TokenApiResponse responseData = response.body();
-                    storageService.setAccessToken(responseData.getAccessToken());
-                    storageService.setRefreshToken(responseData.getRefreshToken());
-
-                    startRun();
-
-                } else {
-                    try {
-                        JSONObject jObjError = new JSONObject(response.errorBody().string());
-                        String error = jObjError.getString("error");
-                        Log.d("ContentActErrorTest", error);
-                    } catch (Exception e) {
-                        Log.d("CodeActivationJSON", e.getMessage());
-                    }
+        accessTokenService.refreshAccessToken().observe(this, deviceApiResponse -> {
+            if(deviceApiResponse != null)
+            {
+                if(ObjectExtensions.isNullOrEmpty(deviceApiResponse.getRefreshToken())
+                && ObjectExtensions.isNullOrEmpty(deviceApiResponse.getAccessToken()))
+                {
+                    navigateToCodeActivationScreen();
                 }
+                startRun();
             }
-
-            @Override
-            public void onFailure(Call<TokenApiResponse> call, Throwable t) {
-                // Handle API request failure
+            else {
                 navigateToErrorActivity("Content Refresh Network Error", "Technical error occurred when connecting to the server, try again later.");
             }
         });
@@ -432,11 +405,9 @@ public class ContentActivity extends AppCompatActivity {
         messageTextView.setText(displayMsg);
         if(showDeviceName) {
             String deviceName = storageService.getData(Constants.DEVICE_NAME);
-            if (!ObjectExtensions.isNullOrEmpty(deviceName)) {
-                deviceNameTextView.setText(deviceName);
-            }
+            navigateToContentMessageInfoActivity(displayMsg, deviceName);
         } else {
-            deviceNameTextView.setVisibility(View.INVISIBLE);
+            navigateToContentMessageInfoActivity(displayMsg, "...");
         }
     }
 }

@@ -20,13 +20,10 @@ import com.onscreensync.tvapp.services.DeviceService;
 import com.onscreensync.tvapp.services.LocalStorageService;
 import com.onscreensync.tvapp.utils.ObjectExtensions;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.messaging.FirebaseMessaging;
-
 public class MainActivity extends FragmentActivity {
 
     private static final int PERMISSION_REQUEST_CODE = 123;
+    private LocalStorageService storageService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +32,7 @@ public class MainActivity extends FragmentActivity {
         setContentView(R.layout.activity_main);
 
         requestBootCompletedPermission();
+        this.storageService = new LocalStorageService(this);
 
         Handler handler = new Handler();
         final Runnable r = () -> startRun();
@@ -48,7 +46,6 @@ public class MainActivity extends FragmentActivity {
     }
 
     private void startRun() {
-        LocalStorageService storageService = new LocalStorageService(this);
         // Retrieve access token
         String accessToken = storageService.getAccessToken();
         Intent intent;
@@ -56,9 +53,7 @@ public class MainActivity extends FragmentActivity {
         {
             intent = new Intent(this, CodeActivationActivity.class);
         } else {
-
-            DeviceService deviceService = new DeviceService(accessToken, this);
-            deviceService.updateDeviceInfo();
+            updateDeviceInfo();
             intent = new Intent(this, ContentActivity.class);
         }
         startIntent(intent);
@@ -67,24 +62,9 @@ public class MainActivity extends FragmentActivity {
         //setUpFirebase();
     }
 
-    private void setUpFirebase() {
-        FirebaseMessaging.getInstance().getToken()
-                .addOnCompleteListener(new OnCompleteListener<String>() {
-                    @Override
-                    public void onComplete(@NonNull Task<String> task) {
-                        if (!task.isSuccessful()) {
-                            Log.w(TAG, "Fetching FCM registration token failed", task.getException());
-                            return;
-                        }
-
-                        // Get new FCM registration token
-                        String token = task.getResult();
-
-                        // Log and toast
-                        Log.d("FCMToken", token);
-                        Toast.makeText(MainActivity.this, "Your token: " + token, Toast.LENGTH_SHORT).show();
-                    }
-                });
+    private void updateDeviceInfo() {
+        DeviceService deviceService = new DeviceService(this);
+        deviceService.updateDeviceInfo();
     }
 
     @Override

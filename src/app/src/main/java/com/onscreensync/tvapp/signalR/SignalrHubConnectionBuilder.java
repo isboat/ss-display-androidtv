@@ -1,15 +1,18 @@
 package com.onscreensync.tvapp.signalR;
 
 import android.content.Context;
+import android.os.Handler;
 import android.util.Log;
 
-import com.microsoft.signalr.Action;
+import androidx.lifecycle.LifecycleOwner;
+
 import com.microsoft.signalr.Action1;
 import com.microsoft.signalr.HubConnection;
 import com.microsoft.signalr.HubConnectionBuilder;
 import com.microsoft.signalr.HubConnectionState;
 import com.microsoft.signalr.TransportEnum;
 import com.onscreensync.tvapp.Constants;
+import com.onscreensync.tvapp.services.AccessTokenService;
 import com.onscreensync.tvapp.services.LocalStorageService;
 import com.onscreensync.tvapp.utils.ObjectExtensions;
 
@@ -28,14 +31,20 @@ public class SignalrHubConnectionBuilder {
     private HubConnection hubConnection;
     private OkHttpClient okHttpClient;
     private HttpLoggingInterceptor loggingInterceptor;
-    private String deviceId;
-    private String accessToken;
+    private Context context;
+    private LocalStorageService storageService;
+    private AccessTokenService accessTokenService;
+
+
     private Action1<String> onReceiveMessageAction;
     private Retrofit retrofit;
 
-    public SignalrHubConnectionBuilder(String accessToken, String deviceId, Action1<String> onReceiveMsgAction) {
-        this.deviceId = deviceId;
-        this.accessToken = accessToken;
+    private Handler handler = new Handler();
+
+    public SignalrHubConnectionBuilder(Context context, Action1<String> onReceiveMsgAction) {
+        this.context = context;
+        this.storageService = new LocalStorageService(context);
+        this.accessTokenService = new AccessTokenService(context);
 
         this.onReceiveMessageAction = onReceiveMsgAction;
 
@@ -57,10 +66,13 @@ public class SignalrHubConnectionBuilder {
     }
 
     public void initializeNegotiation() {
+        String deviceId = storageService.getData((Constants.DEVICE_ID));
 
-        SignalRServerApiRequest activationApiRequest = retrofit.create(SignalRServerApiRequest.class);
-        Call<NegotiateApiResponse> call = activationApiRequest.negotiate(deviceId, "Bearer " + accessToken);
+        Log.d(TAG, "initializeNegotiation called");
+        SignalRServerApiRequest signalRServerApiRequest = retrofit.create(SignalRServerApiRequest.class);
+        Call<NegotiateApiResponse> call = signalRServerApiRequest.negotiate(deviceId, "Bearer " + this.storageService.getAccessToken());
 
+        LifecycleOwner lifecycleOwner = (LifecycleOwner) this.context;
         call.enqueue(new Callback<NegotiateApiResponse>() {
             @Override
             public void onResponse(Call<NegotiateApiResponse> call, Response<NegotiateApiResponse> response) {
@@ -71,51 +83,109 @@ public class SignalrHubConnectionBuilder {
                     }
                     else {
                         //userCodeTextView.setText("Status Error: ResponseData is null");
+                        Log.d(TAG, "initializeNegotiation " + "Status Error: ResponseData is null");
                     }
                 } else {
                     // Handle unsuccessful API request
-                    //userCodeTextView.setText("Status Error: " + response.code());
+                    int responseCode = response.code();
+                    Log.d(TAG, "initializeNegotiation " + "Status Error: " + response.code());
+                    if (responseCode == 401) {
+                        accessTokenService.refreshAccessToken().observe(lifecycleOwner, deviceApiResponse -> {
+                            if(deviceApiResponse != null)
+                            {
+                                if(!ObjectExtensions.isNullOrEmpty(deviceApiResponse.getAccessToken()))
+                                {
+                                    initializeNegotiation();
+                                } else {
+                                    Log.d(TAG, "initializeNegotiation " + "device api response getAccessToken is null");
+                                }
+                            }
+                            else {
+                                Log.d(TAG, "initializeNegotiation " + "device api response is null");
+                            }
+                        });
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call<NegotiateApiResponse> call, Throwable t) {
                 // Handle API request failure
+                Log.d(TAG, "initializeNegotiation " + "Handle API request failure");
             }
         });
     }
 
     public void addToGroup() {
         if(this.hubConnection != null) {
+            Log.d(TAG, "addToGroup called");
+            String deviceId = storageService.getData((Constants.DEVICE_ID));
 
             String connectionId = this.hubConnection.getConnectionId();
             HubConnectionState connectionState = this.hubConnection.getConnectionState();
 
             if(connectionState == HubConnectionState.CONNECTED && !ObjectExtensions.isNullOrEmpty(connectionId)) {
 
+                Log.d(TAG, "addToGroup: connectionState" + connectionState);
                 SignalRServerApiRequest activationApiRequest = retrofit.create(SignalRServerApiRequest.class);
-                Call<AddToGroupApiResponse> call = activationApiRequest.addToGroup(deviceId, connectionId, "Bearer " + accessToken);
+                Call<AddToGroupApiResponse> call = activationApiRequest.addToGroup(deviceId, connectionId, "Bearer " + this.storageService.getAccessToken());
 
                 call.enqueue(new Callback<AddToGroupApiResponse>() {
                     @Override
                     public void onResponse(Call<AddToGroupApiResponse> call, Response<AddToGroupApiResponse> response) {
                         if (response.isSuccessful()) {
+                            Log.d(TAG, "addToGroup: response.isSuccessful");
 
                         } else {
                             // Handle unsuccessful API request
+                            Log.d(TAG, "addToGroup: unsuccessful API request");
                         }
                     }
 
                     @Override
                     public void onFailure(Call<AddToGroupApiResponse> call, Throwable t) {
                         // Handle API request failure
+                        Log.d(TAG, "addToGroup: Handle API request failure");
                     }
                 });
             }
+
+            Log.d(TAG, "addToGroup call completed");
         }
     }
+
+    private void manualKeepAlive()
+    {
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // Call your method here
+                if(hubConnection != null) {
+                    Log.d(TAG, "ManualKeepAlive inside if");
+                    HubConnectionState connectionState = hubConnection.getConnectionState();
+                    if(connectionState != HubConnectionState.CONNECTED && connectionState != HubConnectionState.CONNECTING) {
+                        initializeNegotiation();
+                    }
+                    else {
+                        hubConnection.send("ManualKeepAlive");
+                        Log.d(TAG, "ManualKeepAlive inside else hubconnection state is " + connectionState);
+                    }
+                }
+                else {
+                    Log.d(TAG, "ManualKeepAlive inside else hubconnection is null");
+                }
+
+                // Schedule the next execution
+                handler.postDelayed(this, 10000); // 1000 milliseconds (1 second)
+            }
+        }, 10000); // Initial delay of 1000 milliseconds (1 second)
+
+
+    }
+
     private void initializeHubConnection(String signalrEndpoint, String accessToken)
     {
+        Log.d(TAG, "initializeHubConnection called");
         HubConnection hubConnection = HubConnectionBuilder.create(signalrEndpoint)
                 .withAccessTokenProvider(Single.defer(() -> {
                     // Your logic here.
@@ -124,6 +194,8 @@ public class SignalrHubConnectionBuilder {
                 .withTransport(TransportEnum.WEBSOCKETS)
                 .build();
 
+        hubConnection.setServerTimeout(1000 * 60 * 10); // 10mins
+
         this.hubConnection = hubConnection;
 
         this.hubConnection.start()
@@ -131,6 +203,7 @@ public class SignalrHubConnectionBuilder {
                 .doOnComplete(() -> {
                     Log.d(TAG, "SignalR connection started");
                     addToGroup();
+                    manualKeepAlive();
                 })
                 //.doFinally(() -> Log.d(TAG, "SignalR connection starting"))
                 .subscribe();
@@ -138,9 +211,14 @@ public class SignalrHubConnectionBuilder {
         this.hubConnection.on("ReceiveChangeMessage", this.onReceiveMessageAction, String.class);
 
         this.hubConnection.onClosed((ex) -> {
+
             if (ex != null) {
                 ex.printStackTrace();
                 Log.d(TAG, "SignalR Closed with errors. " + ex);
+                if(ex.toString().contains("Connection reset")) {
+                    Log.d(TAG, "Re-negotiation triggered.");
+                    initializeNegotiation();
+                }
             }
         });
     }
