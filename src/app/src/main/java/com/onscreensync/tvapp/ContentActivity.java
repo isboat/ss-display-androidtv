@@ -1,10 +1,13 @@
 package com.onscreensync.tvapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LifecycleOwner;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -155,22 +158,39 @@ public class ContentActivity extends AppCompatActivity {
     }
 
     private void restartApp() {
+        this.signalrHubConnectionBuilder.removeConnectionFromGroup();
 
-        // Restart the app by launching the main activity
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
+        Context self = this;
 
-        // Finish the current activity
-        finish();
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                // Restart the app by launching the main activity
+                Intent intent = new Intent(self, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+
+                // Finish the current activity
+                finish();
+            }
+        }, 2000);
+
     }
 
     @Override
     public void onBackPressed() {
-        finishAffinity();
-        finish();
-        // Call System.exit(0) to terminate the entire process
-        System.exit(0);
+        signalrHubConnectionBuilder.removeConnectionFromGroup();
+
+        final Handler handler = new Handler();
+        handler.postDelayed(() -> {
+
+            finishAffinity();
+            finish();
+            // Call System.exit(0) to terminate the entire process
+            System.exit(0);
+        }, 2000);
     }
 
     private void loadContentDataFromApi() {

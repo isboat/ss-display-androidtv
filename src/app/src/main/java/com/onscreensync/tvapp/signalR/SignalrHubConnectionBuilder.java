@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.util.Log;
 
 import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.MutableLiveData;
 
 import com.microsoft.signalr.Action1;
 import com.microsoft.signalr.HubConnection;
@@ -12,6 +13,8 @@ import com.microsoft.signalr.HubConnectionBuilder;
 import com.microsoft.signalr.HubConnectionState;
 import com.microsoft.signalr.TransportEnum;
 import com.onscreensync.tvapp.Constants;
+import com.onscreensync.tvapp.apiresponses.DeviceApiResponse;
+import com.onscreensync.tvapp.apiresponses.TokenApiResponse;
 import com.onscreensync.tvapp.services.AccessTokenService;
 import com.onscreensync.tvapp.services.LocalStorageService;
 import com.onscreensync.tvapp.utils.ObjectExtensions;
@@ -169,19 +172,12 @@ public class SignalrHubConnectionBuilder {
         call.enqueue(new Callback<RemoveConnectionApiResponse>() {
             @Override
             public void onResponse(Call<RemoveConnectionApiResponse> call, Response<RemoveConnectionApiResponse> response) {
-                if (response.isSuccessful()) {
-                    Log.d(TAG, "removeConnectionFromGroup: response.isSuccessful");
 
-                } else {
-                    // Handle unsuccessful API request
-                    Log.d(TAG, "removeConnectionFromGroup: unsuccessful API request");
-                }
             }
 
             @Override
             public void onFailure(Call<RemoveConnectionApiResponse> call, Throwable t) {
-                // Handle API request failure
-                Log.d(TAG, "removeConnectionFromGroup: Handle API request failure");
+
             }
         });
     }
