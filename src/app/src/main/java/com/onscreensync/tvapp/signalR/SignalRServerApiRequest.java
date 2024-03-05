@@ -9,9 +9,17 @@ public interface SignalRServerApiRequest {
     @POST("signalr/negotiate")
     Call<NegotiateApiResponse> negotiate(@Query("deviceId") String deviceId, @Header("Authorization") String authHeader);
 
-    @POST("signalr/add-to-group")
+    @POST("signalr/add-connection")
     Call<AddToGroupApiResponse> addToGroup(
             @Query("deviceId") String deviceId,
+            @Query("deviceName") String deviceName,
+            @Query("connectionId") String connectionId,
+            @Header("Authorization") String authHeader);
+
+    @POST("signalr/remove-connection")
+    Call<RemoveConnectionApiResponse> removeConnection(
+            @Query("deviceId") String deviceId,
+            @Query("deviceName") String deviceName,
             @Query("connectionId") String connectionId,
             @Header("Authorization") String authHeader);
 }

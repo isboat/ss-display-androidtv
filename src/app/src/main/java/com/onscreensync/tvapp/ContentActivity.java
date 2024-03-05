@@ -6,7 +6,10 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.onscreensync.tvapp.apirequests.ContentDataApiRequest;
@@ -114,16 +117,16 @@ public class ContentActivity extends AppCompatActivity {
                                 loadContentDataFromApi();
                                 break;
                             case "app.restart":
-                                // loadContentDataFromApi(accessToken);
+                                restartApp();
                                 break;
                             case "app.terminate":
-                                // shutdown loadContentDataFromApi(accessToken);
+                                onBackPressed();
                                 break;
                             case "app.upgrade.info":
-                                makeSnackBarMessage(receivedMessage.getMessageData(), Color.BLACK);
+                                showToastMessage(receivedMessage.getMessageData(), Color.BLACK);
                                 break;
                             case "operator.info":
-                                makeSnackBarMessage(receivedMessage.getMessageData(), Color.RED);
+                                showToastMessage(receivedMessage.getMessageData(), Color.RED);
                                 break;
                             case "operator.upgrade.force":
                                 // App should auto upgrade itself
@@ -135,18 +138,39 @@ public class ContentActivity extends AppCompatActivity {
         }
     }
 
-    private void makeSnackBarMessage(String message, int color) {
-        Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), message, 10000)
-                .setBackgroundTint(Color.WHITE)
-                .setTextColor(color); // Set text color;
+    // Method to display a toast message
+    private void showToastMessage(String message, int color) {
+        View layout = getLayoutInflater().inflate(R.layout.custom_toast_layout, (ViewGroup) findViewById(R.id.custom_toast_container));
 
-        snackbar.show();
+        // Set message
+        TextView textViewToast = layout.findViewById(R.id.textViewToast);
+        textViewToast.setText(message);
+        textViewToast.setTextColor(color);
+
+        // Create and show toast
+        Toast toast = new Toast(getApplicationContext());
+        toast.setDuration(Toast.LENGTH_LONG);
+        toast.setView(layout);
+        toast.show();
+    }
+
+    private void restartApp() {
+
+        // Restart the app by launching the main activity
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+
+        // Finish the current activity
+        finish();
     }
 
     @Override
     public void onBackPressed() {
         finishAffinity();
         finish();
+        // Call System.exit(0) to terminate the entire process
+        System.exit(0);
     }
 
     private void loadContentDataFromApi() {
@@ -358,7 +382,9 @@ public class ContentActivity extends AppCompatActivity {
                 {
                     navigateToCodeActivationScreen();
                 }
-                startRun();
+                else {
+                    startRun();
+                }
             }
             else {
                 navigateToErrorActivity("Content Refresh Network Error", "Technical error occurred when connecting to the server, try again later.");

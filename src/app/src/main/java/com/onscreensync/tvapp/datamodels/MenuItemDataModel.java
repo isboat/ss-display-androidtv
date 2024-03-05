@@ -23,6 +23,12 @@ public class MenuItemDataModel implements Parcelable {
     @SerializedName("discountPrice")
     private String discountPrice;
 
+    @SerializedName("createdOn")
+    private String createdOn;
+
+    @SerializedName("updatedOn")
+    private String updatedOn;
+
     public String getName() {
         return name;
     }

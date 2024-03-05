@@ -37,4 +37,8 @@ public class TokenApiResponse {
     public String getRefreshToken() {
         return refreshToken;
     }
+
+    public void setScope(String scope) {
+        this.scope = scope;
+    }
 }

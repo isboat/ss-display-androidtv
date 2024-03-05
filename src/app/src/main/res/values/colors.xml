@@ -3,4 +3,5 @@
     <color name="grey">#FF656567</color>
     <color name="blue">#6274D5</color>
     <color name="black">#000000</color>
+    <color name="toast_background_color">#FFFFFF</color> <!-- Example background color -->
 </resources>

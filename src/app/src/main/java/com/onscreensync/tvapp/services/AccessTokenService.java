@@ -74,10 +74,24 @@ public class AccessTokenService {
                         JSONObject jObjError = new JSONObject(response.errorBody().string());
                         String error = jObjError.getString("error");
                         Log.d(TAG, error);
+
+                        int responseStatus = response.code();
+                        switch (responseStatus) {
+                            case 404:
+                                TokenApiResponse errorData = new TokenApiResponse();
+                                data.postValue(errorData);
+                                break;
+                            case 401:
+                                refreshAccessToken();
+                            default:
+                                data.postValue(null);
+                                break;
+                        }
+
                     } catch (Exception e) {
                         Log.d(TAG, e.getMessage());
+                        data.postValue(null);
                     }
-                    data.postValue(null);
                 }
             }
 

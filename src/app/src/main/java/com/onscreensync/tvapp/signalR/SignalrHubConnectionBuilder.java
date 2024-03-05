@@ -29,6 +29,7 @@ public class SignalrHubConnectionBuilder {
     private static final String TAG = "SignalrHubConnection";
 
     private HubConnection hubConnection;
+    private String hubConnectionId;
     private OkHttpClient okHttpClient;
     private HttpLoggingInterceptor loggingInterceptor;
     private Context context;
@@ -120,15 +121,17 @@ public class SignalrHubConnectionBuilder {
         if(this.hubConnection != null) {
             Log.d(TAG, "addToGroup called");
             String deviceId = storageService.getData((Constants.DEVICE_ID));
+            String deviceName = storageService.getData((Constants.DEVICE_NAME));
 
             String connectionId = this.hubConnection.getConnectionId();
+            this.hubConnectionId = connectionId;
             HubConnectionState connectionState = this.hubConnection.getConnectionState();
 
             if(connectionState == HubConnectionState.CONNECTED && !ObjectExtensions.isNullOrEmpty(connectionId)) {
 
                 Log.d(TAG, "addToGroup: connectionState" + connectionState);
                 SignalRServerApiRequest activationApiRequest = retrofit.create(SignalRServerApiRequest.class);
-                Call<AddToGroupApiResponse> call = activationApiRequest.addToGroup(deviceId, connectionId, "Bearer " + this.storageService.getAccessToken());
+                Call<AddToGroupApiResponse> call = activationApiRequest.addToGroup(deviceId, deviceName, connectionId, "Bearer " + this.storageService.getAccessToken());
 
                 call.enqueue(new Callback<AddToGroupApiResponse>() {
                     @Override
@@ -154,6 +157,35 @@ public class SignalrHubConnectionBuilder {
         }
     }
 
+    public void removeConnectionFromGroup() {
+
+        String deviceId = storageService.getData((Constants.DEVICE_ID));
+        String deviceName = storageService.getData((Constants.DEVICE_NAME));
+
+        String connectionId = this.hubConnectionId;
+        SignalRServerApiRequest activationApiRequest = retrofit.create(SignalRServerApiRequest.class);
+        Call<RemoveConnectionApiResponse> call = activationApiRequest.removeConnection(deviceId, deviceName, connectionId, "Bearer " + this.storageService.getAccessToken());
+
+        call.enqueue(new Callback<RemoveConnectionApiResponse>() {
+            @Override
+            public void onResponse(Call<RemoveConnectionApiResponse> call, Response<RemoveConnectionApiResponse> response) {
+                if (response.isSuccessful()) {
+                    Log.d(TAG, "removeConnectionFromGroup: response.isSuccessful");
+
+                } else {
+                    // Handle unsuccessful API request
+                    Log.d(TAG, "removeConnectionFromGroup: unsuccessful API request");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RemoveConnectionApiResponse> call, Throwable t) {
+                // Handle API request failure
+                Log.d(TAG, "removeConnectionFromGroup: Handle API request failure");
+            }
+        });
+    }
+
     private void manualKeepAlive()
     {
         handler.postDelayed(new Runnable() {
@@ -161,14 +193,12 @@ public class SignalrHubConnectionBuilder {
             public void run() {
                 // Call your method here
                 if(hubConnection != null) {
-                    Log.d(TAG, "ManualKeepAlive inside if");
                     HubConnectionState connectionState = hubConnection.getConnectionState();
                     if(connectionState != HubConnectionState.CONNECTED && connectionState != HubConnectionState.CONNECTING) {
                         initializeNegotiation();
                     }
                     else {
                         hubConnection.send("ManualKeepAlive");
-                        Log.d(TAG, "ManualKeepAlive inside else hubconnection state is " + connectionState);
                     }
                 }
                 else {
@@ -212,6 +242,8 @@ public class SignalrHubConnectionBuilder {
 
         this.hubConnection.onClosed((ex) -> {
 
+            removeConnectionFromGroup();
+
             if (ex != null) {
                 ex.printStackTrace();
                 Log.d(TAG, "SignalR Closed with errors. " + ex);
@@ -219,6 +251,10 @@ public class SignalrHubConnectionBuilder {
                     Log.d(TAG, "Re-negotiation triggered.");
                     initializeNegotiation();
                 }
+            }
+            else
+            {
+                Log.d(TAG, "SignalR connection on closed");
             }
         });
     }

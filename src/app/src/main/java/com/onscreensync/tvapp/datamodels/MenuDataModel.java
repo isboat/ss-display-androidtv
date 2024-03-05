@@ -15,6 +15,11 @@ public class MenuDataModel {
 
     @SerializedName("iconUrl")
     private String iconUrl;
+    @SerializedName("createdOn")
+    private String createdOn;
+
+    @SerializedName("updatedOn")
+    private String updatedOn;
     @SerializedName("menuItems")
     private MenuItemDataModel[] menuItems;
 
@@ -36,6 +41,14 @@ public class MenuDataModel {
 
     public MenuItemDataModel[] getMenuItems() {
         return menuItems;
+    }
+
+    public String getUpdatedOn() {
+        return updatedOn;
+    }
+
+    public String getCreatedOn() {
+        return createdOn;
     }
 }
 

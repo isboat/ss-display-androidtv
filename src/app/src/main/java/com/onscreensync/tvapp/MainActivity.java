@@ -57,9 +57,6 @@ public class MainActivity extends FragmentActivity {
             intent = new Intent(this, ContentActivity.class);
         }
         startIntent(intent);
-
-        //startWorkerRun();
-        //setUpFirebase();
     }
 
     private void updateDeviceInfo() {
