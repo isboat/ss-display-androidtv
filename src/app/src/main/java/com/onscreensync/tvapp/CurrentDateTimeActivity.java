@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.text.Html;
 import android.widget.TextView;
 
+import com.onscreensync.tvapp.signalR.SignalrHubConnectionBuilder;
 import com.onscreensync.tvapp.utils.ObjectExtensions;
 import com.onscreensync.tvapp.utils.UiHelper;
 
@@ -53,8 +54,16 @@ public class CurrentDateTimeActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        finishAffinity();
-        finish();
+        SignalrHubConnectionBuilder.getInstance().removeConnectionFromGroup();
+
+        final Handler handler = new Handler();
+        handler.postDelayed(() -> {
+
+            finishAffinity();
+            finish();
+            // Call System.exit(0) to terminate the entire process
+            System.exit(0);
+        }, 2000);
     }
 
     private void displayCurrentDateTime()

@@ -1,58 +1,67 @@
 package com.onscreensync.tvapp;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
-import android.widget.FrameLayout;
+import android.text.Html;
+import android.widget.ImageView;
+import android.widget.MediaController;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.VideoView;
 
 import com.onscreensync.tvapp.datamodels.MediaAssetDataModel;
 import com.onscreensync.tvapp.datamodels.PlaylistItemSerializedDataModel;
 import com.onscreensync.tvapp.datamodels.TextADInformationAsset;
-import com.onscreensync.tvapp.fragments.ImageMediaFragment;
-import com.onscreensync.tvapp.fragments.TextADInformationFragment;
-import com.onscreensync.tvapp.fragments.VideoMediaFragment;
+import com.onscreensync.tvapp.signalR.SignalrHubConnectionBuilder;
 import com.onscreensync.tvapp.utils.JsonUtils;
 import com.onscreensync.tvapp.utils.ObjectExtensions;
+import com.onscreensync.tvapp.utils.UiHelper;
+import com.squareup.picasso.Picasso;
 
 public class PlaylistActivity extends AppCompatActivity {
 
     private PlaylistItemSerializedDataModel[] itemsSerialized;
 
     private int itemDuration; //"00:00:20"
-    TextView messageTextView;
-    FrameLayout frameLayout;
+    TextView adsTextView;
+    ImageView imageAssetImageView;
+    VideoView videoAssetVideoView;
     private int currentIndex = 0;
-    private boolean stopIteration;
+
+    private MediaController mediaController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_media_playlist);
 
-        messageTextView = findViewById(R.id.media_playlist_activity_message_textview);
-        frameLayout = findViewById(R.id.media_playlist_activity_framelayout);
+        adsTextView = findViewById(R.id.media_playlist_activity_ads_textview);
+        imageAssetImageView = findViewById(R.id.media_playlist_image_asset);
+
+        videoAssetVideoView = findViewById(R.id.media_playlist_video_asset_view);
+        setupMediaPlayer();
 
         Intent intent = getIntent();
         itemDuration = parseItemDuration(intent.getStringExtra("itemDuration"));
         itemsSerialized = ObjectExtensions.getParcelableArrayExtra(getIntent(), "itemsSerialized", PlaylistItemSerializedDataModel.class);
 
-        messageTextView.setVisibility(TextView.VISIBLE);
+        adsTextView.setVisibility(TextView.VISIBLE);
+
         if(itemsSerialized != null) {
             if(itemsSerialized.length == 0) {
-                messageTextView.setText("No item in the playlist, please add items and republish");
+                Toast.makeText(getApplicationContext(), "No item in the playlist, please add items and republish.", Toast.LENGTH_LONG).show();
             } else {
-                messageTextView.setVisibility(TextView.INVISIBLE);
-                iterateItemsWithDelay(itemsSerialized);
+                adsTextView.setVisibility(TextView.INVISIBLE);
+                currentIndex = -1;
+                playNext();
             }
         }
         else {
-            messageTextView.setText("No item in the playlist, please add items and republish");
+            Toast.makeText(getApplicationContext(), "No item in the playlist, please add items and republish.", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -72,73 +81,127 @@ public class PlaylistActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        finishAffinity();
-        finish();
+        SignalrHubConnectionBuilder.getInstance().removeConnectionFromGroup();
+
+        final Handler handler = new Handler();
+        handler.postDelayed(() -> {
+
+            finishAffinity();
+            finish();
+            // Call System.exit(0) to terminate the entire process
+            System.exit(0);
+        }, 2000);
     }
 
-    private void iterateItemsWithDelay(PlaylistItemSerializedDataModel[] itemsSerialized) {
-        final Handler handler = new Handler();
-        final int delayMillis = 1000; // 5 seconds
+    private void playNext() {
+        currentIndex++;
+        if (currentIndex >= itemsSerialized.length) {
+            currentIndex = 0; // Start from the beginning if reached the end
+        }
 
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if(!stopIteration) {
-                    // Your iteration logic here
-                    if (currentIndex < itemsSerialized.length) {
-                        PlaylistItemSerializedDataModel currentItem = itemsSerialized[currentIndex];
-                        // Do something with the current item
-                        String objType = currentItem.getKey(); // key contains ObjectType
-                        switch (objType) {
-                            case "AssetItemModel":
-                                runAssetItemModel(currentItem);
-                                break;
-                            case "TextAssetItemModel":
-                                runTextAssetItemModel(currentItem);
-                                break;
-                            default:
-                                messageTextView.setText("No such Item type");
-                                break;
-                        }
+        PlaylistItemSerializedDataModel currentItem = itemsSerialized[currentIndex];
 
-                        // Move to the next index
-                        currentIndex++;
+        adsTextView.setVisibility(TextView.INVISIBLE);
+        imageAssetImageView.setVisibility(ImageView.INVISIBLE);
+        videoAssetVideoView.setVisibility(VideoView.INVISIBLE);
 
-                        // Continue iterating after the delay
-                        handler.postDelayed(this, itemDuration);
-                    } else {
-                        // Reset or start again
-                        currentIndex = 0;
-                        handler.postDelayed(this, delayMillis);
-                    }
+        // Do something with the current item
+        String objType = currentItem.getKey(); // key contains ObjectType
+        switch (objType) {
+            case "AssetItemModel":
+                runAssetItemModel(currentItem);
+                break;
+            case "TextAssetItemModel":
+                runTextAssetItemModel(currentItem);
+                break;
+            default:
+                Toast.makeText(getApplicationContext(), "No such Item type.", Toast.LENGTH_LONG).show();
+                playNext();
+                break;
+        }
+    }
+
+    private void playAdTextMedia(TextADInformationAsset currentItem) {
+        if(adsTextView != null)
+        {
+            String description = currentItem.getDescription();
+            String backgroundColor = currentItem.getBackgroundColor();
+            String textColor = currentItem.getTextColor();
+            String textFont = currentItem.getTextFont();
+
+            if(ObjectExtensions.isNullOrEmpty(description)) description = "Error: No text found in the data, republish.";
+            adsTextView.setText(Html.fromHtml(description));
+            UiHelper.setTextViewFont(adsTextView, textFont);
+            UiHelper.setTextViewColor(adsTextView, textColor);
+
+            adsTextView.setBackgroundColor(UiHelper.parseColor(backgroundColor));
+        }
+    }
+
+    private void playImageMedia(MediaAssetDataModel currentItem) {
+        if(imageAssetImageView != null)
+        {
+            String assetUrl = currentItem.getAssetUrl();
+            Picasso.get().load(assetUrl).into(imageAssetImageView);
+        }
+    }
+
+    private void setupMediaPlayer() {
+
+        if(videoAssetVideoView != null) {
+            // Set up a MediaController to enable play, pause, etc. controls
+            mediaController = new MediaController(this);
+            mediaController.setAnchorView(videoAssetVideoView);
+            videoAssetVideoView.setMediaController(mediaController);
+
+            //Video Loop
+            videoAssetVideoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                public void onCompletion(MediaPlayer mp) {
+                    playNext();
                 }
-            }
-        }, delayMillis);
+            });
+
+            videoAssetVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.setLooping(false);
+                }
+            });
+        }
+    }
+    private void playVideoMedia(String videoAssetUrl) {
+        mediaController.resetPivot();
+        // Set the video URL using setVideoPath or setVideoURI
+        videoAssetVideoView.setVideoPath(videoAssetUrl);
+
+        // Start playing the video
+        videoAssetVideoView.start();
+    }
+
+    private void waitBeforeNext() {
+        final Handler handler = new Handler();
+        final int delayMillis = itemDuration;
+
+        handler.postDelayed(() -> playNext(), delayMillis);
     }
 
     private void runTextAssetItemModel(PlaylistItemSerializedDataModel itemSerialized) {
         TextADInformationAsset currentItem = JsonUtils.fromJson(itemSerialized.getValue(), TextADInformationAsset.class);
         if(currentItem == null)
         {
-            messageTextView.setText("ItemSerialized is null.");
-            return;
+            Toast.makeText(getApplicationContext(), "ItemSerialized is null.", Toast.LENGTH_LONG).show();
+            playNext();
         }
-
-        Bundle bundle = new Bundle();
-        bundle.putString("description", currentItem.getDescription());
-        bundle.putString("backgroundColor", currentItem.getBackgroundColor());
-        bundle.putString("name", currentItem.getName());
-        bundle.putString("textColor", currentItem.getTextColor());
-        bundle.putString("textFont", currentItem.getTextFont());
-        Fragment fragment = new TextADInformationFragment();
-        loadFragment(fragment, bundle);
+        adsTextView.setVisibility(TextView.VISIBLE);
+        playAdTextMedia(currentItem);
+        waitBeforeNext();
     }
 
     private void runAssetItemModel(PlaylistItemSerializedDataModel itemSerialized) {
         MediaAssetDataModel currentItem = JsonUtils.fromJson(itemSerialized.getValue(), MediaAssetDataModel.class);
         if(currentItem == null)
         {
-            messageTextView.setText("ItemSerialized is null.");
+            Toast.makeText(getApplicationContext(), "ItemSerialized is null.", Toast.LENGTH_LONG).show();
             return;
         }
         // Do something with the current item
@@ -146,42 +209,17 @@ public class PlaylistActivity extends AppCompatActivity {
 
         switch (assetType) {
             case 1: // Image
-                loadImageMediaFragment(currentItem.getAssetUrl());
+                imageAssetImageView.setVisibility(ImageView.VISIBLE);
+                playImageMedia(currentItem);
+                waitBeforeNext();
                 break;
             case 2: // Video
-                loadVideoMediaFragment(currentItem.getAssetUrl());
+                videoAssetVideoView.setVisibility(VideoView.VISIBLE);
+                playVideoMedia(currentItem.getAssetUrl());
                 break;
             default:
-                messageTextView.setText("No such media type");
+                Toast.makeText(getApplicationContext(), "No such media type.", Toast.LENGTH_LONG).show();
                 break;
-        }
-    }
-
-    private void loadVideoMediaFragment(String assetUrl) {
-        Bundle bundle = new Bundle();
-        bundle.putString("assetUrl", assetUrl);
-        Fragment fragment = new VideoMediaFragment();
-        loadFragment(fragment, bundle);
-    }
-
-    private void loadImageMediaFragment(String assetUrl) {
-        Bundle bundle = new Bundle();
-        bundle.putString("assetUrl", assetUrl);
-        Fragment fragment = new ImageMediaFragment();
-        loadFragment(fragment, bundle);
-    }
-
-    private void loadFragment(Fragment fragment, Bundle bundle) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        if(!isFinishing() && !fragmentManager.isDestroyed()) {
-            fragment.setArguments(bundle);
-
-            FragmentTransaction transaction = fragmentManager.beginTransaction();
-            transaction.replace(R.id.media_playlist_activity_framelayout, fragment);
-            transaction.addToBackStack(null);
-            transaction.commit();
-        } else {
-            stopIteration = true;
         }
     }
 }

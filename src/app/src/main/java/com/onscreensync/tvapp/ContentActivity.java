@@ -276,7 +276,8 @@ public class ContentActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<ContentDataApiResponse> call, Throwable t) {
                 // Handle API request failure
-                navigateToErrorActivity("Content Data Network Error", "Technical error occurred when connecting to the server, try again later.");
+
+                navigateToErrorActivity("Content Data Network Error", t.getMessage());
             }
         });
     }
@@ -437,6 +438,7 @@ public class ContentActivity extends AppCompatActivity {
             case "no_such_device":
                 displayMsg = "No Such Device Found";
                 showDeviceName = false;
+                navigateToCodeActivationScreen();
                 break;
             case "no_screen_id":
                 displayMsg = "No Screen Attached";

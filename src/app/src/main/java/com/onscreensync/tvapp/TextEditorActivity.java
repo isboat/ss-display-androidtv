@@ -4,9 +4,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Html;
 import android.widget.TextView;
 
+import com.onscreensync.tvapp.signalR.SignalrHubConnectionBuilder;
 import com.onscreensync.tvapp.utils.ObjectExtensions;
 
 public class TextEditorActivity extends AppCompatActivity {
@@ -29,7 +31,15 @@ public class TextEditorActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        finishAffinity();
-        finish();
+        SignalrHubConnectionBuilder.getInstance().removeConnectionFromGroup();
+
+        final Handler handler = new Handler();
+        handler.postDelayed(() -> {
+
+            finishAffinity();
+            finish();
+            // Call System.exit(0) to terminate the entire process
+            System.exit(0);
+        }, 2000);
     }
 }

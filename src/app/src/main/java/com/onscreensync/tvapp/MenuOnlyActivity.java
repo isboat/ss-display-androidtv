@@ -6,11 +6,13 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 
 import com.onscreensync.tvapp.datamodels.MenuItemDataModel;
 import com.onscreensync.tvapp.datamodels.MenuMetadata;
 import com.onscreensync.tvapp.fragments.BasicMenuFragment;
 import com.onscreensync.tvapp.fragments.PremiumMenuFragment;
+import com.onscreensync.tvapp.signalR.SignalrHubConnectionBuilder;
 import com.onscreensync.tvapp.utils.ObjectExtensions;
 
 public class MenuOnlyActivity extends AppCompatActivity {
@@ -48,8 +50,16 @@ public class MenuOnlyActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        finishAffinity();
-        finish();
+        SignalrHubConnectionBuilder.getInstance().removeConnectionFromGroup();
+
+        final Handler handler = new Handler();
+        handler.postDelayed(() -> {
+
+            finishAffinity();
+            finish();
+            // Call System.exit(0) to terminate the entire process
+            System.exit(0);
+        }, 2000);
     }
 
     private void loadMenuFragment(Fragment fragment) {

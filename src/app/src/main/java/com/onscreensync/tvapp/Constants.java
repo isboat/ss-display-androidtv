@@ -5,6 +5,8 @@ public class Constants {
 
     public static final String DEVICE_NAME = "deviceName";
 
+    public static final String CONNECTION_ID = "connectionId";
+
     public static final String DEVICE_ID = "deviceId";
 
     public static final String TENANT_ID = "tenantId";

@@ -43,6 +43,7 @@ public class MainActivity extends FragmentActivity {
     public void onBackPressed() {
         finishAffinity();
         finish();
+        System.exit(0);
     }
 
     private void startRun() {

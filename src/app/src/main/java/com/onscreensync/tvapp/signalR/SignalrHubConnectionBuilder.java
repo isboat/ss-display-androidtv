@@ -32,6 +32,7 @@ public class SignalrHubConnectionBuilder {
     private static final String TAG = "SignalrHubConnection";
 
     private HubConnection hubConnection;
+    private static SignalrHubConnectionBuilder selfInstance;
     private String hubConnectionId;
     private OkHttpClient okHttpClient;
     private HttpLoggingInterceptor loggingInterceptor;
@@ -67,6 +68,11 @@ public class SignalrHubConnectionBuilder {
                 .build();
 
         this.initializeNegotiation();
+        selfInstance = this;
+    }
+    // Public static method to get the singleton instance
+    public static synchronized SignalrHubConnectionBuilder getInstance() {
+        return selfInstance;
     }
 
     public void initializeNegotiation() {
@@ -123,11 +129,13 @@ public class SignalrHubConnectionBuilder {
     public void addToGroup() {
         if(this.hubConnection != null) {
             Log.d(TAG, "addToGroup called");
-            String deviceId = storageService.getData((Constants.DEVICE_ID));
-            String deviceName = storageService.getData((Constants.DEVICE_NAME));
+            String deviceId = storageService.getData(Constants.DEVICE_ID);
+            String deviceName = storageService.getData(Constants.DEVICE_NAME);
 
             String connectionId = this.hubConnection.getConnectionId();
             this.hubConnectionId = connectionId;
+            storageService.setData(Constants.CONNECTION_ID, connectionId);
+
             HubConnectionState connectionState = this.hubConnection.getConnectionState();
 
             if(connectionState == HubConnectionState.CONNECTED && !ObjectExtensions.isNullOrEmpty(connectionId)) {
@@ -162,10 +170,13 @@ public class SignalrHubConnectionBuilder {
 
     public void removeConnectionFromGroup() {
 
-        String deviceId = storageService.getData((Constants.DEVICE_ID));
-        String deviceName = storageService.getData((Constants.DEVICE_NAME));
+        String deviceId = storageService.getData(Constants.DEVICE_ID);
+        String deviceName = storageService.getData(Constants.DEVICE_NAME);
 
         String connectionId = this.hubConnectionId;
+        if(ObjectExtensions.isNullOrEmpty(connectionId)) {
+            connectionId = storageService.getData(Constants.CONNECTION_ID);
+        }
         SignalRServerApiRequest activationApiRequest = retrofit.create(SignalRServerApiRequest.class);
         Call<RemoveConnectionApiResponse> call = activationApiRequest.removeConnection(deviceId, deviceName, connectionId, "Bearer " + this.storageService.getAccessToken());
 
