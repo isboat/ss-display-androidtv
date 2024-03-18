@@ -6,45 +6,25 @@
     android:background="@color/black"
     tools:context=".fragments.BasicMenuFragment">
 
-    <ImageView
-        android:id="@+id/basic_menu_fragment_menu_icon_image_view"
+    <TextView
+        android:id="@+id/basic_menu_fragment_title"
         android:layout_width="match_parent"
-        android:scaleType="fitXY"
-        android:layout_height="120dp" />
+        android:layout_height="wrap_content"
+        android:text="TILE"
+        android:gravity="center"
+        android:textSize="50dp"
+        android:layout_marginTop="5dp"
+        />
 
     <TableLayout
         android:id="@+id/basic_menu_fragment_table_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/basic_menu_fragment_menu_icon_image_view"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@id/basic_menu_fragment_title"
         android:layout_marginBottom="0dp"
         android:stretchColumns="*">
 
-        <TableRow android:background="#0079D6" android:padding="5dp">
-
-            <TextView
-                android:layout_gravity="center"
-                android:padding="14dp"
-                android:text="" />
-
-            <TextView
-                android:layout_gravity="center"
-                android:padding="16dp"
-                android:text="NAME"
-                android:textSize="25dp" />
-
-            <TextView
-                android:layout_gravity="center"
-                android:padding="16dp"
-                android:textSize="30dp"
-                android:text="PRICE" />
-
-            <TextView
-                android:layout_gravity="center"
-                android:padding="16dp"
-                android:textSize="30dp"
-                android:text="INFORMATION" />
+        <TableRow android:background="#0079D6">
         </TableRow>
     </TableLayout>
 

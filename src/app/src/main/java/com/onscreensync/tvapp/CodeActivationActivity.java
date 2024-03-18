@@ -1,21 +1,18 @@
 package com.onscreensync.tvapp;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.LifecycleOwner;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.onscreensync.tvapp.apirequests.CodeActivationApiRequest;
 import com.onscreensync.tvapp.apirequests.CodeActivationRequestBody;
 import com.onscreensync.tvapp.apirequests.TokenApiRequest;
 import com.onscreensync.tvapp.apirequests.TokenApiRequestBody;
 import com.onscreensync.tvapp.apiresponses.CodeActivationApiResponse;
-import com.onscreensync.tvapp.apiresponses.DeviceApiResponse;
 import com.onscreensync.tvapp.apiresponses.TokenApiResponse;
 import com.onscreensync.tvapp.services.DeviceService;
 import com.onscreensync.tvapp.services.LocalStorageService;
@@ -114,7 +111,7 @@ public class CodeActivationActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<CodeActivationApiResponse> call, Throwable t) {
                 // Handle API request failure
-                navigateToErrorActivity("CodeActivation Network Error", "technical error occurred when connecting to the server, try again later.");
+                navigateToErrorActivity("Code Activation Network Error", "MakeApiRequest: technical error occurred when connecting to the server ." + t.getMessage());
             }
         });
     }
@@ -197,7 +194,7 @@ public class CodeActivationActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<TokenApiResponse> call, Throwable t) {
                 // Handle API request failure
-                navigateToErrorActivity("Network Error", "technical error occurred when connecting to the server, try again later.");
+                navigateToErrorActivity("Code Activation Network Error", "StatusApiRequest: technical error occurred when connecting to the server . " + t.getMessage());
             }
         });
     }

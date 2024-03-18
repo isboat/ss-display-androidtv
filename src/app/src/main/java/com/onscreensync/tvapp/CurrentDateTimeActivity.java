@@ -20,8 +20,6 @@ public class CurrentDateTimeActivity extends AppCompatActivity {
 
     private TextView dateTimeTextView;
     private String dateTimeFormat;
-    private String textColor;
-    private String textFont;
     private Handler handler;
 
     @Override
@@ -33,11 +31,16 @@ public class CurrentDateTimeActivity extends AppCompatActivity {
         // Retrieve the Intent that started this activity
         Intent intent = getIntent();
         dateTimeFormat = intent.getStringExtra("dateTimeFormat");
-        textColor = intent.getStringExtra("textColor");
-        textFont = intent.getStringExtra("textFont");
+        String textColor = intent.getStringExtra("textColor");
+        String textFont = intent.getStringExtra("textFont");
 
-        UiHelper.setTextViewFont(dateTimeTextView, textFont);
-        UiHelper.setTextViewColor(dateTimeTextView, textColor);
+        if(!ObjectExtensions.isNullOrEmpty(textFont)) {
+            UiHelper.setTextViewFont(dateTimeTextView, textFont);
+        }
+
+        if(!ObjectExtensions.isNullOrEmpty(textColor)) {
+            UiHelper.setTextViewColor(dateTimeTextView, textColor);
+        }
 
         if(ObjectExtensions.isNullOrEmpty(dateTimeFormat)) dateTimeFormat = "EEE, d MMM yyyy, HH:mm:ss";
 
@@ -49,7 +52,6 @@ public class CurrentDateTimeActivity extends AppCompatActivity {
             }
         };
         handler.postDelayed(r, 1000);
-
     }
 
     @Override

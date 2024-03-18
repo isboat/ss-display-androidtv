@@ -10,11 +10,10 @@ import android.widget.TextView;
 
 import com.onscreensync.tvapp.signalR.SignalrHubConnectionBuilder;
 import com.onscreensync.tvapp.utils.ObjectExtensions;
+import com.onscreensync.tvapp.utils.UiHelper;
 
 public class TextEditorActivity extends AppCompatActivity {
 
-    private String textEditorData;
-    private TextView textEditorTextView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,11 +21,26 @@ public class TextEditorActivity extends AppCompatActivity {
 
         // Retrieve the Intent that started this activity
         Intent intent = getIntent();
-        textEditorData = intent.getStringExtra("textEditorData");
+        String textEditorData = intent.getStringExtra("textEditorData");
+        String textColor = intent.getStringExtra("textColor");
+        String textFont = intent.getStringExtra("textFont");
+        String backgroundColor = intent.getStringExtra("backgroundColor");
 
         if(ObjectExtensions.isNullOrEmpty(textEditorData)) textEditorData = "Error: No text found in the data, republish.";
-        textEditorTextView = findViewById(R.id.text_editor_activity_text_view);
+        TextView textEditorTextView = findViewById(R.id.text_editor_activity_text_view);
         textEditorTextView.setText(Html.fromHtml(textEditorData));
+
+        if(!ObjectExtensions.isNullOrEmpty(textFont)) {
+            UiHelper.setTextViewFont(textEditorTextView, textFont);
+        }
+
+        if(!ObjectExtensions.isNullOrEmpty(textColor)) {
+            UiHelper.setTextViewColor(textEditorTextView, textColor);
+        }
+
+        if(!ObjectExtensions.isNullOrEmpty(backgroundColor)) {
+            textEditorTextView.setBackgroundColor(UiHelper.parseColor(backgroundColor));
+        }
     }
 
     @Override

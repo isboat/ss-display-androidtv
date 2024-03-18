@@ -12,7 +12,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -33,7 +32,7 @@ public class BasicMenuFragment extends Fragment {
     private MenuItemDataModel[] menuItems;
 
     TableLayout tableLayout;
-    ImageView menuTopIconImageView;
+    TextView menuTitleTextView;
 
     private boolean setTransparentBackground;
     private String backgroundOpacity;
@@ -75,8 +74,8 @@ public class BasicMenuFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_basic_menu, container, false);
 
-        menuTopIconImageView = view.findViewById(R.id.basic_menu_fragment_menu_icon_image_view);
         tableLayout = view.findViewById(R.id.basic_menu_fragment_table_layout);
+        menuTitleTextView = view.findViewById(R.id.basic_menu_fragment_title);
 
         if(menuItems != null) {
             if(menuItems.length == 0) {
@@ -98,24 +97,33 @@ public class BasicMenuFragment extends Fragment {
         return view;
     }
 
+    public static String getTitleFontSize(String textFont) {
+        if(ObjectExtensions.isNullOrEmpty(textFont)) return "50";
+
+        int toInt = ObjectExtensions.convertToInt(textFont);
+        if(toInt == 0) return "50";
+
+        int font = toInt + 20;
+        return "" + font;
+    }
+
     private void createMenu() {
-        boolean displayMenuIcon = !ObjectExtensions.isNullOrEmpty(menuMetadata.getIconUrl());
-        if(displayMenuIcon)
+        boolean displayMenuTitle = !ObjectExtensions.isNullOrEmpty(menuMetadata.getTitle());
+        if(displayMenuTitle)
         {
-            Picasso.get().load(menuMetadata.getIconUrl()).into(menuTopIconImageView);
+            menuTitleTextView.setText(menuMetadata.getTitle());
+            //UiHelper.setTextViewFont(menuTitleTextView, getTitleFontSize(textFont));
+            UiHelper.setTextViewColor(menuTitleTextView, textColor);
         } else {
-            menuTopIconImageView.setVisibility(View.GONE);
+            menuTitleTextView.setVisibility(TextView.INVISIBLE);
         }
 
         for (MenuItemDataModel obj : menuItems) {
             TableRow tableRow = new TableRow(this.getContext());
-            tableRow.setPadding(5,5,5,5);
-
-            // Create TextViews for each field
-            ImageView imageView = createItemIcon(obj.getIconUrl());
-
+            tableRow.setPadding(100,5,5,5);
 
             TextView nameTextView = createTextView(obj.getName());
+            nameTextView.setPadding(20, 0,0,0);
             UiHelper.setTextViewFont(nameTextView, textFont);
             UiHelper.setTextViewColor(nameTextView, textColor);
 
@@ -128,29 +136,16 @@ public class BasicMenuFragment extends Fragment {
             UiHelper.setTextViewColor(descTextView, textColor);
 
             // Add TextViews to the TableRow
-            tableRow.addView(imageView);
             tableRow.addView(nameTextView);
             tableRow.addView(priceTextView);
             tableRow.addView(descTextView);
 
             // Add a bottom border to the TableRow
-            tableRow.setBackgroundResource(R.drawable.border);
+            //tableRow.setBackgroundResource(R.drawable.border);
 
             // Add TableRow to the TableLayout
             tableLayout.addView(tableRow);
         }
-    }
-
-    private ImageView createItemIcon(String iconUrl) {
-        ImageView imageView = new ImageView(this.getContext());
-
-        if(!ObjectExtensions.isNullOrEmpty(iconUrl)) Picasso.get().load(iconUrl).into(imageView);
-        TableRow.LayoutParams params = new TableRow.LayoutParams(150, 150);
-        params.gravity = Gravity.CENTER;
-        imageView.setLayoutParams(params);
-        imageView.setPadding(16,16,16,16);
-
-        return imageView;
     }
 
     private TextView createPriceTextView(String price, String discountPrice) {
@@ -173,7 +168,7 @@ public class BasicMenuFragment extends Fragment {
     private TextView createTextView(String text) {
         TextView textView = new TextView(this.getContext());
         textView.setText(text);
-        textView.setPadding(16, 16, 16, 16);
+        //textView.setPadding(16, 16, 16, 16);
 
         TableLayout.LayoutParams params = new TableLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -181,6 +176,7 @@ public class BasicMenuFragment extends Fragment {
 
         // Set layout gravity for the TextView (e.g., center horizontally)
         params.gravity = Gravity.CENTER;
+
         //textView.setLayoutParams(params);
         return textView;
     }

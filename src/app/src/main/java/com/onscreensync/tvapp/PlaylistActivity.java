@@ -155,18 +155,9 @@ public class PlaylistActivity extends AppCompatActivity {
             videoAssetVideoView.setMediaController(mediaController);
 
             //Video Loop
-            videoAssetVideoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                public void onCompletion(MediaPlayer mp) {
-                    playNext();
-                }
-            });
+            videoAssetVideoView.setOnCompletionListener(mp -> playNext());
 
-            videoAssetVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.setLooping(false);
-                }
-            });
+            videoAssetVideoView.setOnPreparedListener(mp -> mp.setLooping(false));
         }
     }
     private void playVideoMedia(String videoAssetUrl) {

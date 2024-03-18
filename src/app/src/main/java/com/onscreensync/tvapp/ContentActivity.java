@@ -1,7 +1,6 @@
 package com.onscreensync.tvapp;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.LifecycleOwner;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.material.snackbar.Snackbar;
 import com.onscreensync.tvapp.apirequests.ContentDataApiRequest;
 import com.onscreensync.tvapp.apiresponses.ContentDataApiResponse;
 import com.onscreensync.tvapp.datamodels.LayoutDataModel;
@@ -163,18 +161,15 @@ public class ContentActivity extends AppCompatActivity {
         Context self = this;
 
         final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
+        handler.postDelayed(() -> {
 
-                // Restart the app by launching the main activity
-                Intent intent = new Intent(self, MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
+            // Restart the app by launching the main activity
+            Intent intent = new Intent(self, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
 
-                // Finish the current activity
-                finish();
-            }
+            // Finish the current activity
+            finish();
         }, 2000);
 
     }
@@ -241,9 +236,6 @@ public class ContentActivity extends AppCompatActivity {
                                     navigateToErrorActivity("No Layout Key", "Layout Key is not set, update screen and republish");
                             }
                         }
-                    }
-                    else {
-                        //userCodeTextView.setText("Status Error: ResponseData is null");
                     }
                     establishSignalRConnection();
                 } else {
@@ -342,7 +334,8 @@ public class ContentActivity extends AppCompatActivity {
         Intent intent = new Intent(this, TextEditorActivity.class);
 
         // You can also pass data to the new activity using putExtra
-        intent .putExtra("textEditorData", responseData.getTextEditorData());
+        intent.putExtra("textEditorData", responseData.getTextEditorData());
+        addLayoutPropertiesToIntentExtra(responseData.getLayout(), intent);
 
         // Start the new activity
         startIntentActivity(intent);
@@ -367,8 +360,7 @@ public class ContentActivity extends AppCompatActivity {
         if(layout == null) return;
         LayoutTemplatePropertyDataModel[] templateProperties = layout.getTemplateProperties();
         if(templateProperties != null && templateProperties.length > 0) {
-            for (int i = 0; i < templateProperties.length; i++) {
-                LayoutTemplatePropertyDataModel property = templateProperties[i];
+            for (LayoutTemplatePropertyDataModel property : templateProperties) {
                 intent.putExtra(property.getKey(), property.getValue());
             }
         }

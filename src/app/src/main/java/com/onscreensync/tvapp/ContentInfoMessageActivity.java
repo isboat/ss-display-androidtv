@@ -1,20 +1,15 @@
 package com.onscreensync.tvapp;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.onscreensync.tvapp.signalR.SignalrHubConnectionBuilder;
-import com.onscreensync.tvapp.utils.ObjectExtensions;
 
 public class ContentInfoMessageActivity extends AppCompatActivity {
-    private TextView messageTextView;
-    private TextView deviceNameTextView;
-    private String message;
-    private String deviceName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,13 +18,13 @@ public class ContentInfoMessageActivity extends AppCompatActivity {
 
         // Retrieve the Intent that started this activity
         Intent intent = getIntent();
-        message = intent.getStringExtra("message");
-        deviceName = intent.getStringExtra("deviceName");
+        String message = intent.getStringExtra("message");
+        String deviceName = intent.getStringExtra("deviceName");
 
-        messageTextView = findViewById(R.id.activity_content_info_message_textview);
+        TextView messageTextView = findViewById(R.id.activity_content_info_message_textview);
         messageTextView.setText(message);
 
-        deviceNameTextView = findViewById(R.id.activity_content_info_subtext_textview);
+        TextView deviceNameTextView = findViewById(R.id.activity_content_info_subtext_textview);
         deviceNameTextView.setText(deviceName);
     }
 

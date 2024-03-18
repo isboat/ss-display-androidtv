@@ -5,7 +5,6 @@ import android.os.Handler;
 import android.util.Log;
 
 import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.MutableLiveData;
 
 import com.microsoft.signalr.Action1;
 import com.microsoft.signalr.HubConnection;
@@ -13,8 +12,6 @@ import com.microsoft.signalr.HubConnectionBuilder;
 import com.microsoft.signalr.HubConnectionState;
 import com.microsoft.signalr.TransportEnum;
 import com.onscreensync.tvapp.Constants;
-import com.onscreensync.tvapp.apiresponses.DeviceApiResponse;
-import com.onscreensync.tvapp.apiresponses.TokenApiResponse;
 import com.onscreensync.tvapp.services.AccessTokenService;
 import com.onscreensync.tvapp.services.LocalStorageService;
 import com.onscreensync.tvapp.utils.ObjectExtensions;
@@ -34,17 +31,17 @@ public class SignalrHubConnectionBuilder {
     private HubConnection hubConnection;
     private static SignalrHubConnectionBuilder selfInstance;
     private String hubConnectionId;
-    private OkHttpClient okHttpClient;
-    private HttpLoggingInterceptor loggingInterceptor;
-    private Context context;
-    private LocalStorageService storageService;
-    private AccessTokenService accessTokenService;
+    private final OkHttpClient okHttpClient;
+    private final HttpLoggingInterceptor loggingInterceptor;
+    private final Context context;
+    private final LocalStorageService storageService;
+    private final AccessTokenService accessTokenService;
 
 
     private Action1<String> onReceiveMessageAction;
-    private Retrofit retrofit;
+    private final Retrofit retrofit;
 
-    private Handler handler = new Handler();
+    private final Handler handler = new Handler();
 
     public SignalrHubConnectionBuilder(Context context, Action1<String> onReceiveMsgAction) {
         this.context = context;

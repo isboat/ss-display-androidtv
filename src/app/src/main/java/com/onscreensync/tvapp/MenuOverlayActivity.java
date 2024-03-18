@@ -24,7 +24,6 @@ public class MenuOverlayActivity extends AppCompatActivity {
     RelativeLayout relativeLayout;
     private MenuItemDataModel[] menuItems;
     private MenuMetadata menuMetadata;
-    private MediaAssetDataModel mediaAsset;
     private String textFont;
     private String textColor;
     private String backgroundOpacity;
@@ -45,7 +44,7 @@ public class MenuOverlayActivity extends AppCompatActivity {
         menuItems = ObjectExtensions.getParcelableArrayExtra(getIntent(), "menuItems", MenuItemDataModel.class);
         loadBasicMenuFragment();
 
-        mediaAsset = intent.getParcelableExtra("mediaAsset");
+        MediaAssetDataModel mediaAsset = intent.getParcelableExtra("mediaAsset");
 
         if(mediaAsset != null) {
             int mediaType = mediaAsset.getType();

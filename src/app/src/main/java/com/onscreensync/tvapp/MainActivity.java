@@ -1,6 +1,5 @@
 package com.onscreensync.tvapp;
 
-import static android.content.ContentValues.TAG;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -13,8 +12,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.Manifest;
 import android.os.Handler;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.onscreensync.tvapp.services.DeviceService;
 import com.onscreensync.tvapp.services.LocalStorageService;
