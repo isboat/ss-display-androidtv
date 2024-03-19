@@ -14,6 +14,7 @@ import com.onscreensync.tvapp.fragments.BasicMenuFragment;
 import com.onscreensync.tvapp.fragments.PremiumMenuFragment;
 import com.onscreensync.tvapp.signalR.SignalrHubConnectionBuilder;
 import com.onscreensync.tvapp.utils.ObjectExtensions;
+import com.onscreensync.tvapp.utils.UiHelper;
 
 public class MenuOnlyActivity extends AppCompatActivity {
 
@@ -22,6 +23,7 @@ public class MenuOnlyActivity extends AppCompatActivity {
     private MenuMetadata menuMetadata;
     private String textFont;
     private String textColor;
+    private String backgroundColor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +35,10 @@ public class MenuOnlyActivity extends AppCompatActivity {
         menuMetadata = intent.getParcelableExtra("menuMetadata");
         textColor = intent.getStringExtra("textColor");
         textFont = intent.getStringExtra("textFont");
+        backgroundColor = intent.getStringExtra("backgroundColor");
+        if(!ObjectExtensions.isNullOrEmpty(backgroundColor)) {
+            getWindow().getDecorView().setBackgroundColor(UiHelper.parseColor(backgroundColor));
+        }
         menuItems = ObjectExtensions.getParcelableArrayExtra(getIntent(), "menuItems", MenuItemDataModel.class);
 
         String subType = menuMetadata.getSubType();
@@ -70,6 +76,7 @@ public class MenuOnlyActivity extends AppCompatActivity {
         bundle.putParcelableArray("menuItems", menuItems);
         bundle.putString("textColor", textColor);
         bundle.putString("textFont", textFont);
+        bundle.putString("backgroundColor", backgroundColor);
         bundle.putBoolean("setTransparentBackground", true);
         loadFragment(fragment, bundle, R.id.menu_only_activity_menu_relativeLayout);
     }

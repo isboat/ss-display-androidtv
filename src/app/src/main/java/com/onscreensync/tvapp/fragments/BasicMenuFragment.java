@@ -29,6 +29,7 @@ public class BasicMenuFragment extends Fragment {
     private MenuMetadata menuMetadata;
     private String textFont;
     private String textColor;
+    private String backgroundColor;
     private MenuItemDataModel[] menuItems;
 
     TableLayout tableLayout;
@@ -57,6 +58,7 @@ public class BasicMenuFragment extends Fragment {
         if (bundle != null) {
             textFont = bundle.getString("textFont");
             textColor = bundle.getString("textColor");
+            backgroundColor = bundle.getString("backgroundColor");
             setTransparentBackground = bundle.getBoolean("setTransparentBackground", false);
             backgroundOpacity = bundle.getString("backgroundOpacity");
 
@@ -97,22 +99,11 @@ public class BasicMenuFragment extends Fragment {
         return view;
     }
 
-    public static String getTitleFontSize(String textFont) {
-        if(ObjectExtensions.isNullOrEmpty(textFont)) return "50";
-
-        int toInt = ObjectExtensions.convertToInt(textFont);
-        if(toInt == 0) return "50";
-
-        int font = toInt + 20;
-        return "" + font;
-    }
-
     private void createMenu() {
         boolean displayMenuTitle = !ObjectExtensions.isNullOrEmpty(menuMetadata.getTitle());
         if(displayMenuTitle)
         {
             menuTitleTextView.setText(menuMetadata.getTitle());
-            //UiHelper.setTextViewFont(menuTitleTextView, getTitleFontSize(textFont));
             UiHelper.setTextViewColor(menuTitleTextView, textColor);
         } else {
             menuTitleTextView.setVisibility(TextView.INVISIBLE);
