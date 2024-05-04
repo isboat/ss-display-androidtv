@@ -73,13 +73,14 @@ public class CodeActivationActivity extends AppCompatActivity {
     private void makeApiRequest() {
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constants.ENDPOINT_BASEURL)
+                .baseUrl(this.storageService.getData(DisplayApiConfigConstants.BASEURL))
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
+        String url = this.storageService.getData(DisplayApiConfigConstants.DEVICE_CODE_URL);
         CodeActivationApiRequest activationApiRequest = retrofit.create(CodeActivationApiRequest.class);
-        Call<CodeActivationApiResponse> call = activationApiRequest.deviceCode(new CodeActivationRequestBody("clientid", "user_code"));
+        Call<CodeActivationApiResponse> call = activationApiRequest.deviceCode(url, new CodeActivationRequestBody("clientid", "user_code"));
 
         call.enqueue(new Callback<CodeActivationApiResponse>() {
             @Override
@@ -122,7 +123,7 @@ public class CodeActivationActivity extends AppCompatActivity {
         retryCount++;
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constants.ENDPOINT_BASEURL)
+                .baseUrl(this.storageService.getData(DisplayApiConfigConstants.BASEURL))
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();

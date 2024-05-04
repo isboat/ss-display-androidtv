@@ -202,7 +202,9 @@ public class SignalrHubConnectionBuilder {
                         initializeNegotiation();
                     }
                     else {
-                        hubConnection.send("ManualKeepAlive");
+                        if(connectionState == HubConnectionState.CONNECTED) {
+                            hubConnection.send("ManualKeepAlive");
+                        }
                     }
                 }
                 else {
