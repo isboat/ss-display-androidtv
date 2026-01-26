@@ -12,13 +12,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.Manifest;
 import android.os.Handler;
-import android.util.Log;
 import android.widget.Toast;
 
-import com.onscreensync.tvapp.apirequests.CodeActivationApiRequest;
-import com.onscreensync.tvapp.apirequests.CodeActivationRequestBody;
 import com.onscreensync.tvapp.apirequests.ConfigApiRequest;
-import com.onscreensync.tvapp.apiresponses.CodeActivationApiResponse;
 import com.onscreensync.tvapp.apiresponses.ConfigApiResponse;
 import com.onscreensync.tvapp.apiresponses.configs.DisplayApiConfig;
 import com.onscreensync.tvapp.services.DeviceService;

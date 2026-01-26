@@ -12,6 +12,7 @@ import com.microsoft.signalr.HubConnectionBuilder;
 import com.microsoft.signalr.HubConnectionState;
 import com.microsoft.signalr.TransportEnum;
 import com.onscreensync.tvapp.Constants;
+import com.onscreensync.tvapp.DisplayApiConfigConstants;
 import com.onscreensync.tvapp.services.AccessTokenService;
 import com.onscreensync.tvapp.services.LocalStorageService;
 import com.onscreensync.tvapp.utils.ObjectExtensions;
@@ -59,7 +60,7 @@ public class SignalrHubConnectionBuilder {
                 .build();
 
         retrofit = new Retrofit.Builder()
-                .baseUrl(Constants.ENDPOINT_BASEURL)
+                .baseUrl(this.storageService.getData(DisplayApiConfigConstants.BASEURL))
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
@@ -76,8 +77,9 @@ public class SignalrHubConnectionBuilder {
         String deviceId = storageService.getData((Constants.DEVICE_ID));
 
         Log.d(TAG, "initializeNegotiation called");
+        String url = this.storageService.getData(DisplayApiConfigConstants.SIGNALR_NEGOTIATION_URL);
         SignalRServerApiRequest signalRServerApiRequest = retrofit.create(SignalRServerApiRequest.class);
-        Call<NegotiateApiResponse> call = signalRServerApiRequest.negotiate(deviceId, "Bearer " + this.storageService.getAccessToken());
+        Call<NegotiateApiResponse> call = signalRServerApiRequest.negotiate(url, deviceId, "Bearer " + this.storageService.getAccessToken());
 
         LifecycleOwner lifecycleOwner = (LifecycleOwner) this.context;
         call.enqueue(new Callback<NegotiateApiResponse>() {
@@ -138,8 +140,9 @@ public class SignalrHubConnectionBuilder {
             if(connectionState == HubConnectionState.CONNECTED && !ObjectExtensions.isNullOrEmpty(connectionId)) {
 
                 Log.d(TAG, "addToGroup: connectionState" + connectionState);
+                String url = this.storageService.getData(DisplayApiConfigConstants.SIGNALR_ADD_CONNECTION_URL);
                 SignalRServerApiRequest activationApiRequest = retrofit.create(SignalRServerApiRequest.class);
-                Call<AddToGroupApiResponse> call = activationApiRequest.addToGroup(deviceId, deviceName, connectionId, "Bearer " + this.storageService.getAccessToken());
+                Call<AddToGroupApiResponse> call = activationApiRequest.addToGroup(url, deviceId, deviceName, connectionId, "Bearer " + this.storageService.getAccessToken());
 
                 call.enqueue(new Callback<AddToGroupApiResponse>() {
                     @Override
@@ -174,8 +177,9 @@ public class SignalrHubConnectionBuilder {
         if(ObjectExtensions.isNullOrEmpty(connectionId)) {
             connectionId = storageService.getData(Constants.CONNECTION_ID);
         }
+        String url = this.storageService.getData(DisplayApiConfigConstants.SIGNALR_REMOVE_CONNECTION_URL);
         SignalRServerApiRequest activationApiRequest = retrofit.create(SignalRServerApiRequest.class);
-        Call<RemoveConnectionApiResponse> call = activationApiRequest.removeConnection(deviceId, deviceName, connectionId, "Bearer " + this.storageService.getAccessToken());
+        Call<RemoveConnectionApiResponse> call = activationApiRequest.removeConnection(url, deviceId, deviceName, connectionId, "Bearer " + this.storageService.getAccessToken());
 
         call.enqueue(new Callback<RemoveConnectionApiResponse>() {
             @Override

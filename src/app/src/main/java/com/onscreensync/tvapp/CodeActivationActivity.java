@@ -128,8 +128,9 @@ public class CodeActivationActivity extends AppCompatActivity {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
+        String url = this.storageService.getData(DisplayApiConfigConstants.DEVICE_TOKEN_REQUEST_URL);
         TokenApiRequest tokenApiRequest = retrofit.create(TokenApiRequest.class);
-        Call<TokenApiResponse> call = tokenApiRequest.tokenRequest(
+        Call<TokenApiResponse> call = tokenApiRequest.tokenRequest(url,
                 new TokenApiRequestBody(requestData.getClientId(), "string", requestData.getDeviceCode(), TOKEN_GRANT_TYPE));
 
         call.enqueue(new Callback<TokenApiResponse>() {

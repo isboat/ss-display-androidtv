@@ -7,6 +7,7 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.MutableLiveData;
 
 import com.onscreensync.tvapp.Constants;
+import com.onscreensync.tvapp.DisplayApiConfigConstants;
 import com.onscreensync.tvapp.apirequests.DeviceApiRequest;
 import com.onscreensync.tvapp.apiresponses.DeviceApiResponse;
 import com.onscreensync.tvapp.utils.ObjectExtensions;
@@ -59,13 +60,14 @@ public class DeviceService {
         LifecycleOwner lifecycleOwner = (LifecycleOwner) this.context;
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constants.ENDPOINT_BASEURL)
+                .baseUrl(this.storageService.getData(DisplayApiConfigConstants.BASEURL))
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
+        String url = this.storageService.getData(DisplayApiConfigConstants.DEVICE_INFO_URL);
         DeviceApiRequest deviceApiRequest = retrofit.create(DeviceApiRequest.class);
-        Call<DeviceApiResponse> call = deviceApiRequest.getName("Bearer " + accessToken);
+        Call<DeviceApiResponse> call = deviceApiRequest.getName(url, "Bearer " + accessToken);
 
         call.enqueue(new Callback<DeviceApiResponse>() {
             @Override

@@ -10,10 +10,10 @@ android {
     defaultConfig {
         applicationId = "com.onscreensync.tvapp"
         minSdk = 21
-        targetSdk = 33
-        versionCode = 2
+        targetSdk = 34
+        versionCode = 3
         versionName = "2.0"
-
+    
     }
 
     buildTypes {

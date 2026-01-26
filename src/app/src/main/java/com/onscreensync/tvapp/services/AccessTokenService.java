@@ -6,6 +6,7 @@ import android.util.Log;
 import androidx.lifecycle.MutableLiveData;
 
 import com.onscreensync.tvapp.Constants;
+import com.onscreensync.tvapp.DisplayApiConfigConstants;
 import com.onscreensync.tvapp.apirequests.DeviceApiRequest;
 import com.onscreensync.tvapp.apirequests.TokenApiRequest;
 import com.onscreensync.tvapp.apirequests.TokenApiRequestBody;
@@ -50,13 +51,13 @@ public class AccessTokenService {
         }
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constants.ENDPOINT_BASEURL)
+                .baseUrl(this.storageService.getData(DisplayApiConfigConstants.BASEURL))
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-
+        String url = this.storageService.getData(DisplayApiConfigConstants.DEVICE_REFRESH_TOKEN_REQUEST_URL);
         TokenApiRequest tokenApiRequest = retrofit.create(TokenApiRequest.class);
-        Call<TokenApiResponse> call = tokenApiRequest.refreshTokenRequest(
+        Call<TokenApiResponse> call = tokenApiRequest.refreshTokenRequest(url,
                 new TokenApiRequestBody("", "string", "", Constants.TOKEN_REFRESH_GRANT_TYPE), "Bearer " + refreshToken);
 
         call.enqueue(new Callback<TokenApiResponse>() {

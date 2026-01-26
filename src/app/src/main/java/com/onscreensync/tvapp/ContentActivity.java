@@ -191,13 +191,14 @@ public class ContentActivity extends AppCompatActivity {
     private void loadContentDataFromApi() {
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constants.ENDPOINT_BASEURL)
+                .baseUrl(this.storageService.getData(DisplayApiConfigConstants.BASEURL))
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
+        String url = this.storageService.getData(DisplayApiConfigConstants.CONTENT_DATA_URL);
         ContentDataApiRequest apiRequest = retrofit.create(ContentDataApiRequest.class);
-        Call<ContentDataApiResponse> call = apiRequest.getData("Bearer " + storageService.getAccessToken());
+        Call<ContentDataApiResponse> call = apiRequest.getData(url, "Bearer " + storageService.getAccessToken());
 
         call.enqueue(new Callback<ContentDataApiResponse>() {
             @Override
