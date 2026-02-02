@@ -1,6 +1,6 @@
 <resources>
 
-    <style name="Theme.ScreenServiceTVApp" parent="@style/Theme.Leanback" />
+    <style name="Theme.ScreenServiceTVApp" parent="Theme.AppCompat.NoActionBar" />
     <style name="splashScreenTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="android:windowBackground">@drawable/onscreensynlogo</item>
         <item name="android:statusBarColor">@color/grey</item>
