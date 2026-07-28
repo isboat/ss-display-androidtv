@@ -649,3 +649,296 @@ Use current official documentation throughout development because LG changes sup
 - [MDN: HTMLMediaElement](https://developer.mozilla.org/docs/Web/API/HTMLMediaElement)
 
 Validate each URL, command, metadata field, service URI, permission, API, codec, and packaging rule against the selected consumer or commercial SDK and minimum webOS version before coding. This is a comprehensive architecture and delivery blueprint; access to a feature on desktop, simulator, another webOS product, or an undocumented Luna service is not proof that LG permits or supports it on the target TVs.
+
+## 19. Standalone implementation contract
+
+This section makes the blueprint implementable **without access to the Android repository**. Earlier references to “current,” “existing,” or “Android” behavior mean the contracts reproduced below. An LG webOS team should be able to define its models, mock server, application states, and acceptance fixtures entirely from this section. Where the backend behavior is ambiguous, the ambiguity is explicitly identified rather than delegated to inspection of another codebase.
+
+### 19.1 Fixed bootstrap location and configuration model
+
+The only fixed production URL is:
+
+```text
+GET https://www.onscreensync.com/config.json
+```
+
+Expected JSON shape:
+
+```json
+{
+  "display-api": {
+    "base-endpoint": "https://display-api.example/",
+    "device-code-url": "/device/code",
+    "device-info-url": "/device/info",
+    "device-token-request-url": "/device/token",
+    "device-refresh-token-request-url": "/device/token/refresh",
+    "content-data-url": "/display/content",
+    "signalr-negotiation-url": "/signalr/negotiate",
+    "signalr-add-connection-url": "/signalr/add",
+    "signalr-remove-connection-url": "/signalr/remove",
+    "messages": {
+      "app-title": "Screen Service"
+    }
+  }
+}
+```
+
+Endpoint values are nullable in the source contract but are operationally required for the corresponding feature. They can be absolute URLs or encoded route values understood by the deployed API. The new implementation must resolve a relative value against `base-endpoint`, preserve an absolute HTTPS value, reject invalid/downgrade URLs, and never let stored `base-endpoint` rewrite the canonical bootstrap request. Store token and refresh-token routes under separate keys.
+
+### 19.2 Activation and token wire models
+
+Device-code request:
+
+```http
+POST <device-code-url>
+Content-Type: application/json
+
+{"clientId":"clientid","grantType":"user_code"}
+```
+
+Device-code response:
+
+```json
+{
+  "deviceCode": "opaque-device-code",
+  "userCode": "ABCD-EFGH",
+  "verificationUrl": "https://example.com/activate",
+  "expiresIn": 900,
+  "interval": 5,
+  "deviceName": "Lobby TV",
+  "clientId": "returned-client-id"
+}
+```
+
+Activation token polling request:
+
+```http
+POST <device-token-request-url>
+Content-Type: application/json
+
+{
+  "clientId": "<clientId from device-code response>",
+  "clientSecret": "string",
+  "deviceCode": "<deviceCode from device-code response>",
+  "grantType": "urn:ietf:params:oauth:grant-type:access_token"
+}
+```
+
+Poll sequentially every `interval` seconds. HTTP `428` means authorization pending. Stop on success, non-428 failure, cancellation, 100 attempts, or `expiresIn`, whichever happens first. Supporting OAuth-style `slow_down` is a recommended compatible enhancement, not a presently proven response.
+
+Token response used by both initial authorization and refresh:
+
+```json
+{
+  "accessToken": "access-token",
+  "expiresIn": 3600,
+  "scope": "display",
+  "tokenType": "Bearer",
+  "refreshToken": "refresh-token"
+}
+```
+
+Refresh request contract:
+
+```http
+POST <device-refresh-token-request-url>
+Authorization: Bearer <refreshToken>
+Content-Type: application/json
+
+{
+  "clientId": "",
+  "clientSecret": "string",
+  "deviceCode": "",
+  "grantType": "refresh_token"
+}
+```
+
+All other protected REST requests use `Authorization: Bearer <accessToken>`. Retry an original request only once after refresh.
+
+### 19.3 Device and content wire models
+
+Device response:
+
+```json
+{
+  "deviceName": "Lobby TV",
+  "tenantId": "tenant-123",
+  "id": "device-456"
+}
+```
+
+Complete content envelope, shown with every supported field:
+
+```json
+{
+  "id": "display-1",
+  "tenantId": "tenant-123",
+  "displayName": "Lobby Display",
+  "layout": {
+    "templateKey": "MediaOnly",
+    "subType": "",
+    "templateProperties": [
+      {"key": "textColor", "value": "#FFFFFF", "label": "Text color"}
+    ]
+  },
+  "menu": null,
+  "mediaAsset": {
+    "type": 1,
+    "assetUrl": "https://media.example/image.jpg",
+    "description": "Campaign image",
+    "name": "Campaign"
+  },
+  "textEditorData": null,
+  "externalMediaSource": null,
+  "checksum": "opaque-content-checksum",
+  "playlistData": null
+}
+```
+
+Type definitions:
+
+```ts
+type TemplateKey =
+  | "MenuOverlay" | "MenuOnly" | "MediaOnly"
+  | "Text" | "CurrentDateTime" | "MediaPlaylist";
+
+interface TemplateProperty { key: string | null; value: string | null; label: string | null; }
+interface Layout { templateKey: TemplateKey | string | null; subType: string | null; templateProperties: TemplateProperty[] | null; }
+interface MediaAsset { type: number; assetUrl: string | null; description: string | null; name: string | null; }
+interface MenuItem {
+  name: string | null; description: string | null; iconUrl: string | null;
+  price: string | null; discountPrice: string | null;
+  createdOn: string | null; updatedOn: string | null;
+}
+interface Menu {
+  name: string | null; description: string | null; title: string | null;
+  currency: string | null; iconUrl: string | null;
+  createdOn: string | null; updatedOn: string | null; menuItems: MenuItem[] | null;
+}
+interface PlaylistItemSerialized { key: string | null; value: string | null; }
+interface PlaylistData { itemDuration: string | null; items: unknown[] | null; itemsSerialized: PlaylistItemSerialized[] | null; }
+interface ContentData {
+  id: string | null; tenantId: string | null; displayName: string | null;
+  layout: Layout | null; menu: Menu | null; mediaAsset: MediaAsset | null;
+  textEditorData: string | null; externalMediaSource: string | null;
+  checksum: string | null; playlistData: PlaylistData | null;
+}
+```
+
+`mediaAsset.type` is `1` for image and `2` for video. Other values are unsupported. `externalMediaSource`, when non-empty in `MediaOnly`, takes precedence over `mediaAsset`.
+
+### 19.4 Layout input matrix
+
+| `templateKey` | Required/used content | `subType` | Recognized properties |
+| --- | --- | --- | --- |
+| `MediaOnly` | `externalMediaSource` or `mediaAsset` | Not used | None currently required. |
+| `MenuOnly` | `menu.menuItems`; menu metadata | `Premium`, `Deluxe`, or `Basic`; unknown defaults to Basic | `textColor`, `textFont`, `backgroundColor`. |
+| `MenuOverlay` | Menu plus image/video `mediaAsset` | Menu metadata carries it, but renderer is Basic | `textColor`, `textFont`, `backgroundOpacity`. |
+| `Text` | `textEditorData` HTML | Not used | `textColor`, `textFont`, `backgroundColor`. |
+| `CurrentDateTime` | No content asset | Date/time format; empty default is `EEE, d MMM yyyy HH:mm:ss` | `textColor`, `textFont`. |
+| `MediaPlaylist` | `playlistData.itemsSerialized` and `itemDuration` | Not used | Per-text-item styling is embedded in serialized JSON. |
+
+Missing layout or unknown `templateKey` must show: title `No Layout Key`, message `Layout Key is not set, update screen and republish`. Empty text falls back to `Error: No text found in the data, republish.` An empty playlist shows `No item in the playlist, please add items and republish.` These strings may be localized, but their states must remain distinct.
+
+### 19.5 Menu rendering contract
+
+Display the menu title when non-empty. For each item show name, description, and price. Prefix prices with `menu.currency` without inserting an extra separator. When `discountPrice` is non-empty, display `<currency><price> <currency><discountPrice>` and strike through only the first price. Premium additionally displays `menu.iconUrl` and each `item.iconUrl`; Basic/Deluxe do not require icons. Null arrays render the content-status state instead of throwing.
+
+Fonts and colors are backend-provided strings but must pass the platform implementation's allow-list. The legacy opacity representation is not formally specified; accept a documented numeric range at the new boundary, clamp it, and add backend contract tests rather than reproducing platform-specific alpha arithmetic.
+
+### 19.6 Playlist serialized values
+
+Only `itemsSerialized` drives playback; the parallel `items` field is not needed.
+
+Image/video entry:
+
+```json
+{
+  "key": "AssetItemModel",
+  "value": "{\"type\":1,\"assetUrl\":\"https://media.example/item.jpg\",\"description\":\"\",\"name\":\"Item\"}"
+}
+```
+
+Text entry:
+
+```json
+{
+  "key": "TextAssetItemModel",
+  "value": "{\"name\":\"Notice\",\"description\":\"<b>Welcome</b>\",\"backgroundColor\":\"#000000\",\"textColor\":\"#FFFFFF\",\"textFont\":\"sans-serif\",\"playlistType\":0}"
+}
+```
+
+`itemDuration` is `HH:mm:ss`; missing/malformed input defaults to `00:00:10`. Images and text advance on that timer. Video ignores the shared timer and advances on completion. Items loop circularly. Skip invalid/unknown items with a full-cycle guard.
+
+### 19.7 SignalR REST and message contract
+
+All three management operations are authenticated POSTs with query parameters and no required request body:
+
+```text
+POST <signalr-negotiation-url>?deviceId=<url-encoded device id>
+  -> {"url":"https://hub.example/client/?...","accessToken":"hub-token"}
+
+POST <signalr-add-connection-url>?deviceId=<...>&deviceName=<...>&connectionId=<...>
+  -> successful empty object/body is sufficient
+
+POST <signalr-remove-connection-url>?deviceId=<...>&deviceName=<...>&connectionId=<...>
+  -> successful empty object/body is sufficient
+```
+
+The hub sends a single string argument through target method `ReceiveChangeMessage`. Parse that string as:
+
+```ts
+interface SignalRReceivedMessage {
+  deviceId: string | null;
+  tenantId: string | null;
+  messageType: string | null;
+  messageData: string | null;
+  messageStatus: string | null;
+}
+```
+
+Supported `messageType` values and behavior are fully specified in section 6.5. The client invokes hub method `ManualKeepAlive` with no arguments every ten seconds while connected. Server timeout target is ten minutes; reconnect begins after five seconds in the baseline behavior. New implementations should add jitter and prevent duplicate reconnect loops.
+
+### 19.8 Required local state and deterministic startup pseudocode
+
+Persist these independent keys (names are implementation choices): access token, refresh token, endpoint config, device name, device ID, tenant ID, last connection ID, active/last checksum, configuration schema/timestamp, and optional last-known-good content.
+
+```ts
+async function startPlayer(): Promise<void> {
+  showLocalSplash();
+  const config = await bootstrapWithValidatedFallback();
+  if (!storage.accessToken) return showActivation(config);
+  try {
+    const device = await api.getDevice(config);
+    storage.saveDevice(device);
+    await Promise.allSettled([
+      signalR.connect(config, device),
+      content.loadValidateAndRender(config)
+    ]);
+  } catch (error) {
+    if (isUnrecoverableAuthentication(error)) {
+      await signalR.disconnect();
+      storage.clearTokens();
+      return showActivation(config);
+    }
+    showLastKnownContentOrStatus(error);
+  }
+}
+```
+
+### 19.9 Backend questions that must be resolved, not guessed
+
+The models above are sufficient to build against mocks, but production integration must obtain definitive answers for:
+
+- whether configured route values are relative, absolute, or mixed in each environment;
+- exact CORS origin emitted by a packaged webOS `.ipk` application;
+- formal non-success JSON envelope and mapping for `no_such_device`, `no_screen_id`, and `no_screen_data_found`;
+- whether the negotiated URL is direct WebSocket and therefore valid with `skipNegotiation`;
+- refresh-token rotation and whether a missing replacement refresh token retains or invalidates the old one;
+- allowed media origins, MIME types, byte ranges, URL expiry, codecs, maximum payload/asset sizes, and offline rights;
+- `backgroundOpacity` units/range and supported font/date format values;
+- whether `deviceId`/`tenantId` in a SignalR envelope must exactly match locally stored identity;
+- CORS, CSP domain allow-list, TLS minimums, reconnect rate limits, and stale-connection TTL;
+- public-store versus enterprise deployment, auto-launch, telemetry/privacy, and upgrade policy.
+
+Develop using contract fixtures for the documented happy/error cases while these environment decisions are finalized. None of these questions requires Android source access; they require backend and LG webOS deployment owners.
