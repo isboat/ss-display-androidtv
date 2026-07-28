@@ -1,4 +1,4 @@
-# Samsung Tizen TV replication plan
+# Samsung Tizen TV replication blueprint
 
 ## 1. Objective
 
