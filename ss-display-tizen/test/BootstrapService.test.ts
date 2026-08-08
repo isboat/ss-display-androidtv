@@ -18,4 +18,9 @@ describe('BootstrapService', () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => ({ 'display-api': { 'base-endpoint': 'https://display.test', ...routes, 'device-code-url': 'http://unsafe.test' } }) }));
     await expect(new BootstrapService().load()).rejects.toThrow('Invalid device-code-url');
   });
+
+  it.each(['', '   '])('rejects an empty endpoint route (%j)', async route => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => ({ 'display-api': { 'base-endpoint': 'https://display.test', ...routes, 'device-code-url': route } }) }));
+    await expect(new BootstrapService().load()).rejects.toThrow('Invalid device-code-url');
+  });
 });

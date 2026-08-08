@@ -17,9 +17,9 @@ export class BootstrapService {
     return Object.fromEntries(Object.entries(FIELD_MAP).map(([property, field]) => [property, this.httpsUrl(source[field], field, baseUrl)])) as unknown as EndpointConfig;
   }
   private httpsUrl(value: unknown, name: string, base?: string): string {
-    if (typeof value !== 'string') throw new Error(`Invalid ${name}`);
+    if (typeof value !== 'string' || !value.trim()) throw new Error(`Invalid ${name}`);
     let url: URL;
-    try { url = new URL(value, base); } catch { throw new Error(`Invalid ${name}`); }
+    try { url = new URL(value.trim(), base); } catch { throw new Error(`Invalid ${name}`); }
     if (url.protocol !== 'https:') throw new Error(`Invalid ${name}`);
     return url.toString();
   }
