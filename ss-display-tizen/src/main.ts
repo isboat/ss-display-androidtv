@@ -14,5 +14,5 @@ document.addEventListener('keydown', event => {
   if (event.key === 'Enter' && document.activeElement instanceof HTMLButtonElement) document.activeElement.click();
   if (event.key === 'Escape' || event.keyCode === 10009) { try { window.tizen?.application.getCurrentApplication().exit(); } catch { window.close(); } }
 });
-document.addEventListener('visibilitychange', () => { if (document.hidden) player.pause(); });
+document.addEventListener('visibilitychange', () => { if (document.hidden) player.pause(); else player.resume(); });
 void controller.start();

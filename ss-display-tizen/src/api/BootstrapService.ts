@@ -13,7 +13,14 @@ export class BootstrapService {
     if (!response.ok) throw new Error(`Configuration unavailable (${response.status})`);
     const root = await response.json() as { 'display-api'?: Record<string, unknown> }; const source = root['display-api'];
     if (!source) throw new Error('Configuration is missing display-api');
-    return Object.fromEntries(Object.entries(FIELD_MAP).map(([property, field]) => [property, this.httpsUrl(source[field], field)])) as unknown as EndpointConfig;
+    const baseUrl = this.httpsUrl(source['base-endpoint'], 'base-endpoint');
+    return Object.fromEntries(Object.entries(FIELD_MAP).map(([property, field]) => [property, this.httpsUrl(source[field], field, baseUrl)])) as unknown as EndpointConfig;
   }
-  private httpsUrl(value: unknown, name: string): string { if (typeof value !== 'string' || new URL(value).protocol !== 'https:') throw new Error(`Invalid ${name}`); return value; }
+  private httpsUrl(value: unknown, name: string, base?: string): string {
+    if (typeof value !== 'string' || !value.trim()) throw new Error(`Invalid ${name}`);
+    let url: URL;
+    try { url = new URL(value.trim(), base); } catch { throw new Error(`Invalid ${name}`); }
+    if (url.protocol !== 'https:') throw new Error(`Invalid ${name}`);
+    return url.toString();
+  }
 }
