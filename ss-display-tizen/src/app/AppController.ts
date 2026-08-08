@@ -1,5 +1,5 @@
 import type { ContentData, DeviceInfo, Tokens } from '../models';
-import { ApiClient } from '../api/ApiClient';
+import { ApiClient, ApiError } from '../api/ApiClient';
 import { BootstrapService } from '../api/BootstrapService';
 import { StorageService } from '../platform/Storage';
 import { Router } from '../screens/Router';
@@ -24,7 +24,7 @@ export class AppController {
       const config = this.requiredConfig(); const code = await this.api.request<DeviceCode>(config.deviceCodeUrl, { method: 'POST', body: JSON.stringify({ clientId: 'clientid', grantType: 'user_code' }) });
       this.router.show('activation', { code: code.userCode, url: code.verificationUrl }); this.polling = true;
       const expiresAt = Date.now() + (code.expiresIn ?? 600) * 1000;
-      while (this.polling && Date.now() < expiresAt) { await this.delay((code.interval ?? 5) * 1000); try { this.storage.tokens = await this.api.request<Tokens>(config.deviceTokenRequestUrl, { method: 'POST', body: JSON.stringify({ clientId: code.clientId, clientSecret: '', deviceCode: code.deviceCode, grantType: 'urn:ietf:params:oauth:grant-type:access_token' }) }); this.polling = false; return this.loadDisplay(); } catch { /* Pending authorization is intentionally retried until expiry. */ } }
+      while (this.polling && Date.now() < expiresAt) { await this.delay((code.interval ?? 5) * 1000); try { this.storage.tokens = await this.api.request<Tokens>(config.deviceTokenRequestUrl, { method: 'POST', body: JSON.stringify({ clientId: code.clientId, clientSecret: '', deviceCode: code.deviceCode, grantType: 'urn:ietf:params:oauth:grant-type:access_token' }) }); this.polling = false; return this.loadDisplay(); } catch (error) { if (!(error instanceof ApiError) || error.status !== 428) throw error; } }
       throw new Error('The activation code expired.');
     } catch (error) { this.fail(error); }
   }

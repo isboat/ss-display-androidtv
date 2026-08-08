@@ -3,7 +3,7 @@ import type { DeviceInfo, EndpointConfig } from '../models';
 import { ApiClient } from '../api/ApiClient';
 
 interface Negotiation { url: string; accessToken: string }
-interface RealtimeMessage { messageType?: string; message?: string }
+interface RealtimeMessage { messageType?: string; messageData?: string }
 
 /** Maintains the application-scoped SignalR connection, registration, keep-alive, and command dispatch. */
 export class SignalRService {
@@ -34,6 +34,6 @@ export class SignalRService {
     if (command.messageType === 'content.publish' || command.messageType === 'device.info.update') this.onPublish();
     else if (command.messageType === 'app.restart') window.location.reload();
     else if (command.messageType === 'app.terminate') window.tizen?.application.getCurrentApplication().exit();
-    else if (command.messageType === 'app.upgrade.info' || command.messageType === 'operator.info') this.onNotice(command.message ?? '', command.messageType === 'operator.info');
+    else if (command.messageType === 'app.upgrade.info' || command.messageType === 'operator.info') this.onNotice(command.messageData ?? '', command.messageType === 'operator.info');
   }
 }

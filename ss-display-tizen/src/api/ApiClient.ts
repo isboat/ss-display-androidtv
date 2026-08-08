@@ -1,6 +1,10 @@
 import type { Tokens } from '../models';
 import { StorageService } from '../platform/Storage';
 
+export class ApiError extends Error {
+  public constructor(public readonly status: number) { super(`Request failed (${status})`); }
+}
+
 /** Central HTTP gateway implementing timeout, trusted-origin authentication, and single-flight token refresh. */
 export class ApiClient {
   private refreshPromise: Promise<boolean> | null = null;
@@ -14,8 +18,9 @@ export class ApiClient {
     try {
       const response = await fetch(url, { ...init, headers, signal: controller.signal });
       if (response.status === 401 && retry && await this.refresh()) return this.request<T>(url, init, false);
-      if (!response.ok) throw new Error(`Request failed (${response.status})`);
-      return response.status === 204 ? undefined as T : await response.json() as T;
+      if (!response.ok) throw new ApiError(response.status);
+      const body = await response.text();
+      return body ? JSON.parse(body) as T : undefined as T;
     } finally { window.clearTimeout(timeout); }
   }
 
@@ -24,7 +29,7 @@ export class ApiClient {
     if (this.refreshPromise) return this.refreshPromise;
     const refreshUrl = this.storage.config?.deviceRefreshTokenRequestUrl; const refreshToken = this.storage.tokens?.refreshToken;
     if (!refreshUrl || !refreshToken) return Promise.resolve(false);
-    this.refreshPromise = fetch(refreshUrl, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${refreshToken}` }, body: JSON.stringify({ grantType: 'refresh_token', refreshToken }) })
+    this.refreshPromise = fetch(refreshUrl, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${refreshToken}` }, body: JSON.stringify({ clientId: '', clientSecret: 'string', deviceCode: '', grantType: 'refresh_token' }) })
       .then(async response => { if (!response.ok) throw new Error('Refresh rejected'); this.storage.tokens = await response.json() as Tokens; return true; })
       .catch(() => { this.storage.tokens = null; return false; }).finally(() => { this.refreshPromise = null; });
     return this.refreshPromise;
