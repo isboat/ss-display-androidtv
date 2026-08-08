@@ -1,0 +1,7 @@
+node_modules/
+dist/
+artifacts/
+*.ipk
+.env*
+!.env.example
+.generated-public/
