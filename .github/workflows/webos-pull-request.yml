@@ -1,0 +1,19 @@
+name: LG webOS pull request
+on:
+  pull_request:
+    paths: ['ss-display-webos/**', '.github/workflows/webos-pull-request.yml']
+permissions:
+  contents: read
+concurrency:
+  group: webos-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: ss-display-webos } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: ss-display-webos/package-lock.json }
+      - run: npm ci
+      - run: npm run check
