@@ -1,0 +1,17 @@
+name: Tizen main
+on:
+  push:
+    branches: [main]
+permissions: { contents: read }
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: ss-display-tizen } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: ss-display-tizen/package-lock.json }
+      - run: npm ci
+      - run: npm run check
+      - uses: actions/upload-artifact@v4
+        with: { name: tizen-web-app, path: ss-display-tizen/dist, if-no-files-found: error }
