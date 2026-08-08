@@ -1,0 +1,16 @@
+name: Tizen pull request
+on:
+  pull_request:
+    paths: ['ss-display-tizen/**', '.github/workflows/tizen-*.yml']
+permissions: { contents: read }
+concurrency: { group: "tizen-pr-${{ github.event.pull_request.number }}", cancel-in-progress: true }
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: ss-display-tizen } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: ss-display-tizen/package-lock.json }
+      - run: npm ci
+      - run: npm run check
