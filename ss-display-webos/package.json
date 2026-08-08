@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "build": "tsc --noEmit && vite build && npm run validate:package",
+    "build": "node scripts/prepare-public.mjs && tsc --noEmit && vite build && npm run validate:package",
     "package:webos": "npm run build && ares-package dist -o artifacts",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
@@ -29,6 +29,7 @@
     "typescript": "5.9.3",
     "typescript-eslint": "8.46.3",
     "vite": "8.2.1",
-    "vitest": "4.1.0"
+    "vitest": "4.1.0",
+    "sharp": "0.34.5"
   }
 }

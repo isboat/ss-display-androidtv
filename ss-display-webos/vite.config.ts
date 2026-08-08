@@ -4,7 +4,7 @@ import { resolve } from 'node:path';
 /** Produces a self-contained webOS package without CDN dependencies. */
 export default defineConfig({
   root: 'src',
-  publicDir: resolve(import.meta.dirname, 'public'),
+  publicDir: resolve(import.meta.dirname, '.generated-public'),
   base: './',
   test: { root: import.meta.dirname, environment: 'jsdom', globals: true, include: ['test/**/*.test.ts'] },
   build: {

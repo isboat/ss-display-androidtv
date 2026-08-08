@@ -4,3 +4,4 @@ artifacts/
 *.ipk
 .env*
 !.env.example
+.generated-public/

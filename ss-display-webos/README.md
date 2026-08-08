@@ -7,7 +7,7 @@ A packaged, full-screen digital-signage player for LG webOS TV, implemented from
 - TypeScript, Vite, Vitest, ESLint, DOMPurify, and Microsoft SignalR.
 - Semantic HTML/CSS with a TV-safe 16:9 layout, large typography, high contrast, and LG remote support.
 - Constructor injection and separate application, API, rendering, media, realtime, persistence, and platform boundaries.
-- Locally bundled code only. All artwork is SVG source; the repository and package contain no binary images.
+- Locally bundled code only. All committed artwork is SVG source. The build generates LG-required PNG launcher icons into ignored output, so no binary artwork is committed.
 
 Node.js 22 or newer is required. Production qualification requires physical oldest/newest supported LG models; a browser cannot validate codecs, memory pressure, remote behavior, or LG distribution policy.
 
@@ -44,4 +44,4 @@ Runtime endpoints must be HTTPS. Rich text is sanitized, realtime message size i
 
 ## CI
 
-The repository workflows separately validate `main` pushes and pull requests. Main builds upload the unsigned text/SVG application directory. Both use `npm ci`, Node 22, least-privilege permissions, and concurrency cancellation.
+The repository workflows separately validate `main` pushes and pull requests. Main builds upload the unsigned application directory, including build-generated LG launcher icons. Both use `npm ci`, Node 22, least-privilege permissions, and concurrency cancellation.
