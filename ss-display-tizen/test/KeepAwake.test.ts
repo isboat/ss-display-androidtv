@@ -25,6 +25,10 @@ describe('KeepAwake', () => {
     expect(release).toHaveBeenCalledOnce();
     expect(release).toHaveBeenCalledWith('SCREEN');
     expect(setScreenSaver).toHaveBeenLastCalledWith(1);
+
+    keepAwake.enable();
+    expect(request).toHaveBeenCalledTimes(2);
+    expect(setScreenSaver).toHaveBeenLastCalledWith(0);
   });
 
   it('does not fail when platform APIs are unavailable', () => {

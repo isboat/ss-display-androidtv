@@ -16,6 +16,9 @@ document.addEventListener('keydown', event => {
   if (event.key === 'Enter' && document.activeElement instanceof HTMLButtonElement) document.activeElement.click();
   if (event.key === 'Escape' || event.keyCode === 10009) { try { window.tizen?.application.getCurrentApplication().exit(); } catch { window.close(); } }
 });
-document.addEventListener('visibilitychange', () => { if (document.hidden) player.pause(); else player.resume(); });
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) { player.pause(); keepAwake.disable(); }
+  else { keepAwake.enable(); player.resume(); }
+});
 window.addEventListener('unload', () => keepAwake.disable(), { once: true });
 void controller.start();
