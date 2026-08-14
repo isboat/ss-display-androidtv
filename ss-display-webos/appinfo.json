@@ -10,5 +10,6 @@
   "bgColor": "#050914",
   "requiredMemory": 64,
   "resolution": "1920x1080",
+  "screenSaver": false,
   "disableBackHistoryAPI": true
 }
