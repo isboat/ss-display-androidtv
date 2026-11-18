@@ -42,6 +42,8 @@ The backend selects a presentation through `layout.templateKey`:
 5. The SignalR client negotiates a WebSocket connection, registers the connection against the device, and listens for remote commands.
 6. A `content.publish` command retrieves and displays changed content. Other commands can update device information, restart the player, terminate it, or deliver operator/upgrade information.
 
+For a summary of all three players, see the [project overview](docs/project-overview.md).
+
 See [the detailed Android project overview](doc/project-overview.md) for complete flows, endpoint contracts, technologies, persistence behavior, and implementation observations.
 
 ## Technology stack
